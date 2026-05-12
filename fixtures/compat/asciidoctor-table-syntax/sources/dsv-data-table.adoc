@@ -1,0 +1,7 @@
+= DSV data table compatibility
+
+[format=dsv,separator=;]
+|===
+Name;Value
+Alpha;1
+|===

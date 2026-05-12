@@ -1,0 +1,12 @@
+{
+  "id": "table-spec-column-cell-spec",
+  "fixture": "fixtures/lossless/table-spec-column-cell-spec/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "column-cell-spec-metadata-visible", "type": "ui-review" }
+  ]
+}

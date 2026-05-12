@@ -1,0 +1,14 @@
+{
+  "id": "clipboard-merged-cell-paste",
+  "fixture": "fixtures/lossless/clipboard-merged-cell-paste/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "merged-imported-cell-visible", "type": "ui-review" },
+    { "id": "covered-cell-not-editable", "type": "ui-review" },
+    { "id": "clipboard-merged-paste-regression", "type": "vlm-review" }
+  ]
+}

@@ -1,0 +1,34 @@
+= Official table syntax compatibility
+
+== Column style inheritance
+
+[cols="2,2,5a"]
+|===
+|Firefox
+|Browser
+|Firefox is an open source web browser.
+
+Key characteristics:
+
+* Standards compliant
+* High performance
+* Portable
+
+http://getfirefox.com[Download Firefox]!
+|===
+
+== Duplicate with style and alignment
+
+|===
+|Name |Value
+
+2*>m|Styled duplicate
+|===
+
+== Non-goal CSV data table
+
+[format=csv]
+|===
+Name,Value
+Alpha,1
+|===

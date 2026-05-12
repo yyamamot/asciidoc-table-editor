@@ -1,0 +1,12 @@
+{
+  "id": "block-cell-boundary",
+  "fixture": "fixtures/lossless/block-cell-boundary/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "block-cell-boundary-preserved", "type": "ui-review" }
+  ]
+}

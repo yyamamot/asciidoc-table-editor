@@ -1,0 +1,16 @@
+{
+  "id": "preview-comprehensive",
+  "fixture": "fixtures/lossless/preview-comprehensive/source.adoc",
+  "expectedMode": "structured",
+  "expectedEditorMode": "preview",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "switch-preview", "action": "command", "command": "asciidocTable.test.setEditorMode", "target": "preview" }
+  ],
+  "assertions": [
+    { "id": "preview-pane-visible", "type": "ui-review" },
+    { "id": "preview-hides-source-actions", "type": "ui-review" },
+    { "id": "preview-alignment-and-block-content", "type": "vlm-review" }
+  ]
+}

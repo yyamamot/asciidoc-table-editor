@@ -1,0 +1,12 @@
+{
+  "id": "diagnostics",
+  "fixture": "fixtures/lossless/diagnostics/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "diagnostics-visible", "type": "ui-review" }
+  ]
+}

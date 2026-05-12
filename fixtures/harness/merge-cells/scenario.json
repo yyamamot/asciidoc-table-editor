@@ -1,0 +1,12 @@
+{
+  "id": "merge-cells",
+  "fixture": "fixtures/lossless/horizontal-span/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "covered-cell-visible", "type": "ui-review" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "ja-responsive",
+  "fixture": "fixtures/lossless/ja-responsive/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "ja-text-visible", "type": "ui-review" }
+  ]
+}

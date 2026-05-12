@@ -1,0 +1,135 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { createWebviewAppModel, renderTableEditorHtml, type TableEditorWebviewLabels } from "../../src/app";
+import { parseAsciiDocTable, projectGridModel } from "../../src/core";
+
+describe("l10n coverage", () => {
+  it("keeps package and runtime English/Japanese bundles aligned", () => {
+    expect(Object.keys(readJson("package.nls.ja.json")).sort()).toEqual(Object.keys(readJson("package.nls.json")).sort());
+    expect(Object.keys(readJson("l10n/bundle.l10n.ja.json")).sort()).toEqual(Object.keys(readJson("l10n/bundle.l10n.json")).sort());
+  });
+
+  it("covers extension vscode.l10n.t string literals in runtime bundles", () => {
+    const source = [
+      "src/extension/index.ts",
+      "src/extension/commands.ts",
+      "src/extension/format-command.ts",
+      "src/extension/panel.ts",
+      "src/extension/table-editor-labels.ts"
+    ].map((path) => readFileSync(path, "utf8")).join("\n");
+    const english = readJson("l10n/bundle.l10n.json");
+    const japanese = readJson("l10n/bundle.l10n.ja.json");
+    const keys = [...source.matchAll(/vscode\.l10n\.t\("([^"]+)"/gu)].map((match) => match[1]);
+
+    expect(keys.length).toBeGreaterThan(0);
+    expect(keys.filter((key) => english[key] === undefined)).toEqual([]);
+    expect(keys.filter((key) => japanese[key] === undefined)).toEqual([]);
+  });
+
+  it("renders Webview labels from the provided label table", () => {
+    const model = createWebviewAppModel(projectGridModel(parseAsciiDocTable("|===\n| A | B\n|===\n")));
+    const labels = japaneseLabels();
+    const html = renderTableEditorHtml(model, "testNonce", {}, labels);
+
+    expect(html).toContain("上に行を挿入");
+    expect(html).toContain("選択セル");
+    expect(html).toContain("セル内容を適用");
+    expect(html).not.toContain("Insert row above");
+  });
+});
+
+function readJson(path: string): Record<string, string> {
+  return JSON.parse(readFileSync(path, "utf8")) as Record<string, string>;
+}
+
+function japaneseLabels(): TableEditorWebviewLabels {
+  const bundle = readJson("l10n/bundle.l10n.ja.json");
+  return {
+    title: bundle["AsciiDoc Table Editor"],
+    tableGrid: bundle["AsciiDoc table grid"],
+    editCommands: bundle["Edit commands"],
+    undo: bundle.Undo,
+    redo: bundle.Redo,
+    edit: bundle.Edit,
+    preview: bundle.Preview,
+    format: bundle.Format,
+    merge: bundle.Merge,
+    mergeSelectedCells: bundle["Merge selected cells"],
+    unmerge: bundle.Unmerge,
+    unmergeSelectedCell: bundle["Unmerge selected cell"],
+    rowsLabel: bundle.rows,
+    columnsLabel: bundle.columns,
+    cellContextMenu: bundle["Cell context menu"],
+    insertRowAbove: bundle["Insert row above"],
+    insertRowBelow: bundle["Insert row below"],
+    insertColumnLeft: bundle["Insert column left"],
+    insertColumnRight: bundle["Insert column right"],
+    removeRow: bundle["Remove row"],
+    removeColumn: bundle["Remove column"],
+    selectedCell: bundle["Selected Cell"],
+    cell: bundle.Cell,
+    kind: bundle.Kind,
+    position: bundle.Position,
+    span: bundle.Span,
+    state: bundle.State,
+    grid: bundle.Grid,
+    content: bundle.Content,
+    raw: bundle.Raw,
+    blockCell: bundle["Block cell"],
+    editContent: bundle["Edit content"],
+    applyCellContent: bundle["Apply Cell Content"],
+    blockSource: bundle["Block Source"],
+    applyBlockSource: bundle["Apply Block Source"],
+    tablePreview: bundle["Table preview"],
+    blockPreview: bundle["Block preview"],
+    row: bundle.row,
+    column: bundle.column,
+    readonly: bundle.readonly,
+    editable: bundle.editable,
+    coveredBy: bundle["Covered by"],
+    editing: bundle.Editing,
+    noDiagnostics: bundle["No diagnostics"],
+    copiedSelectedRange: bundle["Copied selected range."],
+    copiedSelectedCell: bundle["Copied selected cell."],
+    copyBlockedPlainRange: bundle["Copy blocked: range must contain only editable unmerged plain cells."],
+    pasteBlockedPlainRange: bundle["Paste blocked: target range must contain only editable unmerged plain cells."],
+    pasteBlockedMergedOverlap: bundle["Paste blocked: target range overlaps a merged cell."],
+    clearBlockedPlainRange: bundle["Clear blocked: target range must contain only editable unmerged plain cells."],
+    mergeBlockedTooSmall: bundle["Merge blocked: select at least two cells."],
+    mergeBlockedPlainRange: bundle["Merge blocked: target range must contain only editable origin cells."],
+    mergeBlockedHorizontalOnly: bundle["Merge blocked: target range must form a rectangle."],
+    unmergeBlockedOrigin: bundle["Unmerge blocked: select a merged origin cell."],
+    unmergeBlockedHorizontalOnly: bundle["Unmerge blocked: selected cell is not merged."],
+    unmergeBlockedNotMerged: bundle["Unmerge blocked: selected cell is not merged."],
+    structureEditBlockedOrigin: bundle["Structure edit blocked: select an origin cell."],
+    rowColumnEdit: bundle["Row/column edit"],
+    mergeOperation: bundle.Merge,
+    unmergeOperation: bundle.Unmerge,
+    cellUpdate: bundle["Cell update"],
+    blockCellUpdate: bundle["Block cell update"],
+    undoRedo: bundle["Undo/redo"],
+    previewRender: bundle["Preview render"],
+    formatTable: bundle["Format Table"],
+    formatReview: bundle["Format Review"],
+    tableLayout: bundle["Table layout"],
+    cellPerLine: bundle["Cell-per-line"],
+    applyFormat: bundle["Apply Format"],
+    cancelFormat: bundle.Cancel,
+    changedLines: bundle["Changed lines"],
+    formattedRows: bundle["Formatted rows"],
+    preservedRows: bundle["Preserved rows"],
+    before: bundle.Before,
+    after: bundle.After,
+    pasteBlockedImportedSpan: bundle["Paste blocked: imported table spans are not supported yet."],
+    pasteBlockedImportedRagged: bundle["Paste blocked: imported table must be rectangular."],
+    pasteBlockedImportedTable: bundle["Paste blocked: clipboard table could not be parsed."],
+    pasteBlockedBlockMultiCell: bundle["Paste blocked: table paste must start from a plain cell, not a block cell."],
+    pasteRichContentDropped: bundle["Pasted unsupported rich clipboard content with limited formatting."],
+    fallbackGuidanceTitle: bundle["Structured editing is disabled for this table."],
+    fallbackGuidanceBody: bundle["Review the diagnostics to see why this table is read-only in the grid."],
+    focusDiagnostics: bundle["Focus diagnostics"],
+    operationAppliedMessage: bundle["{operation} applied."],
+    operationBlockedMessage: bundle["{operation} failed: {message} ({code})"],
+    operationBlockedWithoutDetailMessage: bundle["{operation} failed."]
+  };
+}

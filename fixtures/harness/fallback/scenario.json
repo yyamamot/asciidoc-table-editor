@@ -1,0 +1,12 @@
+{
+  "id": "fallback",
+  "fixture": "fixtures/lossless/malformed-overlapping-span/source.adoc",
+  "expectedMode": "fallback",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "fallback-hides-structured-actions", "type": "ui-review" }
+  ]
+}

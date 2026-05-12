@@ -1,0 +1,9 @@
+= Column style inheritance compatibility
+
+[cols="h,m,s,e"]
+|===
+|Header style
+|Monospace style
+|Strong style
+|Emphasis style
+|===

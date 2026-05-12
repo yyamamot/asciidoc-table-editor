@@ -1,0 +1,7 @@
+{
+  "command.asciidocTable.showParserInfo.title": "AsciiDoc Table: Parser 情報を表示",
+  "command.asciidocTable.openEditor.title": "AsciiDoc Table: テーブルエディターを開く",
+  "command.asciidocTable.formatTable.title": "AsciiDoc Table: テーブルを整形",
+  "configuration.asciidocTable.title": "AsciiDoc Table Editor",
+  "configuration.asciidocTable.format.enabled.description": "AsciiDoc テーブルの整形機能を有効にする。"
+}

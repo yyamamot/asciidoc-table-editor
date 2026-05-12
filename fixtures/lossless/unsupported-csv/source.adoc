@@ -1,0 +1,5 @@
+[format=csv]
+|===
+Name,Value
+A,1
+|===

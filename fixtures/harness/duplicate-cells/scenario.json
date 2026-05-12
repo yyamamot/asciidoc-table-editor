@@ -1,0 +1,13 @@
+{
+  "id": "duplicate-cells",
+  "fixture": "fixtures/lossless/duplicate-cells/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "duplicate-cells-visible-as-plain-cells", "type": "ui-review" },
+    { "id": "duplicate-cells-edit-expands-shorthand", "type": "vlm-review" }
+  ]
+}

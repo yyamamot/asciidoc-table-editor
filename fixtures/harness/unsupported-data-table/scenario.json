@@ -1,0 +1,12 @@
+{
+  "id": "unsupported-data-table",
+  "fixture": "fixtures/lossless/unsupported-csv/source.adoc",
+  "expectedMode": "fallback",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "unsupported-data-table-hides-structured-actions", "type": "ui-review" }
+  ]
+}

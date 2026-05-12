@@ -1,0 +1,12 @@
+{
+  "id": "large-table",
+  "fixture": "fixtures/lossless/large-table/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "large-grid-visible", "type": "ui-review" }
+  ]
+}

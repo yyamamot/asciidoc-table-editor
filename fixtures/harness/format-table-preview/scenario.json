@@ -1,0 +1,14 @@
+{
+  "id": "format-table-preview",
+  "fixture": "fixtures/lossless/format-table-preview/source.adoc",
+  "expectedMode": "structured",
+  "expectedEditorMode": "format-review",
+  "formatReview": true,
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "format-table", "action": "command", "command": "asciidocTable.formatTable" }
+  ],
+  "assertions": [
+    { "id": "format-review-visible", "type": "ui-review" }
+  ]
+}

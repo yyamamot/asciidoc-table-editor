@@ -1,0 +1,16 @@
+= Column AsciiDoc style compatibility
+
+[cols="2,2,5a"]
+|===
+|Firefox
+|ブラウザ
+|FirefoxはオープンソースのWEBブラウザです。
+
+下記のような特徴があります。:
+
+* 標準仕様準拠
+* 高パフォーマンス
+* 高い可搬性
+
+http://getfirefox.com[Firefoxをダウンロードする]!
+|===

@@ -1,0 +1,14 @@
+{
+  "id": "block-cell-paste",
+  "fixture": "fixtures/lossless/block-cell-readonly/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "block-cell-raw-editor-visible", "type": "ui-review" },
+    { "id": "block-cell-preview-visible", "type": "ui-review" },
+    { "id": "block-cell-paste-diagnostics", "type": "vlm-review" }
+  ]
+}

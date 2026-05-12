@@ -1,0 +1,7 @@
+= TSV data table compatibility
+
+[format=tsv]
+|===
+Name	Value
+Alpha	1
+|===

@@ -1,0 +1,12 @@
+{
+  "id": "block-cell-readonly",
+  "fixture": "fixtures/lossless/block-cell-readonly/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "block-cell-readonly", "type": "ui-review" }
+  ]
+}

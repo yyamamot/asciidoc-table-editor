@@ -1,0 +1,22 @@
+{
+  "id": "clipboard-auto-expand-paste",
+  "fixture": "fixtures/lossless/minimal-basic/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    {
+      "id": "paste-overflow-rectangle",
+      "action": "paste",
+      "format": "html-table",
+      "startSourceCellId": "cell:1:1",
+      "rows": [
+        ["x", "y", "z"],
+        ["p", "q", "r"]
+      ]
+    }
+  ],
+  "assertions": [
+    { "id": "auto-expand-paste-regression", "type": "ui-review" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "clipboard-rich-content-diagnostics",
+  "fixture": "fixtures/lossless/clipboard-rich-content-diagnostics/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "rich-content-pastes-as-plain-text", "type": "ui-review" },
+    { "id": "rich-content-diagnostics-visible", "type": "vlm-review" }
+  ]
+}

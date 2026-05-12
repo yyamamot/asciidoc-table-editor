@@ -1,0 +1,12 @@
+{
+  "id": "nested-table-non-goal",
+  "fixture": "fixtures/lossless/nested-table-non-goal/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "nested-table-raw-block-preserved", "type": "ui-review" }
+  ]
+}

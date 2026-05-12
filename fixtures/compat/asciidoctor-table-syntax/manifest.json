@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "oracle": {
+    "package": "asciidoctor",
+    "version": "3.0.4",
+    "role": "semantic reference"
+  },
+  "fixtures": [
+    {
+      "id": "basic-psv",
+      "source": "fixtures/lossless/minimal-basic/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "header-footer",
+      "source": "fixtures/lossless/table-spec-header-footer/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "column-cell-spec",
+      "source": "fixtures/lossless/table-spec-column-cell-spec/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "compareStyle": false,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "column-style-inheritance",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/column-style-inheritance.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "column-asciidoc-style",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/column-asciidoc-style.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectBlockContentCells": 1
+    },
+    {
+      "id": "horizontal-span",
+      "source": "fixtures/lossless/horizontal-span/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "vertical-span",
+      "source": "fixtures/lossless/vertical-span/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "rectangular-span",
+      "source": "fixtures/lossless/rectangular-span/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "duplicate-cells",
+      "source": "fixtures/lossless/duplicate-cells/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "custom-separator",
+      "source": "fixtures/lossless/custom-separator/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true
+    },
+    {
+      "id": "block-cell-boundary",
+      "source": "fixtures/lossless/block-cell-boundary/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectBlockContentCells": 1
+    },
+    {
+      "id": "csv-data-table",
+      "source": "fixtures/lossless/unsupported-csv/source.adoc",
+      "status": "non-goal",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+    },
+    {
+      "id": "tsv-data-table",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/tsv-data-table.adoc",
+      "status": "non-goal",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+    },
+    {
+      "id": "dsv-data-table",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/dsv-data-table.adoc",
+      "status": "non-goal",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+    },
+    {
+      "id": "nested-table-non-goal",
+      "source": "fixtures/lossless/nested-table-non-goal/source.adoc",
+      "status": "non-goal",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectBlockContentCells": 1
+    }
+  ]
+}

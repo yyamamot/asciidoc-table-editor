@@ -1,0 +1,5 @@
+[cols=2*,separator=¦]
+|===
+¦ Pipe | content
+¦ Right cell
+|===

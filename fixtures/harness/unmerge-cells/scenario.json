@@ -1,0 +1,12 @@
+{
+  "id": "unmerge-cells",
+  "fixture": "fixtures/lossless/rectangular-span/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "rectangular-span-visible", "type": "ui-review" }
+  ]
+}

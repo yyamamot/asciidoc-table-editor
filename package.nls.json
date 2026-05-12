@@ -1,0 +1,7 @@
+{
+  "command.asciidocTable.showParserInfo.title": "AsciiDoc Table: Show Parser Info",
+  "command.asciidocTable.openEditor.title": "AsciiDoc Table: Open Table Editor",
+  "command.asciidocTable.formatTable.title": "AsciiDoc Table: Format Table",
+  "configuration.asciidocTable.title": "AsciiDoc Table Editor",
+  "configuration.asciidocTable.format.enabled.description": "Enable AsciiDoc table formatting features."
+}

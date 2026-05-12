@@ -1,0 +1,11 @@
+= Table spec header/footer fixture
+
+[options="header,footer",cols=3*]
+|===
+| Name | Value | Status
+
+| Alpha | 1 | Ready
+| Beta | 2 | Draft
+
+| Total | 3 | Complete
+|===

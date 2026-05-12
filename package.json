@@ -1,0 +1,140 @@
+{
+  "name": "asciidoc-table-editor",
+  "displayName": "AsciiDoc Table Editor",
+  "publisher": "yyamamot",
+  "description": "Edit AsciiDoc tables with a merge-aware, lossless AST-backed grid",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yyamamot/asciidoc-table-editor.git"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "asciidoc",
+    "table",
+    "vscode",
+    "editor"
+  ],
+  "packageManager": "pnpm@10.30.3",
+  "type": "commonjs",
+  "engines": {
+    "vscode": "^1.105.0",
+    "node": ">=22.0.0"
+  },
+  "main": "./dist/extension.js",
+  "icon": "assets/icon.png",
+  "l10n": "./l10n",
+  "activationEvents": [
+    "onCommand:asciidocTable.showParserInfo",
+    "onCommand:asciidocTable.openEditor",
+    "onCommand:asciidocTable.formatTable",
+    "onLanguage:asciidoc",
+    "onLanguage:adoc"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "asciidoc",
+        "aliases": [
+          "AsciiDoc",
+          "asciidoc",
+          "adoc"
+        ],
+        "extensions": [
+          ".adoc",
+          ".asciidoc",
+          ".asc"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "asciidocTable.showParserInfo",
+        "title": "%command.asciidocTable.showParserInfo.title%"
+      },
+      {
+        "command": "asciidocTable.openEditor",
+        "title": "%command.asciidocTable.openEditor.title%"
+      },
+      {
+        "command": "asciidocTable.formatTable",
+        "title": "%command.asciidocTable.formatTable.title%"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "asciidocTable.openEditor",
+        "key": "cmd+alt+t cmd+alt+e",
+        "mac": "cmd+alt+t cmd+alt+e",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "%configuration.asciidocTable.title%",
+      "properties": {
+        "asciidocTable.format.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.asciidocTable.format.enabled.description%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "node -e \"console.log('lint stub: no linter configured yet')\"",
+    "format": "node -e \"console.log('format stub: no formatter configured yet')\"",
+    "build": "node ./scripts/build.mjs",
+    "build:test": "tsc -p tsconfig.json",
+    "dev:vscode": "node ./scripts/open-clean-vscode.mjs",
+    "package:vsix": "node ./scripts/vsix.mjs package",
+    "test:package": "pnpm run build && node ./scripts/check-preview-vendor.mjs && node ./scripts/vsix.mjs smoke",
+    "install:vsix": "node ./scripts/vsix.mjs install",
+    "uninstall:vsix": "node ./scripts/vsix.mjs uninstall",
+    "test:unit": "vitest run --dir test/unit",
+    "test:integration": "vitest run --dir test/integration",
+    "test:integration:host": "pnpm run build && pnpm run build:test && node ./out/test/integration-host/run.js",
+    "test:nightly:visual": "node ./scripts/nightly-visual.mjs",
+    "perf:large-table": "node ./scripts/perf-large-table.mjs",
+    "perf:codelens": "node ./scripts/perf-codelens.mjs",
+    "review:ui:llm": "node ./scripts/review-ui-llm.mjs",
+    "review:ui:llm:scenario": "node ./scripts/review-ui-llm.mjs --single",
+    "review:ui:feature": "node ./scripts/review-ui-feature.mjs",
+    "verify:ui-change": "node ./scripts/verify-ui-change.mjs",
+    "capture:clipboard-fixture": "node ./scripts/capture-macos-clipboard-fixture.mjs",
+    "release:regression": "node ./scripts/release-regression.mjs",
+    "check:l10n": "node ./scripts/check-l10n.mjs",
+    "check:asciidoctor-compat": "node ./scripts/check-asciidoctor-compat.mjs",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test:unit",
+    "verify": "pnpm run build && pnpm run check:l10n && pnpm run check && pnpm run test:integration && pnpm run test:integration:host"
+  },
+  "files": [
+    "assets/**",
+    "dist/**",
+    "l10n/**",
+    "package.nls.json",
+    "package.nls.ja.json",
+    "README.md",
+    "README.ja.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "dependencies": {
+    "@asciidoctor/core": "3.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/vscode": "^1.105.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.27.2",
+    "happy-dom": "^20.9.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

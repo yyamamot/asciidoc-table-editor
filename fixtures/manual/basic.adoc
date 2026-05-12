@@ -1,0 +1,155 @@
+= Manual Fixture
+
+== Editable plain table
+
+|===
+| col1 | col2 | col3
+
+| hello | world | ready
+| test | message | draft
+| next | value | done
+|===
+
+== Span and block table
+
+[cols=4*]
+|===
+| Name | Value | Status | Notes
+
+| Plain
+| Cell
+| Ready
+| The default separator is \|.
+
+2+| Horizontal merge
+| H3
+| H4
+
+.2+| Vertical merge
+| V row1 col2
+| V row1 col3
+| V row1 col4
+
+| V row2 col2
+| V row2 col3
+| V row2 col4
+
+2.2+| Rectangular merge
+| R1C3
+| R1C4
+
+| R2C3
+| R2C4
+
+m| Mono
+s| Strong
+e| Emphasis
+a| * block cell list item
+|===
+
+== Supported syntax quick reference
+
+=== Header and footer
+
+[options="header,footer",cols=3*]
+|===
+| Name | Value | Status
+
+| Alpha | 1 | Ready
+| Beta | 2 | Draft
+
+| Total | 3 | Complete
+|===
+
+=== Column and cell specs
+
+[cols="1,<,^,>,2a"]
+|===
+^.^h| Header >| Right l| Literal d| Default a| Block style
+
+| Left | Center | Right | Plain | * list item in an AsciiDoc block cell
+|===
+
+=== Column AsciiDoc style inheritance
+
+[cols="2,2,5a"]
+|===
+|Firefox
+|Browser
+|Firefox is an open source web browser.
+
+Key characteristics:
+
+* Standards compliant
+* High performance
+* Portable
+
+http://getfirefox.com[Download Firefox]!
+|===
+
+=== Escaped separator
+
+[cols=2*]
+|===
+| The default separator is \|.
+| The next cell
+|===
+
+=== Custom separator
+
+[cols=2*,separator=¦]
+|===
+¦ Pipe | content
+¦ Right cell
+|===
+
+=== Spans
+
+[cols=4*]
+|===
+2+| Horizontal merge
+| H3
+| H4
+
+.2+| Vertical merge
+| V row1 col2
+| V row1 col3
+| V row1 col4
+
+| V row2 col2
+| V row2 col3
+| V row2 col4
+
+2.2+| Rectangular merge
+| R1C3
+| R1C4
+
+| R2C3
+| R2C4
+|===
+
+=== Cell styles
+
+[cols=5*]
+|===
+m| Mono
+s| Strong
+e| Emphasis
+h| Header style
+a| * AsciiDoc block cell
+|===
+
+=== Block cell boundary
+
+[cols=2*]
+|===
+a| [source]
+----
+| not a table cell
+2+| not a span
+----
+| After block
+
+| Plain left
+| Plain right
+|===

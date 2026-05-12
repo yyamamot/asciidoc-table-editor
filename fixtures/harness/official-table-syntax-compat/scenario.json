@@ -1,0 +1,14 @@
+{
+  "id": "official-table-syntax-compat",
+  "fixture": "fixtures/lossless/official-table-syntax-compat/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "column-a-block-cell-visible", "type": "ui-review" },
+    { "id": "duplicate-style-alignment-visible", "type": "ui-review" },
+    { "id": "non-goal-csv-not-selected-by-default", "type": "vlm-review" }
+  ]
+}

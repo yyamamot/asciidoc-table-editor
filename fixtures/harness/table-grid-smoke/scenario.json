@@ -1,0 +1,12 @@
+{
+  "id": "table-grid-smoke",
+  "fixture": "fixtures/lossless/comprehensive-psv/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+  ],
+  "assertions": [
+    { "id": "table-grid-visible", "type": "ui-review" }
+  ]
+}

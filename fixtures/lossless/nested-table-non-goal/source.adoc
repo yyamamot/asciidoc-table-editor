@@ -1,0 +1,14 @@
+= Nested table non-goal fixture
+
+[cols=2*]
+|===
+| Name
+a| Nested table source stays inside the block cell.
+
+[cols=2*]
+!===
+! Inner A ! Inner B
+!===
+
+| Plain | Tail
+|===
