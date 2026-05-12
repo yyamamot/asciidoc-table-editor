@@ -64,19 +64,38 @@ pnpm run install:vsix
 Use an AsciiDoc pipe table.
 
 ```asciidoc
-= Example
+= Preview comprehensive fixture
 
-[cols="2,2,5a"]
+[options="header,footer",cols="<,^,>,2a"]
 |===
-|Name |Type |Notes
+| Left
+| Center
+| Right
+| Block
 
-|Firefox
-|Browser
-|Firefox is an open source web browser.
+<| Alpha
+^| Beta
+>| Gamma
+a| * list item
+* second item
 
-* Standards compliant
-* High performance
-* Portable
+2+| Horizontal span
+| H3
+| H4
+
+.2+| Vertical span
+| V row1 center
+| V row1 right
+| V row1 block
+
+| V row2 center
+| V row2 right
+| V row2 block
+
+| Footer left
+| Footer center
+| Footer right
+| Footer block
 |===
 ```
 
