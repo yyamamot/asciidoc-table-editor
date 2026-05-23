@@ -1,0 +1,10 @@
+= Rotate and orientation preview
+
+[%rotate]
+[orientation=landscape]
+|===
+|Name |Value
+
+|Alpha |1
+|===
+

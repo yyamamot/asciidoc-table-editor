@@ -52,6 +52,21 @@ describe("findAsciiDocTableBlock", () => {
     expect(block?.raw).toBe(source);
   });
 
+  it("detects Asciidoctor-compatible variable table delimiters", () => {
+    const source = ".Functions\n[%autowidth.stretch]\n|====\n| A | B\n|====\n";
+    const cursorOffset = source.indexOf("| A");
+    const block = findAsciiDocTableBlock(source, cursorOffset);
+
+    expect(block?.raw).toBe(source);
+    expect(block?.range.start.offset).toBe(0);
+  });
+
+  it("does not pair different table delimiter lengths", () => {
+    const source = "|===\n| A | B\n|====\n";
+
+    expect(findAsciiDocTableBlocks(source)).toEqual([]);
+  });
+
   it("returns undefined when the cursor is outside a table", () => {
     const source = "= Doc\n\n|===\n| A\n|===\n";
 

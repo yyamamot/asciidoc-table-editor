@@ -1,0 +1,11 @@
+= Footer option
+
+[options="footer",cols=2*]
+|===
+|Name |Value
+
+|Alpha |1
+
+|Total |1
+|===
+

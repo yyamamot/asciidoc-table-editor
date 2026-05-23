@@ -76,6 +76,7 @@ function compareFixture(core, asciidoctor, fixture) {
     blockContent: cell.isBlockContent
   }));
   const oracleCells = fixture.compareOracle === false ? [] : extractOracleCells(asciidoctor, source);
+  const oracleTableFound = fixture.expectOracleTable === true ? hasOracleTable(asciidoctor, source) : false;
   const diagnostics = [...parsed.errors, ...grid.diagnostics].map((diagnostic) => ({
     code: diagnostic.code,
     severity: diagnostic.severity,
@@ -100,6 +101,33 @@ function compareFixture(core, asciidoctor, fixture) {
     }
   }
 
+  if (typeof fixture.expectParserCellCount === "number" && parserCells.length !== fixture.expectParserCellCount) {
+    failures.push(`parser-cell-count ${parserCells.length} != ${fixture.expectParserCellCount}`);
+  }
+
+  if (typeof fixture.expectGridColumnCount === "number" && grid.columnCount !== fixture.expectGridColumnCount) {
+    failures.push(`grid-column-count ${grid.columnCount} != ${fixture.expectGridColumnCount}`);
+  }
+
+  if (Array.isArray(fixture.expectRowRoles)) {
+    const actualRoles = parsed.rows.map((row) => row.role);
+    if (JSON.stringify(actualRoles) !== JSON.stringify(fixture.expectRowRoles)) {
+      failures.push(`row-roles ${JSON.stringify(actualRoles)} != ${JSON.stringify(fixture.expectRowRoles)}`);
+    }
+  }
+
+  if (Array.isArray(fixture.expectRawContains)) {
+    for (const expectedRaw of fixture.expectRawContains) {
+      if (!parsed.raw.includes(expectedRaw)) {
+        failures.push(`raw does not contain ${JSON.stringify(expectedRaw)}`);
+      }
+    }
+  }
+
+  if (fixture.expectOracleTable === true && !oracleTableFound) {
+    failures.push("oracle table was not found");
+  }
+
   if (typeof fixture.expectBlockContentCells === "number") {
     const blockContentCount = parserCells.filter((cell) => cell.blockContent).length;
     if (blockContentCount !== fixture.expectBlockContentCells) {
@@ -113,15 +141,22 @@ function compareFixture(core, asciidoctor, fixture) {
 
   return {
     fixtureId: fixture.id,
+    category: fixture.category,
     source: fixture.source,
     status: fixture.status,
     structuredEdit: fixture.structuredEdit,
+    checks: fixture.checks ?? [],
     parserCells,
     oracleCells,
     diagnostics,
     failures,
     passed: failures.length === 0
   };
+}
+
+function hasOracleTable(asciidoctor, source) {
+  const document = asciidoctor.load(source, { sourcemap: true });
+  return document.findBy({ context: "table" })[0] !== undefined;
 }
 
 function compareOracleCells(parserCells, oracleCells, options) {
@@ -197,11 +232,11 @@ function renderSummary(summary) {
     `- generatedAt: ${summary.generatedAt}`,
     `- manifest: ${summary.manifest}`,
     "",
-    "| Fixture | Status | Structured | Result | Failures |",
-    "| --- | --- | --- | --- | --- |",
+    "| Fixture | Category | Status | Structured | Result | Failures |",
+    "| --- | --- | --- | --- | --- | --- |",
     ...summary.results.map(
       (result) =>
-        `| ${result.fixtureId} | ${result.status} | ${String(result.structuredEdit)} | ${result.passed ? "pass" : "fail"} | ${result.failures.join("; ")} |`
+        `| ${result.fixtureId} | ${result.category ?? ""} | ${result.status} | ${String(result.structuredEdit)} | ${result.passed ? "pass" : "fail"} | ${result.failures.join("; ")} |`
     ),
     "",
     "Artifacts:",

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2
+
+- Support Asciidoctor-compatible table delimiters such as `|====`.
+- Preserve PSV cell hard line break continuations that use trailing `+`.
+- Fix cell edits from the Table Editor when the source editor is hidden.
+- Keep large tables, previews, and format reviews scrollable inside the Table Editor.
+
 ## 0.0.1
 
 - Initial Marketplace-ready release.

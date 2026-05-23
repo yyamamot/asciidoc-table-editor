@@ -141,7 +141,7 @@ CodeLens またはツールバーからテーブル整形を実行すると Form
 | クリップボード貼り付け | コピーしたテーブルを現在のグリッドに貼り付ける | HTML テーブルと TSV 風フォールバックに対応 |
 | リッチクリップボード変換 | よく使うインライン内容を保持する | 太字、斜体、等幅、安全なリンク、list-to-block-cell paste |
 | ブロックセルプレビュー | ブロックセルの内容のレンダリング済み view を表示する | 編集正本は raw ソースのまま |
-| AsciiDoc Preview | 対象テーブルをレンダリング済み AsciiDoc として表示する | bundled `/core.0.4` を使用 |
+| AsciiDoc Preview | 対象テーブルをレンダリング済み AsciiDoc として表示する | bundled `@asciidoctor/core 3.0.4` を使用 |
 | Format Review | テーブル整形を書き戻し前に確認する | テーブル layout と cell-per-line mode を表示 |
 | 診断 / フォールバック | 安全でない構造化編集を止める | unsupported テーブルはソースを壊さず保持する |
 | VS Code undo / redo | ドキュメント undo stack を使う | テーブル編集は VS Code ドキュメント編集として戻せる |
@@ -200,16 +200,16 @@ Word、Excel、Pages、Numbers、ブラウザからテーブルをコピーし�
 | 項目 | 内容 |
 | --- | --- |
 | VS Code | Desktop `1.105+` |
-| ソースからのビルド用 Node.js | `22+` |
+| ソースからのビルド用 Node.js | `24 LTS+` |
 | 対象ファイル | `.adoc`, `.asciidoc`, `.asc` |
-| Preview renderer | bundled `/core.0.4` |
+| プレビュー renderer | bundled `@asciidoctor/core 3.0.4` |
 | Marketplace package | `README.md`, `README.ja.md`, `LICENSE`, screenshot assets を同梱 |
 
 ## Source から build する
 
 必要なもの:
 
-- Node.js `22+`
+- Node.js `24 LTS+`
 - pnpm `10.30.3+`
 - VS Code Desktop `1.105+`
 
@@ -230,18 +230,6 @@ pnpm run package:vsix
 
 ```sh
 pnpm run install:vsix
-```
-
-主な検証ゲートを実行します。
-
-```sh
-pnpm run verify
-```
-
-UI 変更時の確認:
-
-```sh
-pnpm run verify:ui-change -- --scenario table-grid --id <feature-id>
 ```
 
 ## License

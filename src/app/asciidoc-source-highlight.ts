@@ -16,7 +16,7 @@ interface TokenMatch {
 }
 
 const TOKEN_PATTERNS: ReadonlyArray<{ readonly kind: TokenKind; readonly pattern: RegExp }> = [
-  { kind: "delimiter", pattern: /\|===/gu },
+  { kind: "delimiter", pattern: /^\|={3,}$/gmu },
   { kind: "attribute", pattern: /^\[[^\]\n]+\]/gmu },
   { kind: "link", pattern: /\b(?:https?:\/\/[^\s\[]+|mailto:[^\s\[]+)\[[^\]\n]+\]/gu },
   { kind: "mono", pattern: /`[^`\n]+`/gu },

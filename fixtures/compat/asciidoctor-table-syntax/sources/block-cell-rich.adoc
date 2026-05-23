@@ -1,0 +1,17 @@
+= Block cell rich content
+
+|===
+|Name |Notes
+
+|Alpha
+a|First paragraph.
+
+* First item
+* Second item
+
+[source]
+----
+echo sample
+----
+|===
+

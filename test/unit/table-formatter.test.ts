@@ -14,6 +14,17 @@ describe("formatAsciiDocTable", () => {
     expect(result.summary.changedLineCount).toBe(1);
   });
 
+  it("preserves variable table delimiters in table-layout mode", () => {
+    const result = formatAsciiDocTable(parseAsciiDocTable("|====\n| A | Long\n| Alpha | B\n|====\n"));
+
+    expect(result).toMatchObject({ ok: true, changed: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      throw new Error("expected formatter success");
+    }
+    expect(result.source).toBe("|====\n| A     | Long\n| Alpha | B\n|====\n");
+  });
+
   it("removes redundant blank lines between rows in table-layout mode", () => {
     const result = formatAsciiDocTable(parseAsciiDocTable("|===\n| A | B\n\n| Alpha | Long\n|===\n"));
 
@@ -48,6 +59,19 @@ describe("formatAsciiDocTable", () => {
     expect(result.summary.preservedRowCount).toBe(1);
   });
 
+  it("preserves hard line break continuation rows instead of flattening multiline cells", () => {
+    const source = "[cols=2*]\n|===\n| A | B +\n next\n| C | D\n|===\n";
+    const result = formatAsciiDocTable(parseAsciiDocTable(source));
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      throw new Error("expected formatter success");
+    }
+    expect(result.source).toBe("[cols=2*]\n|===\n| A | B +\n next\n| C | D\n|===\n");
+    expect(result.summary.preservedRowCount).toBe(1);
+  });
+
   it("blocks unsupported data table formats", () => {
     const result = formatAsciiDocTable(parseAsciiDocTable("[format=csv]\n|===\nA,B\n|===\n"));
 
@@ -67,6 +91,13 @@ describe("formatAsciiDocTable", () => {
 
     expect(result).toMatchObject({ ok: true, changed: true, mode: "cell-per-line" });
     expect(result.source).toBe("[cols=2*]\n|===\n| A\n| Long\n\n| Alpha\n| B\n|===\n");
+  });
+
+  it("preserves variable table delimiters in cell-per-line mode", () => {
+    const result = formatAsciiDocTable(parseAsciiDocTable("|====\n| A | B\n|====\n"), { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true, changed: true, mode: "cell-per-line" });
+    expect(result.source).toBe("[cols=2*]\n|====\n| A\n| B\n|====\n");
   });
 
   it("keeps one blank line between logical rows in cell-per-line mode", () => {

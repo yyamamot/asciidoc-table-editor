@@ -26,6 +26,54 @@ describe("parseAsciiDocTable", () => {
     expect(source.slice(parsed.rows[0].cells[0].range.start.offset, parsed.rows[0].cells[0].range.end.offset)).toBe("| A");
   });
 
+  it("keeps variable table delimiters byte-for-byte on no-op round-trip", () => {
+    const source = "[%autowidth.stretch]\n|====\n|Actor |Endpoint |Command |Description |System A |System B |System C\n|User |GET /status |show status |Status check |Yes |Yes |No\n|====\n";
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+
+    expect(parsed.delimiter.startRaw).toBe("|====");
+    expect(parsed.delimiter.endRaw).toBe("|====");
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(parsed.rows).toHaveLength(2);
+    expect(parsed.rows[0].cells).toHaveLength(7);
+    expect(grid.columnCount).toBe(7);
+    expect(grid.diagnostics).toEqual([]);
+  });
+
+  it("does not close a table with a different delimiter length", () => {
+    const parsed = parseAsciiDocTable("|===\n| A | B\n|====\n");
+
+    expect(parsed.errors).toContainEqual(expect.objectContaining({ code: "table.block.unclosed", severity: "error" }));
+    expect(parsed.rows).toEqual([]);
+  });
+
+  it("keeps hard line break continuation lines in the same plain cell", () => {
+    const source = "[cols=2*]\n|===\n|A |B +\n next\n|C |D\n|===\n";
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(parsed.rows).toHaveLength(2);
+    expect(parsed.rows[0].cells.map((cell) => cell.contentRaw)).toEqual(["A", "B +\n next"]);
+    expect(grid.cells[0][1]).toMatchObject({
+      kind: "origin",
+      contentRaw: "B +\n next"
+    });
+    expect(grid.diagnostics).toEqual([]);
+  });
+
+  it("keeps seven-column hard line break continuation cells without ragged diagnostics", () => {
+    const source = fixtureCompat("hardbreak-continuation.adoc");
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(parsed.rows).toHaveLength(2);
+    expect(grid.columnCount).toBe(7);
+    expect(parsed.rows[1].cells[6].contentRaw).toBe("First note +\n Second note +\n Third note");
+    expect(grid.diagnostics).toEqual([]);
+  });
+
   it.each(["comprehensive-psv", "custom-separator"])("round-trips %s without changing source", (fixtureId) => {
     const source = fixture(fixtureId, "source.adoc");
     const expected = fixture(fixtureId, "expect.noop.adoc");
@@ -446,4 +494,8 @@ describe("parseAsciiDocTable", () => {
 
 function fixture(fixtureId: string, fileName: string): string {
   return readFileSync(join(process.cwd(), "fixtures", "lossless", fixtureId, fileName), "utf8");
+}
+
+function fixtureCompat(fileName: string): string {
+  return readFileSync(join(process.cwd(), "fixtures", "compat", "asciidoctor-table-syntax", "sources", fileName), "utf8");
 }

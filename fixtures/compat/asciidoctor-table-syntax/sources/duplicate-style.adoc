@@ -1,0 +1,9 @@
+= Duplicate style and alignment
+
+|===
+|A |B |C |D
+
+3*e|Repeated emphasis
+>|Right
+|===
+

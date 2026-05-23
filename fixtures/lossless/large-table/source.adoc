@@ -1,6 +1,41 @@
+= Large table scroll fixture
+
+[cols="1,2,2,4,1,1,1"]
 |===
-| R1C1 | R1C2 | R1C3 | R1C4
-| R2C1 | R2C2 | R2C3 | R2C4
-| R3C1 | R3C2 | R3C3 | R3C4
-| R4C1 | R4C2 | R4C3 | R4C4
+|User |API |Command |Description |Web |CLI |Batch
+
+|User group 01 |GetStatus01 |status01 |Returns the current status for sample feature 01. |Yes |Yes |No
+|User group 02 |GetStatus02 |status02 |Returns the current status for sample feature 02. |Yes |Yes |No
+|User group 03 |GetStatus03 |status03 |Returns the current status for sample feature 03. |Yes |Yes |No
+|User group 04 |GetStatus04 |status04 |Returns the current status for sample feature 04. |Yes |Yes |No
+|User group 05 |GetStatus05 |status05 |Returns the current status for sample feature 05. |Yes |Yes |No
+|User group 06 |GetStatus06 |status06 |Returns the current status for sample feature 06. |Yes |Yes |No
+|User group 07 |GetStatus07 |status07 |Returns the current status for sample feature 07. |Yes |Yes |No
+|User group 08 |GetStatus08 |status08 |Returns the current status for sample feature 08. |Yes |Yes |No
+|User group 09 |GetStatus09 |status09 |Returns the current status for sample feature 09. |Yes |Yes |No
+|User group 10 |GetStatus10 |status10 |Returns the current status for sample feature 10. |Yes |Yes |No
+|User group 11 |SetConfig11 |config11 |Updates the sample configuration value for row 11. |Yes |No |Yes
+|User group 12 |SetConfig12 |config12 |Updates the sample configuration value for row 12. |Yes |No |Yes
+|User group 13 |SetConfig13 |config13 |Updates the sample configuration value for row 13. |Yes |No |Yes
+|User group 14 |SetConfig14 |config14 |Updates the sample configuration value for row 14. |Yes |No |Yes
+|User group 15 |SetConfig15 |config15 |Updates the sample configuration value for row 15. |Yes |No |Yes
+|User group 16 |SetConfig16 |config16 |Updates the sample configuration value for row 16. |Yes |No |Yes
+|User group 17 |SetConfig17 |config17 |Updates the sample configuration value for row 17. |Yes |No |Yes
+|User group 18 |SetConfig18 |config18 |Updates the sample configuration value for row 18. |Yes |No |Yes
+|User group 19 |SetConfig19 |config19 |Updates the sample configuration value for row 19. |Yes |No |Yes
+|User group 20 |SetConfig20 |config20 |Updates the sample configuration value for row 20. |Yes |No |Yes
+|Operator 21 |RunTask21 |task21 |Runs a sample maintenance task for row 21. |No |Yes |Yes
+|Operator 22 |RunTask22 |task22 |Runs a sample maintenance task for row 22. |No |Yes |Yes
+|Operator 23 |RunTask23 |task23 |Runs a sample maintenance task for row 23. |No |Yes |Yes
+|Operator 24 |RunTask24 |task24 |Runs a sample maintenance task for row 24. |No |Yes |Yes
+|Operator 25 |RunTask25 |task25 |Runs a sample maintenance task for row 25. |No |Yes |Yes
+|Operator 26 |RunTask26 |task26 |Runs a sample maintenance task for row 26. |No |Yes |Yes
+|Operator 27 |RunTask27 |task27 |Runs a sample maintenance task for row 27. |No |Yes |Yes
+|Operator 28 |RunTask28 |task28 |Runs a sample maintenance task for row 28. |No |Yes |Yes
+|Operator 29 |RunTask29 |task29 |Runs a sample maintenance task for row 29. |No |Yes |Yes
+|Operator 30 |RunTask30 |task30 |Runs a sample maintenance task for row 30. |No |Yes |Yes
+|Admin 31 |AuditLog31 |audit31 |Reads the sample audit log entry for row 31. |Yes |Yes |Yes
+|Admin 32 |AuditLog32 |audit32 |Reads the sample audit log entry for row 32. |Yes |Yes |Yes
+|Admin 33 |AuditLog33 |audit33 |Reads the sample audit log entry for row 33. |Yes |Yes |Yes
+|Admin 34 |AuditLog34 |audit34 |Reads the sample audit log entry for row 34. |Yes |Yes |Yes
 |===

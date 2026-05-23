@@ -2,8 +2,8 @@
   "name": "asciidoc-table-editor",
   "displayName": "AsciiDoc Table Editor",
   "publisher": "yyamamot",
-  "description": "Edit AsciiDoc tables with a merge-aware, lossless AST-backed grid",
-  "version": "0.0.1",
+  "description": "Edit AsciiDoc tables in a visual grid inside VS Code",
+  "version": "0.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   "type": "commonjs",
   "engines": {
     "vscode": "^1.105.0",
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "main": "./dist/extension.js",
   "icon": "assets/icon.png",
@@ -128,13 +128,19 @@
     "@asciidoctor/core": "3.0.4"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "@types/vscode": "^1.105.0",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.27.2",
-    "happy-dom": "^20.9.0",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/node": "24.12.3",
+    "@types/vscode": "1.105.0",
+    "@vscode/test-electron": "2.5.2",
+    "@vscode/vsce": "3.9.1",
+    "esbuild": "0.27.7",
+    "happy-dom": "20.9.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "ws": "8.20.1",
+      "qs": "6.15.2"
+    }
   }
 }

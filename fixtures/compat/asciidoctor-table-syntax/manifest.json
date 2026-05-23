@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "oracle": {
     "package": "asciidoctor",
     "version": "3.0.4",
@@ -8,127 +8,315 @@
   "fixtures": [
     {
       "id": "basic-psv",
+      "category": "structured-supported",
       "source": "fixtures/lossless/minimal-basic/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "checks": ["basic", "cell-count", "grid"]
+    },
+    {
+      "id": "variable-delimiter",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/variable-delimiter.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectRawContains": ["|===="],
+      "checks": ["delimiter", "autowidth", "stretch"]
+    },
+    {
+      "id": "hardbreak-continuation",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/hardbreak-continuation.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 7,
+      "expectRawContains": ["First note +\n Second note +\n Third note"],
+      "checks": ["hard-line-break", "multiline-cell"]
     },
     {
       "id": "header-footer",
+      "category": "structured-supported",
       "source": "fixtures/lossless/table-spec-header-footer/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["header", "footer", "row-role"]
+    },
+    {
+      "id": "header-option",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/header-footer-variants.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectRowRoles": ["header", "body"],
+      "checks": ["header", "percent-option"]
+    },
+    {
+      "id": "noheader-option",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/noheader.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectRowRoles": ["body", "body"],
+      "checks": ["noheader", "implicit-header-blocked"]
+    },
+    {
+      "id": "footer-option",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/footer-option.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectRowRoles": ["header", "body", "footer"],
+      "checks": ["footer", "row-role"]
     },
     {
       "id": "column-cell-spec",
+      "category": "structured-supported",
       "source": "fixtures/lossless/table-spec-column-cell-spec/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
       "compareStyle": false,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["cols", "cell-style", "cell-alignment"]
+    },
+    {
+      "id": "cols-mixed",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/cols-mixed.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "compareStyle": false,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 5,
+      "expectRawContains": ["cols=\"5,3*,>2\""],
+      "checks": ["cols", "multiplier", "mixed-width", "column-alignment"]
     },
     {
       "id": "column-style-inheritance",
+      "category": "structured-supported",
       "source": "fixtures/compat/asciidoctor-table-syntax/sources/column-style-inheritance.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["cols", "column-style"]
     },
     {
       "id": "column-asciidoc-style",
+      "category": "structured-supported",
       "source": "fixtures/compat/asciidoctor-table-syntax/sources/column-asciidoc-style.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectBlockContentCells": 1
+      "expectBlockContentCells": 1,
+      "checks": ["cols", "column-style-a", "block-cell", "list", "link"]
     },
     {
       "id": "horizontal-span",
+      "category": "structured-supported",
       "source": "fixtures/lossless/horizontal-span/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["colspan"]
     },
     {
       "id": "vertical-span",
+      "category": "structured-supported",
       "source": "fixtures/lossless/vertical-span/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["rowspan"]
     },
     {
       "id": "rectangular-span",
+      "category": "structured-supported",
       "source": "fixtures/lossless/rectangular-span/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["rowspan", "colspan"]
+    },
+    {
+      "id": "span-style-alignment",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/span-style-alignment.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "checks": ["rowspan", "colspan", "style", "alignment"]
     },
     {
       "id": "duplicate-cells",
+      "category": "structured-supported",
       "source": "fixtures/lossless/duplicate-cells/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": true,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["duplicate"]
+    },
+    {
+      "id": "duplicate-style",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/duplicate-style.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "checks": ["duplicate", "style", "alignment"]
+    },
+    {
+      "id": "escaped-separator",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/escaped-separator.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectRawContains": ["The \\| character is content"],
+      "checks": ["escaped-separator"]
     },
     {
       "id": "custom-separator",
+      "category": "structured-supported",
       "source": "fixtures/lossless/custom-separator/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": false,
-      "expectNoGridDiagnostics": true
+      "expectNoGridDiagnostics": true,
+      "checks": ["custom-separator"]
     },
     {
       "id": "block-cell-boundary",
+      "category": "structured-supported",
       "source": "fixtures/lossless/block-cell-boundary/source.adoc",
       "status": "supported",
       "structuredEdit": true,
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
-      "expectBlockContentCells": 1
+      "expectBlockContentCells": 1,
+      "checks": ["block-cell", "source-block-boundary"]
+    },
+    {
+      "id": "block-cell-rich",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/block-cell-rich.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectBlockContentCells": 1,
+      "expectRawContains": ["* First item", "[source]", "echo sample"],
+      "checks": ["block-cell", "paragraph", "list", "source-block"]
+    },
+    {
+      "id": "table-attributes-preview",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/table-attributes-preview.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectOracleTable": true,
+      "expectRawContains": [".Attribute preview sample", "#sample-table", "frame=ends", "grid=rows", "stripes=even"],
+      "checks": ["title", "id", "role", "width", "frame", "grid", "stripes", "autowidth", "stretch"]
+    },
+    {
+      "id": "rotate-orientation-preview",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/rotate-orientation-preview.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectOracleTable": true,
+      "expectRawContains": ["%rotate", "orientation=landscape"],
+      "checks": ["rotate", "orientation", "raw-retention", "preview"]
     },
     {
       "id": "csv-data-table",
+      "category": "non-goal",
       "source": "fixtures/lossless/unsupported-csv/source.adoc",
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+      "expectGridDiagnosticCodes": ["table.format.unsupported"],
+      "checks": ["csv", "fallback"]
     },
     {
       "id": "tsv-data-table",
+      "category": "non-goal",
       "source": "fixtures/compat/asciidoctor-table-syntax/sources/tsv-data-table.adoc",
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+      "expectGridDiagnosticCodes": ["table.format.unsupported"],
+      "checks": ["tsv", "fallback"]
     },
     {
       "id": "dsv-data-table",
+      "category": "non-goal",
       "source": "fixtures/compat/asciidoctor-table-syntax/sources/dsv-data-table.adoc",
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"]
+      "expectGridDiagnosticCodes": ["table.format.unsupported"],
+      "checks": ["dsv", "fallback"]
     },
     {
       "id": "nested-table-non-goal",
+      "category": "non-goal",
       "source": "fixtures/lossless/nested-table-non-goal/source.adoc",
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
-      "expectBlockContentCells": 1
+      "expectBlockContentCells": 1,
+      "checks": ["nested-table", "block-cell-raw"]
+    },
+    {
+      "id": "nested-table-block",
+      "category": "non-goal",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/nested-table-block.adoc",
+      "status": "non-goal",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectBlockContentCells": 1,
+      "checks": ["nested-table", "block-cell-raw"]
+    },
+    {
+      "id": "ambiguous-block-cell",
+      "category": "unsupported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/ambiguous-block-cell.adoc",
+      "status": "unsupported",
+      "structuredEdit": false,
+      "compareOracle": false,
+      "expectGridDiagnosticCodes": ["block-cell.unclosed-delimited-block"],
+      "checks": ["complex-block-cell", "fallback"]
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { SourceRange } from "./types";
+import { tableDelimiterRaw } from "./table-delimiter";
 
 export interface TableBlockMatch {
   raw: string;
@@ -9,6 +10,7 @@ export function findAsciiDocTableBlocks(source: string): TableBlockMatch[] {
   const lines = splitLines(source);
   const blocks: TableBlockMatch[] = [];
   let startIndex = -1;
+  let startDelimiterRaw: string | undefined;
   let skippedDelimitedBlock: string | undefined;
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -26,12 +28,18 @@ export function findAsciiDocTableBlocks(source: string): TableBlockMatch[] {
       continue;
     }
 
-    if (trimmed !== "|===") {
+    const delimiterRaw = tableDelimiterRaw(trimmed);
+    if (delimiterRaw === undefined) {
       continue;
     }
 
     if (startIndex === -1) {
       startIndex = index;
+      startDelimiterRaw = delimiterRaw;
+      continue;
+    }
+
+    if (delimiterRaw !== startDelimiterRaw) {
       continue;
     }
 
@@ -50,6 +58,7 @@ export function findAsciiDocTableBlocks(source: string): TableBlockMatch[] {
       }
     });
     startIndex = -1;
+    startDelimiterRaw = undefined;
   }
 
   return blocks;

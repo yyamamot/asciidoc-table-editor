@@ -29,33 +29,7 @@ export async function applyPlainCellContentToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 export async function applyPlainCellContentsToEditor(
@@ -84,33 +58,7 @@ export async function applyPlainCellContentsToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 export async function applyRectangularPasteToEditor(
@@ -139,33 +87,7 @@ export async function applyRectangularPasteToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 export async function applyImportedTablePasteToEditor(
@@ -281,17 +203,22 @@ export async function applyHorizontalMergeToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
+}
+
+async function applyTableBlockReplacement(
+  editor: vscode.TextEditor,
+  tableBlock: { range: { start: { line: number; column: number }; end: { line: number; column: number } } },
+  writeBack: WriteBackResult
+): Promise<CellContentUpdateResult> {
+  if (!writeBack.ok) {
+    return {
+      ok: false,
+      diagnostics: writeBack.diagnostics
+    };
+  }
+
+  const editApplied = await applyTableBlockSourceReplacement(editor, tableBlock, writeBack.source);
 
   if (!editApplied) {
     return {
@@ -310,45 +237,23 @@ export async function applyHorizontalMergeToEditor(
   };
 }
 
-async function applyTableBlockReplacement(
+export async function applyTableBlockSourceReplacement(
   editor: vscode.TextEditor,
   tableBlock: { range: { start: { line: number; column: number }; end: { line: number; column: number } } },
-  writeBack: WriteBackResult
-): Promise<CellContentUpdateResult> {
-  if (!writeBack.ok) {
-    return {
-      ok: false,
-      diagnostics: writeBack.diagnostics
-    };
-  }
-
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  source: string
+): Promise<boolean> {
+  const workspaceEdit = new vscode.WorkspaceEdit();
+  workspaceEdit.replace(
+    editor.document.uri,
+    new vscode.Range(
+      tableBlock.range.start.line,
+      tableBlock.range.start.column,
+      tableBlock.range.end.line,
+      tableBlock.range.end.column
+    ),
+    source
+  );
+  return vscode.workspace.applyEdit(workspaceEdit);
 }
 
 export async function applyHorizontalUnmergeToEditor(
@@ -377,33 +282,7 @@ export async function applyHorizontalUnmergeToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 export async function applyRowColumnEditToEditor(
@@ -433,33 +312,7 @@ export async function applyRowColumnEditToEditor(
     };
   }
 
-  const editApplied = await editor.edit((builder) => {
-    builder.replace(
-      new vscode.Range(
-        tableBlock.range.start.line,
-        tableBlock.range.start.column,
-        tableBlock.range.end.line,
-        tableBlock.range.end.column
-      ),
-      writeBack.source
-    );
-  });
-
-  if (!editApplied) {
-    return {
-      ok: false,
-      diagnostics: [{
-        code: "writeback.edit-not-applied",
-        severity: "error",
-        message: "VS Code did not apply the table edit"
-      }]
-    };
-  }
-
-  return {
-    ok: true,
-    diagnostics: []
-  };
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 function rowColumnWriteBack(table: ReturnType<typeof parseAsciiDocTable>, message: Pick<RowColumnEditMessage, "type" | "sourceCellId">): WriteBackResult {

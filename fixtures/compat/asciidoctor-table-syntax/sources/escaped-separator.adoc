@@ -1,0 +1,8 @@
+= Escaped separator
+
+|===
+|Name |Text
+
+|Alpha |The \| character is content
+|===
+

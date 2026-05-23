@@ -61,6 +61,18 @@ describe("webview mode format and block interactions", () => {
     });
 
     expect(harness.window.document.querySelector("[data-review-target='format-review']")?.hasAttribute("hidden")).toBe(false);
+    const formatReview = harness.window.document.querySelector("[data-review-target='format-review']") as HTMLElement | null;
+    const beforePane = harness.window.document.querySelector("[data-format-review-before]") as HTMLElement | null;
+    const afterPane = harness.window.document.querySelector("[data-format-review-after]:not([hidden])") as HTMLElement | null;
+    expect(formatReview).not.toBeNull();
+    expect(beforePane).not.toBeNull();
+    expect(afterPane).not.toBeNull();
+    beforePane!.scrollTop = 12;
+    afterPane!.scrollLeft = 8;
+    expect(beforePane!.scrollTop).toBe(12);
+    expect(afterPane!.scrollLeft).toBe(8);
+    expect(harness.button("apply-format-table").hidden).toBe(false);
+    expect(harness.button("cancel-format-table").hidden).toBe(false);
     (harness.window.document.querySelector("[data-action='select-format-mode'][data-format-mode='cell-per-line']") as HTMLButtonElement | null)?.click();
     harness.button("apply-format-table").click();
     expect(harness.lastMessage("apply-format-table")).toMatchObject({ type: "apply-format-table", mode: "cell-per-line" });

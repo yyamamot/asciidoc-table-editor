@@ -141,7 +141,7 @@ Use `Format Table` from CodeLens or the toolbar to open Format Review. Review be
 | Clipboard paste | Pastes copied tables into the current grid | Supports HTML table and TSV-style fallback |
 | Rich clipboard mapping | Keeps common inline content | Bold, italic, monospace, safe links, and list-to-block-cell paste |
 | Block cell preview | Shows rendered block cell content | Raw source remains the editable source of truth |
-| AsciiDoc Preview | Shows the selected table as rendered AsciiDoc | Uses bundled `/core.0.4` |
+| AsciiDoc Preview | Shows the selected table as rendered AsciiDoc | Uses bundled `@asciidoctor/core 3.0.4` |
 | Format Review | Reviews table formatting before write-back | Includes table layout and cell-per-line modes |
 | Diagnostics / fallback | Blocks unsafe structured edits | Keeps source intact when a table is unsupported |
 | VS Code undo / redo | Uses the document undo stack | Works with table edits because changes are document edits |
@@ -200,16 +200,16 @@ The extension is built around a lossless table parser and grid projection. It av
 | Item | Requirement |
 | --- | --- |
 | VS Code | Desktop `1.105+` |
-| Node.js for source builds | `22+` |
+| Node.js for source builds | `24 LTS+` |
 | Supported files | `.adoc`, `.asciidoc`, `.asc` |
-| Preview renderer | Bundled `/core.0.4` |
+| Preview renderer | Bundled `@asciidoctor/core 3.0.4` |
 | Marketplace package | Includes `README.md`, `README.ja.md`, `LICENSE`, and screenshot assets |
 
 ## Build from Source
 
 Requirements:
 
-- Node.js `22+`
+- Node.js `24 LTS+`
 - pnpm `10.30.3+`
 - VS Code Desktop `1.105+`
 
@@ -230,18 +230,6 @@ Install the generated VSIX into VS Code:
 
 ```sh
 pnpm run install:vsix
-```
-
-Run the main verification gate:
-
-```sh
-pnpm run verify
-```
-
-For UI changes:
-
-```sh
-pnpm run verify:ui-change -- --scenario table-grid --id <feature-id>
 ```
 
 ## License

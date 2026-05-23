@@ -1,0 +1,11 @@
+= Ambiguous block cell
+
+|===
+|Name |Notes
+
+|Alpha
+a|[source]
+----
+not closed
+|===
+

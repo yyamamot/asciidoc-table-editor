@@ -1,6 +1,7 @@
 import { parseAsciiDocTable } from "./parser";
 import type { LosslessTable, LosslessTableCell, LosslessTableRow, TableDiagnostic } from "./types";
 import { projectGridModel } from "./grid-model";
+import { countTableDelimiterLines, hasTableDelimiterLine } from "./table-delimiter";
 
 export type TableFormatMode = "table-layout" | "cell-per-line";
 
@@ -140,7 +141,7 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
   const lineEnding = detectLineEnding(table.raw);
   const replacements: Replacement[] = [];
   const columnCount = logicalColumnCount(table);
-  const colsResult = ensureColumnCountAttribute(table.raw, columnCount);
+  const colsResult = ensureColumnCountAttribute(table.raw, columnCount, table.delimiter.startRaw);
   if (!colsResult.ok) {
     return {
       ok: false,
@@ -199,7 +200,7 @@ function collectFormatSafetyDiagnostics(table: LosslessTable): readonly TableDia
     });
   }
 
-  if ((table.raw.match(/\|===/gu) ?? []).length > 2) {
+  if (countTableDelimiterLines(table.raw) > 2) {
     diagnostics.push({
       code: "format.nested-table",
       severity: "error",
@@ -213,7 +214,7 @@ function collectFormatSafetyDiagnostics(table: LosslessTable): readonly TableDia
   for (const row of table.rows) {
     for (const cell of row.cells) {
       diagnostics.push(...cell.errors);
-      if (cell.isBlockContent && (cell.contentRaw.match(/\|===/gu) ?? []).length > 0) {
+      if (cell.isBlockContent && hasTableDelimiterLine(cell.contentRaw)) {
         diagnostics.push({
           code: "format.block-nested-table",
           severity: "error",
@@ -338,9 +339,10 @@ function logicalColumnCount(table: LosslessTable): number {
 function ensureColumnCountAttribute(
   source: string,
   columnCount: number,
+  delimiterRaw: string,
 ): { readonly ok: true; readonly replacements: readonly Replacement[] } | { readonly ok: false; readonly diagnostics: readonly TableDiagnostic[] } {
   const lines = splitLines(source);
-  const delimiterLineIndex = lines.findIndex((line) => line.text.trim() === "|===");
+  const delimiterLineIndex = lines.findIndex((line) => line.text.trim() === delimiterRaw);
   if (delimiterLineIndex < 0) {
     return {
       ok: false,

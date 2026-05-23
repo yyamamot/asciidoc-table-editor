@@ -1,34 +1,30 @@
 = Official table syntax compatibility
 
-== Column style inheritance
+== Supported PSV syntax overview
 
-[cols="2,2,5a"]
+[options="header,footer",cols="h,2,2,5a"]
 |===
-|Firefox
-|Browser
-|Firefox is an open source web browser.
+|Name |Kind |Status |Notes
 
-Key characteristics:
+|Alpha
+|Plain
+|Ready
+|AsciiDoc block cell content.
 
-* Standards compliant
-* High performance
-* Portable
+* First item
+* Second item
 
-http://getfirefox.com[Download Firefox]!
-|===
+https://example.com[Example link]
 
-== Duplicate with style and alignment
+2+^.^m|Centered span
+|Open
+|Span with style and alignment
 
-|===
-|Name |Value
+3*e|Repeated emphasis
+|Duplicate cells with style
 
-2*>m|Styled duplicate
-|===
-
-== Non-goal CSV data table
-
-[format=csv]
-|===
-Name,Value
-Alpha,1
+|Total
+|Rows
+|4
+|Footer row
 |===

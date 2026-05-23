@@ -28,6 +28,8 @@ describe("webview table editor shell", () => {
     expect(html).toContain('aria-colcount="2"');
     expect(html).toContain("[hidden] {");
     expect(html).toContain("display: none !important;");
+    expect(html).toContain("height: 100vh;");
+    expect(html).toContain(".grid-wrap {\n  box-sizing: border-box;\n  height: 100%;\n  overflow: auto;");
     expect(html).toContain('id="llm-ui-self-review"');
     expect(html).toContain('data-kind="origin"');
     expect(html).toContain('data-row-role="body"');
@@ -55,6 +57,9 @@ describe("webview table editor shell", () => {
     expect(html).toContain('class="preview-screen"');
     expect(html).toContain('data-review-target="table-preview-screen"');
     expect(html).toContain('data-review-target="table-preview"');
+    expect(html).toContain(".preview-screen {\n  box-sizing: border-box;\n  height: 100%;\n  overflow: auto;");
+    expect(html).toContain("width: max-content;");
+    expect(html).toContain("max-width: none;");
     expect(html).toContain(".preview-pane .halign-left");
     expect(html).toContain(".preview-pane .halign-center");
     expect(html).toContain(".preview-pane .halign-right");
@@ -165,6 +170,9 @@ describe("webview table editor shell", () => {
     expect(html).toContain('data-review-target="format-review"');
     expect(html).toContain('data-action="apply-format-table"');
     expect(html).toContain('data-action="cancel-format-table"');
+    expect(html).toContain(".format-review {\n  box-sizing: border-box;\n  display: grid;");
+    expect(html).toContain(".format-review-pane pre {\n  overflow: auto;");
+    expect(html).toContain("overscroll-behavior: contain;");
     expect(html).toContain("Format Review");
     expect(html).toContain("Table layout");
     expect(html).toContain("Changed lines");

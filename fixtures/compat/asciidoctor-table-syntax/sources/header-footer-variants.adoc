@@ -1,0 +1,9 @@
+= Header and footer variants
+
+[%header]
+|===
+|Name |Value
+
+|Alpha |1
+|===
+

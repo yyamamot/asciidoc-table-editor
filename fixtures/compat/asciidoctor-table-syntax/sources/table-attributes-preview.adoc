@@ -1,0 +1,10 @@
+.Attribute preview sample
+[#sample-table.my-table%autowidth.stretch]
+[width=75%,frame=ends,grid=rows,stripes=even]
+|===
+|Name |Value
+
+|Alpha |1
+|Beta |2
+|===
+

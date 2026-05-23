@@ -1,0 +1,15 @@
+{
+  "id": "table-attribute-preview",
+  "fixture": "fixtures/compat/asciidoctor-table-syntax/sources/table-attributes-preview.adoc",
+  "expectedMode": "structured",
+  "expectedEditorMode": "preview",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "switch-preview", "action": "set-editor-mode", "mode": "preview" }
+  ],
+  "assertions": [
+    { "id": "table-attributes-rendered-preview", "type": "ui-review" },
+    { "id": "frame-grid-stripes-raw-retained", "type": "ui-review" }
+  ]
+}

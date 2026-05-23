@@ -1,0 +1,9 @@
+= Mixed column specs
+
+[cols="5,3*,>2"]
+|===
+|Wide |Middle A |Middle B |Middle C |Right
+
+|Alpha |Bravo |Charlie |Delta |Echo
+|===
+

@@ -28,6 +28,7 @@ const scenarioMatrix = singleScenario
       { id: "table-spec-header-footer", scenarioPath: "fixtures/harness/table-spec-header-footer/scenario.json" },
       { id: "table-spec-column-cell-spec", scenarioPath: "fixtures/harness/table-spec-column-cell-spec/scenario.json" },
       { id: "official-table-syntax-compat", scenarioPath: "fixtures/harness/official-table-syntax-compat/scenario.json" },
+      { id: "table-attribute-preview", scenarioPath: "fixtures/harness/table-attribute-preview/scenario.json" },
       { id: "block-cell-boundary", scenarioPath: "fixtures/harness/block-cell-boundary/scenario.json" },
       { id: "clipboard-auto-expand-paste", scenarioPath: "fixtures/harness/clipboard-auto-expand-paste/scenario.json" },
       { id: "clipboard-merged-cell-paste", scenarioPath: "fixtures/harness/clipboard-merged-cell-paste/scenario.json" },

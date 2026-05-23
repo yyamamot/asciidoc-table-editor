@@ -1,0 +1,11 @@
+= Span style and alignment
+
+|===
+|Name |Value |Status
+
+2.2+^.^m|Merged mono center
+|Ready
+
+|Done
+|===
+

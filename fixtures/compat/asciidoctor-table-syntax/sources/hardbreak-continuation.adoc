@@ -1,0 +1,15 @@
+.Hard line break continuation sample
+[cols=7*]
+|===
+|Name |Type |Mode |Status |Group |Owner |Notes
+
+|Alpha
+|Service
+|Auto
+|Ready
+|Default
+|Team
+|First note +
+ Second note +
+ Third note
+|===

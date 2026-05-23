@@ -221,7 +221,7 @@ export async function run(): Promise<void> {
 
 function findFirstTablePosition(document: vscode.TextDocument): vscode.Position {
   for (let line = 0; line < document.lineCount; line += 1) {
-    if (document.lineAt(line).text.trim() === "|===") {
+    if (/^\|={3,}$/u.test(document.lineAt(line).text.trim())) {
       return new vscode.Position(Math.min(line + 1, document.lineCount - 1), 0);
     }
   }

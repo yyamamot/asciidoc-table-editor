@@ -1,0 +1,12 @@
+= Nested table block
+
+|===
+|Name |Nested
+
+|Alpha
+a|[cols=2*]
+!===
+!A !B
+!1 !2
+!===
+|===

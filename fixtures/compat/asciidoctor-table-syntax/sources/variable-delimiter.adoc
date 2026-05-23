@@ -1,0 +1,13 @@
+.Variable delimiter sample
+[%autowidth.stretch]
+|====
+|Actor |Endpoint |Command |Description |System A |System B |System C
+
+|User
+|GET /status
+|show status
+|Status check
+|Yes
+|Yes
+|No
+|====

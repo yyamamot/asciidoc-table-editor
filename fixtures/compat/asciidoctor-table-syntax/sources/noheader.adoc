@@ -1,0 +1,9 @@
+= No header option
+
+[%noheader,cols=2*]
+|===
+|Name |Value
+
+|Alpha |1
+|===
+
