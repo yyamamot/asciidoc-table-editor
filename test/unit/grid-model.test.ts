@@ -92,7 +92,10 @@ function tableFixture(rows: LosslessTableCell[][]): LosslessTable {
     },
     attributes: {
       options: [],
-      columns: []
+      columns: [],
+      lines: [],
+      entries: [],
+      named: {}
     },
     rows: rows.map((cells, index) => ({
       nodeId: `row:${index}`,

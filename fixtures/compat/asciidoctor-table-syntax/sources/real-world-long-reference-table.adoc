@@ -1,0 +1,25 @@
+.Real-world synthetic long reference table
+[cols="1,2,4"]
+|===
+|Code |Name |Description
+
+|E001
+|Example warning
+|A neutral reference entry with a longer description that should remain editable and scrollable in the grid.
+
+|E002
+|Example error
+|A second reference entry with enough content to exercise long plain cell rendering without requiring block cell parsing.
+
+|E003
+|Example notice
+|A third reference entry keeps the table shape representative of documentation reference tables.
+
+|E004
+|Example hint
+|Another neutral row checks that repeated plain rows do not introduce ragged row diagnostics.
+
+|E005
+|Example status
+|The final row keeps this fixture compact while still covering long reference table behavior.
+|===

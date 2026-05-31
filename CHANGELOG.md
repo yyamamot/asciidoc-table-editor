@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.3
+
+- Support cell style and alignment controls in the Table Editor.
+- Support header, footer, and noheader table option controls.
+- Support column spec editing for width and style.
+- Support table appearance settings for title, attributes, and preview-backed options.
+- Support stacked table attributes, header colspan tables, and span-heavy table shapes.
+- Preserve multiline cell continuations, cell-scoped attributes, and escaped pipes.
+- Improve handling for explicit `a|` block cells, image macros, links, and footnotes.
+
 ## 0.0.2
 
 - Support Asciidoctor-compatible table delimiters such as `|====`.

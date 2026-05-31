@@ -50,6 +50,10 @@ export function renderWebviewDomScript(): string {
         const mergeButton = document.querySelector("[data-action='merge-cells']");
         const unmergeButton = document.querySelector("[data-action='unmerge-cell']");
         const formatTableButton = document.querySelector("[data-action='format-table']");
+        const cellStyleButtons = Array.from(document.querySelectorAll("[data-action^='cell-align-']"));
+        const cellStyleSelect = document.querySelector("[data-action='cell-style-select']");
+        const applyColumnSpecButton = document.querySelector("[data-action='apply-column-spec']");
+        const applyTableAppearanceButton = document.querySelector("[data-action='apply-table-appearance']");
         const focusDiagnosticsButton = document.querySelector("[data-action='focus-diagnostics']");
         const diagnostics = document.querySelector("[data-review-target='diagnostics']");
         const gridWrap = document.querySelector(".grid-wrap");

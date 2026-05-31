@@ -1,0 +1,12 @@
+.Real-world synthetic cell attribute continuation
+|===
+2+|Section note {set:cellbgcolor:#dddddd}
+2+|https://example.invalid/spec/class-a {set:cellbgcolor:#ffffff}
+|Label |Value
+|Item 1 |https://example.invalid/spec/item-1 +
+continued note {set:cellbgcolor:#ffffff}
+
+|Item 2 |https://example.invalid/spec/item-2 +
+continued note
+{set:cellbgcolor:#ffffff}
+|===

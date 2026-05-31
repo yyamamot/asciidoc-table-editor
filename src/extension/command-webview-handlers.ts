@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import type { WebviewAppModel } from "../app";
 import { findAsciiDocTableBlock, type TableDiagnostic, type TableFormatMode } from "../core";
 import { createFormatPreviewModel } from "./format-command";
-import { applyBlockCellContentToEditor, applyHorizontalMergeToEditor, applyHorizontalUnmergeToEditor, applyImportedTablePasteToEditor, applyPlainCellBlockContentToEditor, applyPlainCellContentToEditor, applyPlainCellContentsToEditor, applyRectangularPasteToEditor, applyRowColumnEditToEditor, applyTableBlockSourceReplacement } from "./table-editor-document-edits";
+import { applyBlockCellContentToEditor, applyColumnSpecToEditor, applyHorizontalMergeToEditor, applyHorizontalUnmergeToEditor, applyImportedTablePasteToEditor, applyPlainCellBlockContentToEditor, applyPlainCellContentToEditor, applyPlainCellContentsToEditor, applyPlainCellStyleToEditor, applyRectangularPasteToEditor, applyRowColumnEditToEditor, applyTableAppearanceToEditor, applyTableBlockSourceReplacement, applyTableHeaderFooterToEditor } from "./table-editor-document-edits";
 import { revealSourceCellInEditor } from "./table-editor-source-reveal";
 import type { CellContentReplacement, CellContentUpdateResult, RowColumnEditMessage, UndoRedoResult } from "./types";
 import { createTableEditorLabels } from "./table-editor-labels";
@@ -180,6 +180,58 @@ export async function applyRowColumnEdit(
   }
 }
 
+export async function applyCellStyleUpdate(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  tableStartOffset: number,
+  message: { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }
+): Promise<void> {
+  const result = await applyPlainCellStyleToEditor(editor, tableStartOffset, message);
+  await panel.webview.postMessage({ type: "cell-style-update-result", result });
+  if (result.ok) {
+    await refreshPanelFromEditor(editor, panel, tableStartOffset, message.selectedSourceCellId ?? message.sourceCellIds[0]);
+  }
+}
+
+export async function applyHeaderFooterUpdate(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  tableStartOffset: number,
+  message: { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }
+): Promise<void> {
+  const result = await applyTableHeaderFooterToEditor(editor, tableStartOffset, message);
+  await panel.webview.postMessage({ type: "table-settings-update-result", result });
+  if (result.ok) {
+    await refreshPanelFromEditor(editor, panel, tableStartOffset, message.selectedSourceCellId);
+  }
+}
+
+export async function applyColumnSpecUpdate(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  tableStartOffset: number,
+  message: { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }
+): Promise<void> {
+  const result = await applyColumnSpecToEditor(editor, tableStartOffset, message);
+  await panel.webview.postMessage({ type: "table-settings-update-result", result });
+  if (result.ok) {
+    await refreshPanelFromEditor(editor, panel, tableStartOffset, message.selectedSourceCellId);
+  }
+}
+
+export async function applyAppearanceUpdate(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  tableStartOffset: number,
+  message: { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string }
+): Promise<void> {
+  const result = await applyTableAppearanceToEditor(editor, tableStartOffset, message);
+  await panel.webview.postMessage({ type: "table-settings-update-result", result });
+  if (result.ok) {
+    await refreshPanelFromEditor(editor, panel, tableStartOffset, message.selectedSourceCellId);
+  }
+}
+
 export async function applyRevealSourceCell(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
@@ -337,4 +389,3 @@ async function runEditorUndoRedo(editor: vscode.TextEditor, command: "undo" | "r
     diagnostics: []
   };
 }
-

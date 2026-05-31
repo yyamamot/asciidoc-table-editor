@@ -15,8 +15,12 @@ import {
   replaceBlockCellContent,
   replacePlainCellContent,
   replacePlainCellContents,
+  replacePlainCellStyles,
   replacePlainCellWithBlockContent,
   unmergePlainCellHorizontally,
+  updateColumnSpec,
+  updateTableAppearance,
+  updateTableHeaderFooter,
   type TableDiagnostic,
   type TableFormatMode,
   type TableFormatResult,
@@ -198,6 +202,38 @@ export async function applyPortableTableEditorMessage(
 
     case "apply-format-table":
       return applyPortableFormatReview(session, message.mode, message.selectedSourceCellId);
+
+    case "request-update-cell-style":
+      return applyWriteBackResult(
+        session,
+        replacePlainCellStyles(parseAsciiDocTable(session.source), message),
+        "cell-style-update-result",
+        message.selectedSourceCellId ?? message.sourceCellIds[0]
+      );
+
+    case "request-update-header-footer":
+      return applyWriteBackResult(
+        session,
+        updateTableHeaderFooter(parseAsciiDocTable(session.source), message),
+        "table-settings-update-result",
+        message.selectedSourceCellId
+      );
+
+    case "request-update-column-spec":
+      return applyWriteBackResult(
+        session,
+        updateColumnSpec(parseAsciiDocTable(session.source), message),
+        "table-settings-update-result",
+        message.selectedSourceCellId
+      );
+
+    case "request-update-table-appearance":
+      return applyWriteBackResult(
+        session,
+        updateTableAppearance(parseAsciiDocTable(session.source), message),
+        "table-settings-update-result",
+        message.selectedSourceCellId
+      );
   }
 }
 
@@ -227,7 +263,7 @@ async function refreshPortableSession(options: {
 async function applyWriteBackResult(
   session: PortableTableEditorSession,
   result: WriteBackResult,
-  messageType: Extract<TableEditorResultMessage["type"], "cell-content-update-result" | "block-cell-update-result" | "merge-cells-result" | "unmerge-cell-result" | "row-column-edit-result">,
+  messageType: Extract<TableEditorResultMessage["type"], "cell-content-update-result" | "block-cell-update-result" | "merge-cells-result" | "unmerge-cell-result" | "row-column-edit-result" | "cell-style-update-result" | "table-settings-update-result">,
   selectedSourceCellId?: string,
   diagnostics?: readonly TableDiagnostic[]
 ): Promise<PortableTableEditorApplyResult> {

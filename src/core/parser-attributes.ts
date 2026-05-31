@@ -1,58 +1,174 @@
-import type { TableAttributes, TableColumnSpec } from "./types";
 import type { SourceLine } from "./parser-source";
+import { range } from "./parser-source";
+import type { TableAttributeEntry, TableAttributeLine, TableAttributes, TableColumnSpec, TableTitle } from "./types";
 
 export function parseTableAttributes(
-  lines: Array<Pick<SourceLine, "index" | "text">>,
+  source: string,
+  lines: SourceLine[],
   delimiterLineIndex: number
 ): TableAttributes {
+  const empty = (): TableAttributes => ({ options: [], columns: [], lines: [], entries: [], named: {} });
   if (delimiterLineIndex <= 0) {
-    return { options: [], columns: [] };
+    return empty();
   }
 
-  const attributeLine = [...lines.slice(0, delimiterLineIndex)]
-    .reverse()
-    .find((line) => line.text.trim().startsWith("[") && line.text.trim().endsWith("]"));
-  if (attributeLine === undefined) {
-    return { options: [], columns: [] };
+  const attributeLines = collectTableAttributeLines(lines, delimiterLineIndex);
+  const title = collectTableTitle(source, lines, delimiterLineIndex, attributeLines);
+  if (attributeLines.length === 0) {
+    return { ...empty(), title };
   }
 
-  const attributes = parseAttributeList(attributeLine.text.trim());
+  const parsedLines = attributeLines.map((line) => parseAttributeLine(source, line));
+  const entries = parsedLines.flatMap((line) => line.entries);
+  const attributes = mergeAttributeLists(parsedLines.map((line) => entriesToAttributeMap(line.entries)));
   const columns = parseColumnSpecs(attributes.get("cols"));
   return {
     columnCount: columns.length || parseColumnCount(attributes.get("cols")),
     format: attributes.get("format")?.toLowerCase(),
     separator: parseSeparator(attributes.get("separator")),
     options: parseOptions(attributes),
-    columns
+    columns,
+    lines: parsedLines,
+    entries,
+    title,
+    named: Object.fromEntries(Array.from(attributes.entries()).filter(([key]) => key !== "options"))
   };
 }
 
-function parseAttributeList(raw: string): Map<string, string> {
+function collectTableAttributeLines(
+  lines: SourceLine[],
+  delimiterLineIndex: number
+): SourceLine[] {
+  const attributeLines: SourceLine[] = [];
+  for (let index = delimiterLineIndex - 1; index >= 0; index -= 1) {
+    const line = lines[index];
+    const trimmed = line.text.trim();
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      attributeLines.push(line);
+      continue;
+    }
+    break;
+  }
+  return attributeLines.reverse();
+}
+
+function collectTableTitle(source: string, lines: SourceLine[], delimiterLineIndex: number, attributeLines: readonly SourceLine[]): TableTitle | undefined {
+  const titleLineIndex = attributeLines[0]?.index === undefined ? delimiterLineIndex - 1 : attributeLines[0].index - 1;
+  const line = lines[titleLineIndex];
+  if (line === undefined) {
+    return undefined;
+  }
+  const trimmedStart = line.text.match(/^\s*/u)?.[0].length ?? 0;
+  if (line.text[trimmedStart] !== "." || line.text[trimmedStart + 1] === "." || line.text.slice(trimmedStart + 1).trim().length === 0) {
+    return undefined;
+  }
+  const valueStart = line.offset + trimmedStart + 1;
+  const valueEnd = line.offset + line.text.length;
+  return {
+    raw: line.text,
+    text: line.text.slice(trimmedStart + 1),
+    range: range(source, line.offset, line.offset + line.text.length),
+    valueRange: range(source, valueStart, valueEnd)
+  };
+}
+
+function mergeAttributeLists(lists: Map<string, string>[]): Map<string, string> {
+  const merged = new Map<string, string>();
+  for (const attributes of lists) {
+    for (const [key, value] of attributes) {
+      if (key === "options") {
+        const existing = merged.get("options");
+        merged.set("options", [existing, value].filter(Boolean).join(","));
+        continue;
+      }
+      merged.set(key, value);
+    }
+  }
+  return merged;
+}
+
+function entriesToAttributeMap(entries: readonly TableAttributeEntry[]): Map<string, string> {
   const attributes = new Map<string, string>();
-  const content = raw.slice(1, -1);
   let currentKey: string | undefined;
-  for (const part of splitAttributeParts(content)) {
-    const trimmed = part.trim();
-    if (trimmed.startsWith("%")) {
-      const optionValues = trimmed.slice(1).split("%").map((value) => value.trim()).filter(Boolean);
+  for (const entry of entries) {
+    const trimmed = entry.raw.trim();
+    if (entry.kind === "option") {
+      const optionValues = (entry.value ?? trimmed.replace(/^%/u, "")).split("%").map((value) => value.trim()).filter(Boolean);
       const existing = attributes.get("options");
       attributes.set("options", [...(existing ? splitAttributeParts(existing) : []), ...optionValues].join(","));
       currentKey = "options";
       continue;
     }
 
-    const [key, ...valueParts] = part.split("=");
-    if (valueParts.length === 0) {
+    if (entry.kind === "positional") {
       if (currentKey === "options" && trimmed.length > 0) {
         const existing = attributes.get("options");
         attributes.set("options", [existing, trimmed].filter(Boolean).join(","));
       }
       continue;
     }
-    currentKey = key.trim();
-    attributes.set(currentKey, unquote(valueParts.join("=").trim()));
+    currentKey = entry.name;
+    if (entry.name !== undefined) {
+      attributes.set(entry.name, entry.value ?? "");
+    }
   }
   return attributes;
+}
+
+function parseAttributeLine(source: string, line: SourceLine): TableAttributeLine {
+  const text = line.text.trim();
+  const trimmedStart = line.text.indexOf("[");
+  const content = text.slice(1, -1);
+  const contentOffset = line.offset + trimmedStart + 1;
+  return {
+    raw: line.text,
+    range: range(source, line.offset, line.offset + line.text.length),
+    entries: splitAttributePartsWithOffsets(content).map((part) => parseAttributeEntry(part.text, contentOffset + part.start, source))
+  };
+}
+
+function parseAttributeEntry(rawPart: string, rawStartOffset: number, source: string): TableAttributeEntry {
+  const leading = rawPart.match(/^\s*/u)?.[0].length ?? 0;
+  const trailing = rawPart.match(/\s*$/u)?.[0].length ?? 0;
+  const trimmed = rawPart.trim();
+  const start = rawStartOffset + leading;
+  const end = rawStartOffset + rawPart.length - trailing;
+  const base = {
+    raw: trimmed,
+    range: range(source, start, end)
+  };
+  if (trimmed.startsWith("%")) {
+    return {
+      kind: "option",
+      ...base,
+      value: trimmed.slice(1)
+    };
+  }
+
+  const equalsIndex = trimmed.indexOf("=");
+  if (equalsIndex < 0) {
+    return {
+      kind: "positional",
+      ...base,
+      value: trimmed
+    };
+  }
+
+  const name = trimmed.slice(0, equalsIndex).trim();
+  const rawValue = trimmed.slice(equalsIndex + 1).trim();
+  const quote = rawValue.startsWith("\"") && rawValue.endsWith("\"") ? "\"" : rawValue.startsWith("'") && rawValue.endsWith("'") ? "'" : undefined;
+  const value = unquote(rawValue);
+  const rawValueOffset = start + trimmed.indexOf(rawValue);
+  const valueStart = rawValueOffset + (quote === undefined ? 0 : 1);
+  const valueEnd = rawValueOffset + rawValue.length - (quote === undefined ? 0 : 1);
+  return {
+    kind: "named",
+    ...base,
+    name: name.toLowerCase(),
+    value,
+    valueRange: range(source, valueStart, valueEnd),
+    quote
+  };
 }
 
 function parseOptions(attributes: Map<string, string>): string[] {
@@ -117,10 +233,17 @@ function parseColumnSpec(raw: string, index: number): TableColumnSpec {
 }
 
 function splitAttributeParts(content: string): string[] {
+  return splitAttributePartsWithOffsets(content).map((part) => part.text);
+}
+
+function splitAttributePartsWithOffsets(content: string): Array<{ text: string; start: number }> {
   const parts: string[] = [];
+  const result: Array<{ text: string; start: number }> = [];
   let current = "";
   let quote: string | undefined;
-  for (const character of content) {
+  let start = 0;
+  for (let index = 0; index < content.length; index += 1) {
+    const character = content[index];
     if ((character === "\"" || character === "'") && quote === undefined) {
       quote = character;
     } else if (character === quote) {
@@ -129,13 +252,16 @@ function splitAttributeParts(content: string): string[] {
 
     if (character === "," && quote === undefined) {
       parts.push(current);
+      result.push({ text: current, start });
       current = "";
+      start = index + 1;
     } else {
       current += character;
     }
   }
   parts.push(current);
-  return parts;
+  result.push({ text: current, start });
+  return result;
 }
 
 function unquote(value: string): string {
@@ -162,4 +288,3 @@ function parseSeparator(value: string | undefined): string | undefined {
   }
   return [...value][0];
 }
-

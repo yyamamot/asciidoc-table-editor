@@ -1,0 +1,10 @@
+.Real-world synthetic stacked attributes
+[cols="1,2,3"]
+[%header]
+[frame=ends,grid=rows]
+|===
+|Column A |Column B |Column C
+
+|Alpha |Type A |Ready
+|Beta |Type B |Open
+|===

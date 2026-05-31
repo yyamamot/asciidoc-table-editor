@@ -12,8 +12,12 @@ import {
   isUndoRedoMessage,
   isUnmergeCellMessage,
   isUpdateBlockCellSourceMessage,
+  isUpdateCellStyleMessage,
   isUpdateCellContentMessage,
-  isUpdateCellContentsMessage
+  isUpdateCellContentsMessage,
+  isUpdateColumnSpecMessage,
+  isUpdateHeaderFooterMessage,
+  isUpdateTableAppearanceMessage
 } from "./table-editor-messages";
 
 export interface TableEditorMessageHandlers {
@@ -31,6 +35,10 @@ export interface TableEditorMessageHandlers {
   readonly undoRedo?: (message: unknown) => void;
   readonly requestFormatTable?: (message: unknown) => void;
   readonly applyFormatTable?: (message: unknown) => void;
+  readonly updateCellStyle?: (message: unknown) => void;
+  readonly updateHeaderFooter?: (message: unknown) => void;
+  readonly updateColumnSpec?: (message: unknown) => void;
+  readonly updateTableAppearance?: (message: unknown) => void;
 }
 
 export function registerTableEditorMessageRouter(
@@ -92,6 +100,22 @@ export function registerTableEditorMessageRouter(
     }
     if (isApplyFormatTableMessage(message)) {
       handlers.applyFormatTable?.(message);
+      return;
+    }
+    if (isUpdateCellStyleMessage(message)) {
+      handlers.updateCellStyle?.(message);
+      return;
+    }
+    if (isUpdateHeaderFooterMessage(message)) {
+      handlers.updateHeaderFooter?.(message);
+      return;
+    }
+    if (isUpdateColumnSpecMessage(message)) {
+      handlers.updateColumnSpec?.(message);
+      return;
+    }
+    if (isUpdateTableAppearanceMessage(message)) {
+      handlers.updateTableAppearance?.(message);
     }
   });
 }

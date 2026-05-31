@@ -77,7 +77,11 @@ export type TableEditorHostMessage =
   | { type: "request-reveal-source-cell"; sourceCellId: string; selectedSourceCellId?: string }
   | { type: "request-undo" | "request-redo"; selectedSourceCellId?: string }
   | { type: "apply-format-table"; mode?: TableFormatMode; selectedSourceCellId?: string }
-  | { type: "request-format-table"; selectedSourceCellId?: string };
+  | { type: "request-format-table"; selectedSourceCellId?: string }
+  | { type: "request-update-cell-style"; sourceCellIds: string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }
+  | { type: "request-update-header-footer"; header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }
+  | { type: "request-update-column-spec"; columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }
+  | { type: "request-update-table-appearance"; title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string };
 
 export type TableEditorResultMessage =
   | { readonly type: "cell-content-update-result"; readonly result: CellContentUpdateResult }
@@ -87,7 +91,9 @@ export type TableEditorResultMessage =
   | { readonly type: "row-column-edit-result"; readonly result: CellContentUpdateResult }
   | { readonly type: "undo-redo-result"; readonly result: UndoRedoResult }
   | { readonly type: "source-cell-reveal-result"; readonly result: SourceCellRevealResult }
-  | { readonly type: "format-table-result"; readonly result: CellContentUpdateResult };
+  | { readonly type: "format-table-result"; readonly result: CellContentUpdateResult }
+  | { readonly type: "cell-style-update-result"; readonly result: CellContentUpdateResult }
+  | { readonly type: "table-settings-update-result"; readonly result: CellContentUpdateResult };
 
 export function isUiReviewSnapshotMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "ui-review-snapshot" }> {
   return typeof message === "object" &&
@@ -255,6 +261,60 @@ export function isRequestFormatTableMessage(message: unknown): message is Extrac
     optionalString(message, "selectedSourceCellId");
 }
 
+export function isUpdateCellStyleMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "request-update-cell-style" }> {
+  const sourceCellIds = (message as { sourceCellIds?: unknown } | undefined)?.sourceCellIds;
+  return typeof message === "object" &&
+    message !== null &&
+    "type" in message &&
+    (message as { type?: unknown }).type === "request-update-cell-style" &&
+    Array.isArray(sourceCellIds) &&
+    sourceCellIds.every((sourceCellId) => typeof sourceCellId === "string") &&
+    optionalStyleValue(message) &&
+    optionalHorizontalAlign(message) &&
+    optionalVerticalAlign(message) &&
+    optionalString(message, "selectedSourceCellId");
+}
+
+export function isUpdateHeaderFooterMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "request-update-header-footer" }> {
+  return typeof message === "object" &&
+    message !== null &&
+    "type" in message &&
+    (message as { type?: unknown }).type === "request-update-header-footer" &&
+    optionalBoolean(message, "header") &&
+    optionalBoolean(message, "footer") &&
+    optionalBoolean(message, "noheader") &&
+    optionalString(message, "selectedSourceCellId");
+}
+
+export function isUpdateColumnSpecMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "request-update-column-spec" }> {
+  return typeof message === "object" &&
+    message !== null &&
+    "type" in message &&
+    (message as { type?: unknown }).type === "request-update-column-spec" &&
+    typeof (message as { columnIndex?: unknown }).columnIndex === "number" &&
+    optionalString(message, "widthRaw") &&
+    optionalStyleValue(message) &&
+    optionalHorizontalAlign(message) &&
+    optionalVerticalAlign(message) &&
+    optionalString(message, "selectedSourceCellId");
+}
+
+export function isUpdateTableAppearanceMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "request-update-table-appearance" }> {
+  return typeof message === "object" &&
+    message !== null &&
+    "type" in message &&
+    (message as { type?: unknown }).type === "request-update-table-appearance" &&
+    optionalString(message, "title") &&
+    optionalString(message, "id") &&
+    optionalString(message, "role") &&
+    optionalString(message, "width") &&
+    optionalBoolean(message, "autowidth") &&
+    optionalString(message, "frame") &&
+    optionalString(message, "grid") &&
+    optionalString(message, "stripes") &&
+    optionalString(message, "selectedSourceCellId");
+}
+
 export function optionalDiagnosticsAreValid(message: unknown): boolean {
   if (typeof message !== "object" || message === null || !("diagnostics" in message)) {
     return true;
@@ -276,4 +336,26 @@ export function optionalDiagnosticsAreValid(message: unknown): boolean {
 
 function optionalString(message: object, property: string): boolean {
   return !(property in message) || typeof (message as Record<string, unknown>)[property] === "string";
+}
+
+function optionalBoolean(message: object, property: string): boolean {
+  return !(property in message) || typeof (message as Record<string, unknown>)[property] === "boolean";
+}
+
+function optionalStyleValue(message: object): boolean {
+  return optionalString(message, "style");
+}
+
+function optionalHorizontalAlign(message: object): boolean {
+  return !("horizontalAlign" in message) ||
+    (message as { horizontalAlign?: unknown }).horizontalAlign === "left" ||
+    (message as { horizontalAlign?: unknown }).horizontalAlign === "center" ||
+    (message as { horizontalAlign?: unknown }).horizontalAlign === "right";
+}
+
+function optionalVerticalAlign(message: object): boolean {
+  return !("verticalAlign" in message) ||
+    (message as { verticalAlign?: unknown }).verticalAlign === "top" ||
+    (message as { verticalAlign?: unknown }).verticalAlign === "middle" ||
+    (message as { verticalAlign?: unknown }).verticalAlign === "bottom";
 }

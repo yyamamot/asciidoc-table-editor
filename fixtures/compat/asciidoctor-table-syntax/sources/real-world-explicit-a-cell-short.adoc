@@ -1,0 +1,14 @@
+.Real-world synthetic explicit AsciiDoc cells
+[cols="1,2"]
+|===
+|Name |Description
+
+|Alpha
+a|Short AsciiDoc cell with *inline* markup.
+
+|Beta
+a|https://example.com[Example link]
+
+|Gamma
+|Plain cell for comparison.
+|===

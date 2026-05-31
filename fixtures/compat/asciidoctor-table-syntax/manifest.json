@@ -15,7 +15,14 @@
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
       "expectGridColumnCount": 2,
-      "checks": ["basic", "cell-count", "grid"]
+      "checks": [
+        "basic",
+        "cell-count",
+        "grid"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-openapi-processor-parser-dev-01"
+      ]
     },
     {
       "id": "variable-delimiter",
@@ -25,8 +32,14 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectRawContains": ["|===="],
-      "checks": ["delimiter", "autowidth", "stretch"]
+      "expectRawContains": [
+        "|===="
+      ],
+      "checks": [
+        "delimiter",
+        "autowidth",
+        "stretch"
+      ]
     },
     {
       "id": "hardbreak-continuation",
@@ -37,8 +50,13 @@
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
       "expectGridColumnCount": 7,
-      "expectRawContains": ["First note +\n Second note +\n Third note"],
-      "checks": ["hard-line-break", "multiline-cell"]
+      "expectRawContains": [
+        "First note +\n Second note +\n Third note"
+      ],
+      "checks": [
+        "hard-line-break",
+        "multiline-cell"
+      ]
     },
     {
       "id": "header-footer",
@@ -48,7 +66,11 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["header", "footer", "row-role"]
+      "checks": [
+        "header",
+        "footer",
+        "row-role"
+      ]
     },
     {
       "id": "header-option",
@@ -58,8 +80,18 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectRowRoles": ["header", "body"],
-      "checks": ["header", "percent-option"]
+      "expectRowRoles": [
+        "header",
+        "body"
+      ],
+      "checks": [
+        "header",
+        "percent-option"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-antora-version-facets",
+        "rw-asciidoctor-js-customization-overview"
+      ]
     },
     {
       "id": "noheader-option",
@@ -69,8 +101,14 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectRowRoles": ["body", "body"],
-      "checks": ["noheader", "implicit-header-blocked"]
+      "expectRowRoles": [
+        "body",
+        "body"
+      ],
+      "checks": [
+        "noheader",
+        "implicit-header-blocked"
+      ]
     },
     {
       "id": "footer-option",
@@ -80,8 +118,15 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectRowRoles": ["header", "body", "footer"],
-      "checks": ["footer", "row-role"]
+      "expectRowRoles": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "checks": [
+        "footer",
+        "row-role"
+      ]
     },
     {
       "id": "column-cell-spec",
@@ -92,7 +137,11 @@
       "compareOracle": true,
       "compareStyle": false,
       "expectNoGridDiagnostics": true,
-      "checks": ["cols", "cell-style", "cell-alignment"]
+      "checks": [
+        "cols",
+        "cell-style",
+        "cell-alignment"
+      ]
     },
     {
       "id": "cols-mixed",
@@ -104,8 +153,19 @@
       "compareStyle": false,
       "expectNoGridDiagnostics": true,
       "expectGridColumnCount": 5,
-      "expectRawContains": ["cols=\"5,3*,>2\""],
-      "checks": ["cols", "multiplier", "mixed-width", "column-alignment"]
+      "expectRawContains": [
+        "cols=\"5,3*,>2\""
+      ],
+      "checks": [
+        "cols",
+        "multiplier",
+        "mixed-width",
+        "column-alignment"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-align-column",
+        "rw-cf-conventions-ch09-01"
+      ]
     },
     {
       "id": "column-style-inheritance",
@@ -115,7 +175,14 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["cols", "column-style"]
+      "checks": [
+        "cols",
+        "column-style"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-align-column",
+        "rw-asciidoc-lang-character-replacement"
+      ]
     },
     {
       "id": "column-asciidoc-style",
@@ -126,7 +193,17 @@
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
-      "checks": ["cols", "column-style-a", "block-cell", "list", "link"]
+      "checks": [
+        "cols",
+        "column-style-a",
+        "block-cell",
+        "list",
+        "link"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-kroki-configuration",
+        "rw-asciidoc-book-template-book-01"
+      ]
     },
     {
       "id": "horizontal-span",
@@ -136,7 +213,9 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["colspan"]
+      "checks": [
+        "colspan"
+      ]
     },
     {
       "id": "vertical-span",
@@ -146,7 +225,9 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["rowspan"]
+      "checks": [
+        "rowspan"
+      ]
     },
     {
       "id": "rectangular-span",
@@ -156,7 +237,10 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["rowspan", "colspan"]
+      "checks": [
+        "rowspan",
+        "colspan"
+      ]
     },
     {
       "id": "span-style-alignment",
@@ -166,7 +250,17 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["rowspan", "colspan", "style", "alignment"]
+      "checks": [
+        "rowspan",
+        "colspan",
+        "style",
+        "alignment"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-table-ref",
+        "rw-cf-conventions-ch04-02",
+        "rw-riscv-performance-events-body-01"
+      ]
     },
     {
       "id": "duplicate-cells",
@@ -176,7 +270,9 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["duplicate"]
+      "checks": [
+        "duplicate"
+      ]
     },
     {
       "id": "duplicate-style",
@@ -186,7 +282,15 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "checks": ["duplicate", "style", "alignment"]
+      "checks": [
+        "duplicate",
+        "style",
+        "alignment"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-table-ref",
+        "rw-riscv-matrix-spec-inst-list-01"
+      ]
     },
     {
       "id": "escaped-separator",
@@ -196,8 +300,16 @@
       "structuredEdit": true,
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
-      "expectRawContains": ["The \\| character is content"],
-      "checks": ["escaped-separator"]
+      "expectRawContains": [
+        "The \\| character is content"
+      ],
+      "checks": [
+        "escaped-separator"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-convert-templates",
+        "rw-asciidoc-lang-character-replacement"
+      ]
     },
     {
       "id": "custom-separator",
@@ -207,7 +319,9 @@
       "structuredEdit": true,
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
-      "checks": ["custom-separator"]
+      "checks": [
+        "custom-separator"
+      ]
     },
     {
       "id": "block-cell-boundary",
@@ -218,7 +332,10 @@
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
-      "checks": ["block-cell", "source-block-boundary"]
+      "checks": [
+        "block-cell",
+        "source-block-boundary"
+      ]
     },
     {
       "id": "block-cell-rich",
@@ -229,8 +346,542 @@
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
-      "expectRawContains": ["* First item", "[source]", "echo sample"],
-      "checks": ["block-cell", "paragraph", "list", "source-block"]
+      "expectRawContains": [
+        "* First item",
+        "[source]",
+        "echo sample"
+      ],
+      "checks": [
+        "block-cell",
+        "paragraph",
+        "list",
+        "source-block"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-cell-examples",
+        "rw-asciidoc-lang-verbatim-highlight-lines",
+        "rw-eclipse-uprotocol-spec-cloudevents-04"
+      ]
+    },
+    {
+      "id": "real-world-header-colspan",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-header-colspan.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 4,
+      "expectRawContains": [
+        "|Feature type 2+|Description |Link",
+        "|h|Form of data h|Required coordinates h|",
+        "|**series** 2+|A series of records"
+      ],
+      "checks": [
+        "real-world",
+        "header",
+        "colspan",
+        "long-delimiter"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-cf-conventions-ch09-06",
+        "rw-riscv-brs-acpi-06"
+      ]
+    },
+    {
+      "id": "real-world-long-delimiter-continuation",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-long-delimiter-continuation.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectRawContains": [
+        "|=====================================================================",
+        "* Item A +",
+        "* Item C"
+      ],
+      "checks": [
+        "real-world",
+        "long-delimiter",
+        "hardbreak-continuation",
+        "plain-list-continuation"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-riscv-external-debug-security-appendix-02",
+        "rw-riscv-external-debug-security-dmextsec-03",
+        "rw-riscv-external-debug-security-dmextsec-06",
+        "rw-riscv-external-debug-security-sdsec-04",
+        "rw-riscv-external-debug-security-sdsec-05",
+        "rw-riscv-performance-events-body-02",
+        "rw-cf-conventions-appf-03"
+      ]
+    },
+    {
+      "id": "real-world-image-macro-table",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-image-macro-table.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectRawContains": [
+        "image::https://example.invalid/badges/preview.svg",
+        "link=\"https://example.invalid/releases/stable\""
+      ],
+      "checks": [
+        "real-world",
+        "image-macro",
+        "plain-cell",
+        "raw-retention"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-eventuate-tram-core-readme-02"
+      ]
+    },
+    {
+      "id": "real-world-link-reference-table",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-link-reference-table.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectRowRoles": [
+        "header",
+        "body",
+        "body",
+        "body",
+        "body"
+      ],
+      "expectRawContains": [
+        "https://example.invalid/project-alpha[Project Alpha]",
+        "footnote:[Available in hosted deployments.]",
+        "*Important entry*"
+      ],
+      "checks": [
+        "real-world",
+        "implicit-header",
+        "link",
+        "footnote",
+        "inline-markup",
+        "cols"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-kroki-syntax",
+        "rw-cf-conventions-appj-04",
+        "rw-cf-conventions-ch09-07",
+        "rw-gbif-effective-nodes-guidance-300-en-04",
+        "rw-gbif-effective-nodes-guidance-300-en-05",
+        "rw-gbif-effective-nodes-guidance-500-en-03",
+        "rw-jakartaee-specification-committee-steps-javaee-to-jakartaee-02",
+        "rw-riscv-uefi-boot-protocol-02",
+        "rw-riscv-uefi-boot-protocol-03",
+        "rw-riscv-uefi-intro-01",
+        "rw-riscv-performance-events-body-04",
+        "rw-antora-configure-content-sources",
+        "rw-asciidoctor-diagram-vega"
+      ]
+    },
+    {
+      "id": "real-world-vertical-plain-table",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-vertical-plain-table.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 1,
+      "expectRawContains": [
+        "String, *Mandatory*",
+        "Human readable name.",
+        "Network port number."
+      ],
+      "checks": [
+        "real-world",
+        "vertical-one-column-table",
+        "inline-markup"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-jenkins-documentation-bots-01",
+        "rw-jenkins-documentation-bots-02",
+        "rw-jenkins-documentation-bots-03",
+        "rw-jenkins-documentation-github-apps-04",
+        "rw-jenkins-documentation-github-apps-05",
+        "rw-jenkins-ssh-steps-plugin-readme-02",
+        "rw-jenkins-ssh-steps-plugin-readme-03",
+        "rw-jenkins-ssh-steps-plugin-readme-04"
+      ]
+    },
+    {
+      "id": "real-world-stacked-attributes",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-stacked-attributes.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 3,
+      "expectRowRoles": [
+        "header",
+        "body",
+        "body"
+      ],
+      "expectRawContains": [
+        "[cols=\"1,2,3\"]",
+        "[%header]",
+        "[frame=ends,grid=rows]"
+      ],
+      "checks": [
+        "real-world",
+        "stacked-attributes",
+        "cols",
+        "header",
+        "frame",
+        "grid"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-riscv-brs-acpi-04",
+        "rw-riscv-brs-smbios-05",
+        "rw-riscv-external-debug-security-appendix-01"
+      ]
+    },
+    {
+      "id": "real-world-long-reference-table",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-long-reference-table.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 3,
+      "expectRawContains": [
+        "E001",
+        "longer description",
+        "repeated plain rows"
+      ],
+      "checks": [
+        "real-world",
+        "long-reference-table",
+        "cols",
+        "plain-cell",
+        "scrollable-reference"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-errors-warnings",
+        "rw-antora-environment-variables",
+        "rw-riscv-performance-events-body-03",
+        "rw-riscv-performance-events-body-05",
+        "rw-riscv-performance-events-body-06",
+        "rw-riscv-performance-events-body-07",
+        "rw-asciidoctor-js-migration-guide"
+      ]
+    },
+    {
+      "id": "real-world-plain-continuation-cell",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-plain-continuation-cell.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 3,
+      "expectRawContains": [
+        "Second description line without a new cell marker.",
+        "Another description +\nwith a hard line break continuation."
+      ],
+      "checks": [
+        "real-world",
+        "plain-multiline-cell",
+        "hard-line-break",
+        "cols"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-antora-supported-components",
+        "rw-asciidoctor-pdf-list-theme",
+        "rw-asciidoctor-pdf-theme-table",
+        "rw-asciidoc-lang-document-attributes-duplicate"
+      ]
+    },
+    {
+      "id": "real-world-explicit-a-cell-option-table",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-explicit-a-cell-option-table.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 4,
+      "expectBlockContentCells": 3,
+      "expectRawContains": [
+        "a|Supported values:",
+        "* `alpha`",
+        "https://example.invalid/options[Options]"
+      ],
+      "checks": [
+        "real-world",
+        "explicit-a-cell",
+        "block-cell",
+        "cols",
+        "link",
+        "list"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-api-options",
+        "rw-neo4j-apoc-index-01",
+        "rw-neo4j-apoc-mixedbread-03",
+        "rw-asciidoctor-pdf-arrange-block",
+        "rw-neo4j-apoc-index-02"
+      ]
+    },
+    {
+      "id": "real-world-explicit-a-cell-short",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-explicit-a-cell-short.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectBlockContentCells": 2,
+      "expectRawContains": [
+        "a|Short AsciiDoc cell",
+        "a|https://example.com[Example link]"
+      ],
+      "checks": [
+        "real-world",
+        "explicit-a-cell",
+        "cols",
+        "inline-markup",
+        "link"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-antora-cli-options",
+        "rw-cf-conventions-ch02-05",
+        "rw-eventuate-tram-core-readme-01",
+        "rw-react-awesome-query-builder-config-02",
+        "rw-react-awesome-query-builder-config-03",
+        "rw-react-awesome-query-builder-config-04",
+        "rw-eclipse-uprotocol-spec-someip-05",
+        "rw-eclipse-uprotocol-spec-someip-06",
+        "rw-neo4j-apoc-functions-05"
+      ]
+    },
+    {
+      "id": "real-world-block-colspan-attributes",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-block-colspan-attributes.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 3,
+      "expectBlockContentCells": 4,
+      "expectRawContains": [
+        "#real-world-block-span",
+        "2+|Combined plain heading",
+        "2+a|Block content spans two columns"
+      ],
+      "checks": [
+        "real-world",
+        "colspan",
+        "block-cell",
+        "table-attributes",
+        "source-block-boundary"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-riscv-brs-acpi-01",
+        "rw-riscv-brs-uefi-02",
+        "rw-riscv-brs-uefi-03",
+        "rw-gbif-effective-nodes-guidance-605-box-en-02"
+      ]
+    },
+    {
+      "id": "real-world-block-escaped-pipe",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-block-escaped-pipe.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectBlockContentCells": 3,
+      "expectRawContains": [
+        "Use the \\| separator literally",
+        "value | still not a table cell"
+      ],
+      "checks": [
+        "real-world",
+        "block-cell",
+        "escaped-separator",
+        "source-block-boundary",
+        "header"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-eclipse-uprotocol-spec-someip-01",
+        "rw-zimbra-adminguide-cmdlineutils-02",
+        "rw-zimbra-adminguide-cmdlineutils-03",
+        "rw-zimbra-adminguide-cmdlineutils-04",
+        "rw-zimbra-adminguide-cmdlineutils-05",
+        "rw-zimbra-adminguide-cmdlineutils-06",
+        "rw-asciidoc-lang-block-name-table",
+        "rw-jenkins-ssh-steps-plugin-readme-01"
+      ]
+    },
+    {
+      "id": "real-world-wide-block-column",
+      "category": "preview-raw-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-wide-block-column.adoc",
+      "status": "partial",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectOracleTable": true,
+      "expectGridColumnCount": 4,
+      "expectBlockContentCells": 3,
+      "expectRawContains": [
+        "[%autowidth.stretch]",
+        "cols=\"1,2,>2,4a\"",
+        "* First note"
+      ],
+      "checks": [
+        "real-world",
+        "cols",
+        "header",
+        "autowidth",
+        "stretch",
+        "column-style-a",
+        "block-cell"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-zimbra-adminguide-adminconsole-01",
+        "rw-zimbra-adminguide-cmdlineutils-07",
+        "rw-eclipse-uprotocol-spec-cloudevents-04",
+        "rw-gbif-effective-nodes-guidance-505-box-en-01"
+      ],
+      "compareStyle": false
+    },
+    {
+      "id": "real-world-span-duplicate-mix",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-span-duplicate-mix.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 4,
+      "expectRawContains": [
+        "2+^.^m|Merged value",
+        ".2+|Vertical value",
+        "2*e|Repeated value"
+      ],
+      "checks": [
+        "real-world",
+        "rowspan",
+        "colspan",
+        "duplicate",
+        "style",
+        "alignment"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-table-ref",
+        "rw-riscv-matrix-spec-inst-list-01",
+        "rw-riscv-matrix-spec-inst-list-02",
+        "rw-antora-resource-id-coordinates",
+        "rw-asciidoc-lang-toc-ref",
+        "rw-riscv-matrix-spec-inst-list-03",
+        "rw-riscv-matrix-spec-inst32-list-04",
+        "rw-riscv-matrix-spec-inst32-list-05",
+        "rw-jakartaee-specification-committee-names-01"
+      ]
+    },
+    {
+      "id": "real-world-escaped-pipe-reference",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-escaped-pipe-reference.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 3,
+      "expectRawContains": [
+        "The \\| character is content",
+        "A \\| B"
+      ],
+      "checks": [
+        "real-world",
+        "escaped-separator",
+        "header"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoctor-convert-templates",
+        "rw-asciidoc-lang-character-replacement",
+        "rw-react-awesome-query-builder-config-01",
+        "rw-asciidoctor-syntax-reference"
+      ]
+    },
+    {
+      "id": "real-world-plain-list-continuation",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-plain-list-continuation.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectRowRoles": [
+        "header",
+        "body",
+        "body"
+      ],
+      "expectRawContains": [
+        "* First point",
+        "NOTE: Additional note. +",
+        "More note text."
+      ],
+      "checks": [
+        "real-world",
+        "plain-list-continuation",
+        "note-continuation",
+        "header",
+        "table-attributes"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-eclipse-uprotocol-spec-someip-02",
+        "rw-eclipse-uprotocol-spec-someip-03",
+        "rw-riscv-brs-brs-tests-07",
+        "rw-asciidoctor-pdf-running-content",
+        "rw-asciidoctor-pdf-theme-table-later"
+      ]
+    },
+    {
+      "id": "real-world-cell-attribute-continuation",
+      "category": "structured-supported",
+      "source": "fixtures/compat/asciidoctor-table-syntax/sources/real-world-cell-attribute-continuation.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": true,
+      "expectNoGridDiagnostics": true,
+      "expectGridColumnCount": 2,
+      "expectRawContains": [
+        "{set:cellbgcolor:#dddddd}",
+        "https://example.invalid/spec/item-1 +",
+        "continued note",
+        "{set:cellbgcolor:#ffffff}"
+      ],
+      "checks": [
+        "real-world",
+        "cell-attribute-continuation",
+        "hardbreak-continuation",
+        "colspan",
+        "raw-retention"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-opengeospatial-gss-swg-requirements-class-01"
+      ]
     },
     {
       "id": "table-attributes-preview",
@@ -241,8 +892,28 @@
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
       "expectOracleTable": true,
-      "expectRawContains": [".Attribute preview sample", "#sample-table", "frame=ends", "grid=rows", "stripes=even"],
-      "checks": ["title", "id", "role", "width", "frame", "grid", "stripes", "autowidth", "stretch"]
+      "expectRawContains": [
+        ".Attribute preview sample",
+        "#sample-table",
+        "frame=ends",
+        "grid=rows",
+        "stripes=even"
+      ],
+      "checks": [
+        "title",
+        "id",
+        "role",
+        "width",
+        "frame",
+        "grid",
+        "stripes",
+        "autowidth",
+        "stretch"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-cf-conventions-ch09-01",
+        "rw-cf-conventions-ch09-08"
+      ]
     },
     {
       "id": "rotate-orientation-preview",
@@ -253,8 +924,16 @@
       "compareOracle": true,
       "expectNoGridDiagnostics": true,
       "expectOracleTable": true,
-      "expectRawContains": ["%rotate", "orientation=landscape"],
-      "checks": ["rotate", "orientation", "raw-retention", "preview"]
+      "expectRawContains": [
+        "%rotate",
+        "orientation=landscape"
+      ],
+      "checks": [
+        "rotate",
+        "orientation",
+        "raw-retention",
+        "preview"
+      ]
     },
     {
       "id": "csv-data-table",
@@ -263,8 +942,16 @@
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"],
-      "checks": ["csv", "fallback"]
+      "expectGridDiagnosticCodes": [
+        "table.format.unsupported"
+      ],
+      "checks": [
+        "csv",
+        "fallback"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-data-format"
+      ]
     },
     {
       "id": "tsv-data-table",
@@ -273,8 +960,16 @@
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"],
-      "checks": ["tsv", "fallback"]
+      "expectGridDiagnosticCodes": [
+        "table.format.unsupported"
+      ],
+      "checks": [
+        "tsv",
+        "fallback"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-data-format"
+      ]
     },
     {
       "id": "dsv-data-table",
@@ -283,8 +978,16 @@
       "status": "non-goal",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["table.format.unsupported"],
-      "checks": ["dsv", "fallback"]
+      "expectGridDiagnosticCodes": [
+        "table.format.unsupported"
+      ],
+      "checks": [
+        "dsv",
+        "fallback"
+      ],
+      "derivedFromRealWorldCandidateIds": [
+        "rw-asciidoc-lang-data-format"
+      ]
     },
     {
       "id": "nested-table-non-goal",
@@ -295,7 +998,10 @@
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
-      "checks": ["nested-table", "block-cell-raw"]
+      "checks": [
+        "nested-table",
+        "block-cell-raw"
+      ]
     },
     {
       "id": "nested-table-block",
@@ -306,7 +1012,10 @@
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
-      "checks": ["nested-table", "block-cell-raw"]
+      "checks": [
+        "nested-table",
+        "block-cell-raw"
+      ]
     },
     {
       "id": "ambiguous-block-cell",
@@ -315,8 +1024,13 @@
       "status": "unsupported",
       "structuredEdit": false,
       "compareOracle": false,
-      "expectGridDiagnosticCodes": ["block-cell.unclosed-delimited-block"],
-      "checks": ["complex-block-cell", "fallback"]
+      "expectGridDiagnosticCodes": [
+        "block-cell.unclosed-delimited-block"
+      ],
+      "checks": [
+        "complex-block-cell",
+        "fallback"
+      ]
     }
   ]
 }

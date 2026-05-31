@@ -1,0 +1,13 @@
+.Real-world synthetic escaped separator
+[options="header",cols="3*"]
+|===
+|Name |Literal |Notes
+
+|Alpha
+|The \| character is content
+|Short note
+
+|Beta
+|A \| B
+|Another note
+|===

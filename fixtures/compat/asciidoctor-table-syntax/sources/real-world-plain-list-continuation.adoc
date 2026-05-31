@@ -1,0 +1,15 @@
+.Real-world synthetic plain list continuation
+[cols="1,2",options="header,autowidth"]
+|===
+|Name |Description
+
+|Item A |Summary line.
+
+* First point
+* Second point
+
+NOTE: Additional note. +
+More note text.
+
+|Item B |Done
+|===

@@ -1,0 +1,17 @@
+.Real-world synthetic spans and duplicates
+[cols="1,1,1,1"]
+|===
+|Column A |Column B |Column C |Column D
+
+2+^.^m|Merged value
+|Cell C1
+|Cell D1
+
+.2+|Vertical value
+|Cell B2
+2*e|Repeated value
+
+|Cell B3
+|Cell C3
+|Cell D3
+|===

@@ -1,0 +1,3559 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Manifest for IMP-083 real-world AsciiDoc table corpus candidates. External source text is not vendored; entries are metadata for neutral synthetic reproduction.",
+  "policy": {
+    "sourceTextVendoring": "Do not vendor external table source in this repository at this stage.",
+    "fixtureStrategy": "Use source URL, commit, file path, and line range as evidence; create neutral synthetic reproductions before adding tracked fixtures.",
+    "publicMirrorSafety": "License and attribution must be reviewed before any direct snippet is copied into public mirror fixtures.",
+    "candidateStatuses": [
+      "candidate",
+      "ready-for-synthetic-reproduction",
+      "candidate-only"
+    ],
+    "supportClassifications": [
+      "structured-supported",
+      "preview-raw-supported",
+      "non-goal",
+      "unsupported"
+    ]
+  },
+  "sources": [
+    {
+      "sourceId": "antora",
+      "name": "Antora",
+      "repository": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "license": "MPL-2.0",
+      "attributionRequirement": "Review MPL-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 306,
+        "tableDelimiters": 74,
+        "filesWithTables": 25
+      }
+    },
+    {
+      "sourceId": "asciidoc-book-template",
+      "name": "AsciiDoc Book Template",
+      "repository": "https://github.com/strzibny/asciidoc-book-template.git",
+      "commit": "070749fa04cd",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 1,
+        "tableDelimiters": 2,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "asciidoc-lang",
+      "name": "AsciiDoc Language",
+      "repository": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "license": "EPL-2.0",
+      "attributionRequirement": "Review EPL-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 325,
+        "tableDelimiters": 400,
+        "filesWithTables": 68
+      }
+    },
+    {
+      "sourceId": "asciidoctor",
+      "name": "Asciidoctor",
+      "repository": "https://github.com/asciidoctor/asciidoctor.git",
+      "commit": "07fbd12b0cb5",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 176,
+        "tableDelimiters": 68,
+        "filesWithTables": 17
+      }
+    },
+    {
+      "sourceId": "asciidoctor-diagram",
+      "name": "Asciidoctor Diagram",
+      "repository": "https://github.com/asciidoctor/asciidoctor-diagram.git",
+      "commit": "9a441cef9042",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 52,
+        "tableDelimiters": 84,
+        "filesWithTables": 40
+      }
+    },
+    {
+      "sourceId": "asciidoctor-js",
+      "name": "Asciidoctor.js",
+      "repository": "https://github.com/asciidoctor/asciidoctor.js.git",
+      "commit": "edd8cfa78c12",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 93,
+        "tableDelimiters": 32,
+        "filesWithTables": 6
+      }
+    },
+    {
+      "sourceId": "asciidoctor-kroki",
+      "name": "Asciidoctor Kroki",
+      "repository": "https://github.com/asciidoctor/asciidoctor-kroki.git",
+      "commit": "2ae0a9343dab",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 12,
+        "tableDelimiters": 10,
+        "filesWithTables": 3
+      }
+    },
+    {
+      "sourceId": "asciidoctor-pdf",
+      "name": "Asciidoctor PDF",
+      "repository": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 134,
+        "tableDelimiters": 238,
+        "filesWithTables": 55
+      }
+    },
+    {
+      "sourceId": "cf-conventions",
+      "name": "CF Conventions",
+      "repository": "https://github.com/cf-convention/cf-conventions.git",
+      "commit": "31949e7b5590",
+      "license": "CC0-1.0",
+      "attributionRequirement": "CC0 permits reuse, but still prefer neutral synthetic reproduction for public fixtures.",
+      "scanSummary": {
+        "adocFiles": 30,
+        "tableDelimiters": 52,
+        "filesWithTables": 14
+      }
+    },
+    {
+      "sourceId": "eclipse-uprotocol-spec",
+      "name": "Eclipse uProtocol Specification",
+      "repository": "https://github.com/eclipse-uprotocol/up-spec.git",
+      "commit": "94b76ad3b808",
+      "license": "Apache-2.0",
+      "attributionRequirement": "Review Apache-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 33,
+        "tableDelimiters": 150,
+        "filesWithTables": 22
+      }
+    },
+    {
+      "sourceId": "eventuate-tram-core",
+      "name": "Eventuate Tram Core",
+      "repository": "https://github.com/eventuate-tram/eventuate-tram-core.git",
+      "commit": "28a57e270f7a",
+      "license": "Apache-2.0",
+      "attributionRequirement": "Review Apache-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 1,
+        "tableDelimiters": 4,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "gbif-effective-nodes-guidance",
+      "name": "GBIF Effective Nodes Guidance",
+      "repository": "https://github.com/gbif/doc-effective-nodes-guidance.git",
+      "commit": "a2d795566ce9",
+      "license": "Creative Commons",
+      "attributionRequirement": "Review Creative Commons license variant and attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 17,
+        "tableDelimiters": 14,
+        "filesWithTables": 4
+      }
+    },
+    {
+      "sourceId": "jakartaee-specification-committee",
+      "name": "Jakarta EE Specification Committee",
+      "repository": "https://github.com/jakartaee/specification-committee.git",
+      "commit": "fa29968bbd3f",
+      "license": "EPL",
+      "attributionRequirement": "Review Eclipse Public License notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 2,
+        "tableDelimiters": 4,
+        "filesWithTables": 2
+      }
+    },
+    {
+      "sourceId": "jenkins-documentation",
+      "name": "Jenkins Infrastructure Documentation",
+      "repository": "https://github.com/jenkins-infra/documentation.git",
+      "commit": "ff06a732fc13",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 5,
+        "tableDelimiters": 10,
+        "filesWithTables": 2
+      }
+    },
+    {
+      "sourceId": "jenkins-ssh-steps-plugin",
+      "name": "Jenkins SSH Steps Plugin",
+      "repository": "https://github.com/jenkinsci/ssh-steps-plugin.git",
+      "commit": "498243a110e2",
+      "license": "Apache-2.0",
+      "attributionRequirement": "Review Apache-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 3,
+        "tableDelimiters": 14,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "loongson-la-abi-specs",
+      "name": "LoongArch ABI Specifications",
+      "repository": "https://github.com/loongson/la-abi-specs.git",
+      "commit": "44ef5f63e175",
+      "license": "unknown",
+      "attributionRequirement": "Candidate-only until repository license and attribution requirements are confirmed.",
+      "scanSummary": {
+        "adocFiles": 4,
+        "tableDelimiters": 36,
+        "filesWithTables": 3
+      }
+    },
+    {
+      "sourceId": "neo4j-apoc",
+      "name": "Neo4j APOC Procedures",
+      "repository": "https://github.com/neo4j-contrib/neo4j-apoc-procedures.git",
+      "commit": "940033f21e82",
+      "license": "Apache-2.0",
+      "attributionRequirement": "Review Apache-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 2114,
+        "tableDelimiters": 5533,
+        "filesWithTables": 1370
+      }
+    },
+    {
+      "sourceId": "openapi-processor-parser",
+      "name": "OpenAPI Processor Parser",
+      "repository": "https://github.com/openapi-processor/openapi-parser.git",
+      "commit": "f17da29e9b88",
+      "license": "Apache-2.0",
+      "attributionRequirement": "Review Apache-2.0 notice requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 18,
+        "tableDelimiters": 2,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "opengeospatial-gss-swg",
+      "name": "OGC GSS Standards Working Group",
+      "repository": "https://github.com/opengeospatial/gss-swg.git",
+      "commit": "2ee15a34d3ee",
+      "license": "unknown",
+      "attributionRequirement": "Candidate-only until repository license and attribution requirements are confirmed.",
+      "scanSummary": {
+        "adocFiles": 287,
+        "tableDelimiters": 606,
+        "filesWithTables": 279
+      }
+    },
+    {
+      "sourceId": "react-awesome-query-builder",
+      "name": "React Awesome Query Builder",
+      "repository": "https://github.com/ukrbublik/react-awesome-query-builder.git",
+      "commit": "446689d523d6",
+      "license": "MIT",
+      "attributionRequirement": "Keep MIT attribution if direct snippet reuse is approved.",
+      "scanSummary": {
+        "adocFiles": 1,
+        "tableDelimiters": 28,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "redhat-lab-docker-eap",
+      "name": "Red Hat Developer Lab Docker JBoss EAP",
+      "repository": "https://github.com/redhat-developer/lab-docker-jboss-eap.git",
+      "commit": "e64bbc28cf61",
+      "license": "unknown",
+      "attributionRequirement": "Candidate-only until repository license and attribution requirements are confirmed.",
+      "scanSummary": {
+        "adocFiles": 10,
+        "tableDelimiters": 2,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "redhat-ocp4-vsphere-workshop",
+      "name": "Red Hat CoP OCP4 vSphere Workshop",
+      "repository": "https://github.com/redhat-cop/ocp4-vsphere-workshop.git",
+      "commit": "c5ac4d39f82e",
+      "license": "unknown",
+      "attributionRequirement": "Candidate-only until repository license and attribution requirements are confirmed.",
+      "scanSummary": {
+        "adocFiles": 10,
+        "tableDelimiters": 2,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "riscv-brs",
+      "name": "RISC-V Boot and Runtime Services",
+      "repository": "https://github.com/riscv-non-isa/riscv-brs.git",
+      "commit": "0f2ab2ed9d33",
+      "license": "CC-BY-4.0",
+      "attributionRequirement": "Review Creative Commons attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 22,
+        "tableDelimiters": 68,
+        "filesWithTables": 12
+      }
+    },
+    {
+      "sourceId": "riscv-external-debug-security",
+      "name": "RISC-V External Debug Security",
+      "repository": "https://github.com/riscv-non-isa/riscv-external-debug-security.git",
+      "commit": "53ab0df9f002",
+      "license": "CC-BY-4.0",
+      "attributionRequirement": "Review Creative Commons attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 10,
+        "tableDelimiters": 28,
+        "filesWithTables": 4
+      }
+    },
+    {
+      "sourceId": "riscv-matrix-spec",
+      "name": "RISC-V Matrix Extension Specification",
+      "repository": "https://github.com/riscv-stc/riscv-matrix-spec.git",
+      "commit": "b781b463674d",
+      "license": "CC-BY-4.0",
+      "attributionRequirement": "Review Creative Commons attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 31,
+        "tableDelimiters": 56,
+        "filesWithTables": 9
+      }
+    },
+    {
+      "sourceId": "riscv-performance-events",
+      "name": "RISC-V Performance Events",
+      "repository": "https://github.com/riscv/riscv-performance-events.git",
+      "commit": "a80a12386966",
+      "license": "CC-BY-4.0",
+      "attributionRequirement": "Review Creative Commons attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 7,
+        "tableDelimiters": 48,
+        "filesWithTables": 1
+      }
+    },
+    {
+      "sourceId": "riscv-uefi",
+      "name": "RISC-V UEFI",
+      "repository": "https://github.com/riscv-non-isa/riscv-uefi.git",
+      "commit": "d2b8a4ca190e",
+      "license": "CC-BY-4.0",
+      "attributionRequirement": "Review Creative Commons attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 6,
+        "tableDelimiters": 6,
+        "filesWithTables": 2
+      }
+    },
+    {
+      "sourceId": "tmforum-api-guide",
+      "name": "TM Forum API Developers Guide",
+      "repository": "https://github.com/tmforum-rand/ig1353-api-developers-guide.git",
+      "commit": "856d8ff8a54e",
+      "license": "present-unclassified",
+      "attributionRequirement": "Candidate-only until repository license and attribution requirements are confirmed.",
+      "scanSummary": {
+        "adocFiles": 2,
+        "tableDelimiters": 22,
+        "filesWithTables": 2
+      }
+    },
+    {
+      "sourceId": "zimbra-adminguide",
+      "name": "Zimbra Admin Guide",
+      "repository": "https://github.com/Zimbra/adminguide.git",
+      "commit": "16565e53c73f",
+      "license": "Creative Commons",
+      "attributionRequirement": "Review Creative Commons license variant and attribution requirements before direct snippet reuse.",
+      "scanSummary": {
+        "adocFiles": 107,
+        "tableDelimiters": 705,
+        "filesWithTables": 60
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "id": "rw-antora-cli-options",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/cli/pages/options.adoc",
+      "lineRange": {
+        "start": 49,
+        "end": 229
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic command options table with a block-style description column.",
+      "expectedBehavior": "Column or cell AsciiDoc style should be treated as block raw content."
+    },
+    {
+      "id": "rw-antora-configure-content-sources",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/playbook/pages/configure-content-sources.adoc",
+      "lineRange": {
+        "start": 1,
+        "end": 220
+      },
+      "syntaxFeatures": [
+        "cols",
+        "configuration-reference"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Use as evidence for a synthetic configuration reference table after line range is narrowed. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Configuration reference tables should be editable when cells are plain PSV content."
+    },
+    {
+      "id": "rw-antora-environment-variables",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/playbook/pages/environment-variables.adoc",
+      "lineRange": {
+        "start": 50,
+        "end": 130
+      },
+      "syntaxFeatures": [
+        "cols"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic environment variable table with long values.",
+      "expectedBehavior": "Large plain reference tables should preserve scroll containment and editable cells."
+    },
+    {
+      "id": "rw-antora-resource-id-coordinates",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/page/pages/resource-id-coordinates.adoc",
+      "lineRange": {
+        "start": 87,
+        "end": 125
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "rowspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic Antora-like coordinate table with generic labels.",
+      "expectedBehavior": "Mixed row and column spans should remain merge-aware and editable where safe."
+    },
+    {
+      "id": "rw-antora-supported-components",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/extend/pages/supported-components.adoc",
+      "lineRange": {
+        "start": 35,
+        "end": 153
+      },
+      "syntaxFeatures": [
+        "cols",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic supported-components style table with generic multiline descriptions.",
+      "expectedBehavior": "Multiline descriptions should stay in the intended cell or become raw block content when required."
+    },
+    {
+      "id": "rw-antora-version-facets",
+      "sourceId": "antora",
+      "sourceUrl": "https://gitlab.com/antora/antora.git",
+      "commit": "18cc403b836d",
+      "filePath": "docs/modules/ROOT/pages/version-facets.adoc",
+      "lineRange": {
+        "start": 70,
+        "end": 135
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic version matrix with header rows and generic feature columns.",
+      "expectedBehavior": "Header semantics and regular cells should remain distinguishable in Grid metadata."
+    },
+    {
+      "id": "rw-asciidoc-book-template-book-01",
+      "sourceId": "asciidoc-book-template",
+      "sourceUrl": "https://github.com/strzibny/asciidoc-book-template/blob/070749fa04cd/book.adoc",
+      "commit": "070749fa04cd",
+      "filePath": "book.adoc",
+      "lineRange": {
+        "start": 54,
+        "end": 65
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-asciidoc-lang-align-column",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/tables/pages/align-by-column.adoc",
+      "lineRange": {
+        "start": 1,
+        "end": 220
+      },
+      "syntaxFeatures": [
+        "cols",
+        "column-alignment",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic column alignment fixture derived from the syntax shape only.",
+      "expectedBehavior": "Effective column alignment should project to Grid metadata while raw cols source is retained."
+    },
+    {
+      "id": "rw-asciidoc-lang-block-name-table",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/blocks/partials/block-name-table.adoc",
+      "lineRange": {
+        "start": 7,
+        "end": 111
+      },
+      "syntaxFeatures": [
+        "cols",
+        "escaped-pipe",
+        "block-content"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create neutral escaped-pipe and block-name style table fixture.",
+      "expectedBehavior": "Escaped separators should remain cell content and not split columns."
+    },
+    {
+      "id": "rw-asciidoc-lang-cell-examples",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/tables/examples/cell.adoc",
+      "lineRange": {
+        "start": 24,
+        "end": 55
+      },
+      "syntaxFeatures": [
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create neutral block-cell examples that exercise raw editing and preview without using original text.",
+      "expectedBehavior": "Block content should remain one cell, display as readonly grid content, and use Block Source editing."
+    },
+    {
+      "id": "rw-asciidoc-lang-character-replacement",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/attributes/pages/character-replacement-ref.adoc",
+      "lineRange": {
+        "start": 15,
+        "end": 141
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes",
+        "escaped-pipe"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create neutral replacement table with escaped pipe examples.",
+      "expectedBehavior": "Escaped pipes and substitutions-like text should not corrupt cell boundaries."
+    },
+    {
+      "id": "rw-asciidoc-lang-data-format",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/tables/pages/data-format.adoc",
+      "lineRange": {
+        "start": 1,
+        "end": 220
+      },
+      "syntaxFeatures": [
+        "format-csv",
+        "format-tsv",
+        "format-dsv",
+        "header"
+      ],
+      "supportClassification": "non-goal",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic data-format fixtures that assert structured edit remains disabled.",
+      "expectedBehavior": "CSV, TSV, and DSV table bodies should not expose structured source-changing grid actions."
+    },
+    {
+      "id": "rw-asciidoc-lang-document-attributes-duplicate",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/attributes/pages/document-attributes-ref.adoc",
+      "lineRange": {
+        "start": 1266,
+        "end": 1326
+      },
+      "syntaxFeatures": [
+        "cols",
+        "plain-continuation"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic multiline plain cell table with generic attribute-like values.",
+      "expectedBehavior": "Parser should keep non-marker continuation lines in the previous cell without creating ragged rows."
+    },
+    {
+      "id": "rw-asciidoc-lang-table-ref",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/tables/pages/table-ref.adoc",
+      "lineRange": {
+        "start": 5,
+        "end": 201
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "rowspan",
+        "duplicate-cells",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic table reference fixture covering the same span and duplicate patterns without copying prose.",
+      "expectedBehavior": "Parser and Grid should preserve cell count, spans, duplicate shorthand semantics, and table attributes."
+    },
+    {
+      "id": "rw-asciidoc-lang-toc-ref",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/toc/pages/toc-ref.adoc",
+      "lineRange": {
+        "start": 6,
+        "end": 51
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "rowspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic compact reference table with mixed span and attributes.",
+      "expectedBehavior": "Span projection should match Asciidoctor oracle and no-op source should remain stable."
+    },
+    {
+      "id": "rw-asciidoc-lang-verbatim-highlight-lines",
+      "sourceId": "asciidoc-lang",
+      "sourceUrl": "https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang.git",
+      "commit": "f2de4d8a2338",
+      "filePath": "docs/modules/verbatim/pages/highlight-lines.adoc",
+      "lineRange": {
+        "start": 10,
+        "end": 33
+      },
+      "syntaxFeatures": [
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic block cell with source-like content and table attributes.",
+      "expectedBehavior": "Source-like block content must not be split into false table rows."
+    },
+    {
+      "id": "rw-asciidoctor-api-options",
+      "sourceId": "asciidoctor",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.git",
+      "commit": "07fbd12b0cb5",
+      "filePath": "docs/modules/api/pages/options.adoc",
+      "lineRange": {
+        "start": 4,
+        "end": 161
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic API options table with block description cells.",
+      "expectedBehavior": "Block cells should be previewable and raw-editable without losing surrounding PSV cells."
+    },
+    {
+      "id": "rw-asciidoctor-convert-templates",
+      "sourceId": "asciidoctor",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.git",
+      "commit": "07fbd12b0cb5",
+      "filePath": "docs/modules/convert/pages/templates.adoc",
+      "lineRange": {
+        "start": 240,
+        "end": 334
+      },
+      "syntaxFeatures": [
+        "cols",
+        "escaped-pipe"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic template mapping table with escaped separator text.",
+      "expectedBehavior": "Escaped pipe text should not be interpreted as a column separator."
+    },
+    {
+      "id": "rw-asciidoctor-diagram-vega",
+      "sourceId": "asciidoctor-diagram",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-diagram.git",
+      "commit": "9a441cef9042",
+      "filePath": "docs/modules/ROOT/pages/diagram_types/vega.adoc",
+      "lineRange": {
+        "start": 1,
+        "end": 180
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Do not reproduce until repository license is confirmed; use only as a pointer to recurring diagram type matrix patterns. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "If reproduced synthetically later, diagram type matrices should be plain editable PSV tables."
+    },
+    {
+      "id": "rw-asciidoctor-errors-warnings",
+      "sourceId": "asciidoctor",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.git",
+      "commit": "07fbd12b0cb5",
+      "filePath": "docs/modules/ROOT/pages/errors-and-warnings.adoc",
+      "lineRange": {
+        "start": 85,
+        "end": 176
+      },
+      "syntaxFeatures": [
+        "cols",
+        "long-reference-table"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic diagnostics reference table with long row content.",
+      "expectedBehavior": "Large reference tables should stay scrollable and support safe cell editing."
+    },
+    {
+      "id": "rw-asciidoctor-js-customization-overview",
+      "sourceId": "asciidoctor-js",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.js.git",
+      "commit": "edd8cfa78c12",
+      "filePath": "docs/modules/extend/pages/customization-overview.adoc",
+      "lineRange": {
+        "start": 14,
+        "end": 61
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic extension overview table with a header row.",
+      "expectedBehavior": "Header rows and plain cells should match existing table-spec-header-footer coverage."
+    },
+    {
+      "id": "rw-asciidoctor-js-migration-guide",
+      "sourceId": "asciidoctor-js",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.js.git",
+      "commit": "edd8cfa78c12",
+      "filePath": "docs/modules/setup/pages/migration-guide.adoc",
+      "lineRange": {
+        "start": 1,
+        "end": 260
+      },
+      "syntaxFeatures": [
+        "cols",
+        "migration-reference"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Use as evidence for synthetic migration/reference table patterns after narrowing exact table ranges. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Migration reference tables should be editable when cells are plain PSV content."
+    },
+    {
+      "id": "rw-asciidoctor-kroki-configuration",
+      "sourceId": "asciidoctor-kroki",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-kroki.git",
+      "commit": "2ae0a9343dab",
+      "filePath": "docs/modules/ROOT/pages/configuration.adoc",
+      "lineRange": {
+        "start": 7,
+        "end": 41
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell",
+        "block-content",
+        "header"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic configuration table with a block description column.",
+      "expectedBehavior": "Configuration block cells should be previewable and raw-editable."
+    },
+    {
+      "id": "rw-asciidoctor-kroki-syntax",
+      "sourceId": "asciidoctor-kroki",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-kroki.git",
+      "commit": "2ae0a9343dab",
+      "filePath": "docs/modules/ROOT/pages/syntax.adoc",
+      "lineRange": {
+        "start": 172,
+        "end": 255
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic syntax support matrix with header and plain cells.",
+      "expectedBehavior": "Support matrix tables should be editable as plain structured PSV tables."
+    },
+    {
+      "id": "rw-asciidoctor-pdf-arrange-block",
+      "sourceId": "asciidoctor-pdf",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "filePath": "spec/fixtures/arrange-block-at-top-does-not-fit.adoc",
+      "lineRange": {
+        "start": 921,
+        "end": 993
+      },
+      "syntaxFeatures": [
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Use only as behavioral evidence; do not vendor spec fixture text. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Complex block cell boundaries should remain raw/preview rather than structured editable."
+    },
+    {
+      "id": "rw-asciidoctor-pdf-list-theme",
+      "sourceId": "asciidoctor-pdf",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "filePath": "docs/modules/theme/pages/list.adoc",
+      "lineRange": {
+        "start": 53,
+        "end": 95
+      },
+      "syntaxFeatures": [
+        "cols",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic list-theme table that exercises multiline and list-like cell content.",
+      "expectedBehavior": "List-like content should not be flattened by Grid editing."
+    },
+    {
+      "id": "rw-asciidoctor-pdf-running-content",
+      "sourceId": "asciidoctor-pdf",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "filePath": "docs/modules/theme/pages/running-content.adoc",
+      "lineRange": {
+        "start": 19,
+        "end": 237
+      },
+      "syntaxFeatures": [
+        "cols",
+        "block-content",
+        "large-reference-table"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Use as evidence for a large synthetic reference table with block values. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Large preview/raw tables should remain internally scrollable."
+    },
+    {
+      "id": "rw-asciidoctor-pdf-theme-table",
+      "sourceId": "asciidoctor-pdf",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "filePath": "docs/modules/theme/pages/table.adoc",
+      "lineRange": {
+        "start": 12,
+        "end": 105
+      },
+      "syntaxFeatures": [
+        "cols",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic theme table with block-like value descriptions.",
+      "expectedBehavior": "Theme reference block-like cells should remain readable and raw-editable."
+    },
+    {
+      "id": "rw-asciidoctor-pdf-theme-table-later",
+      "sourceId": "asciidoctor-pdf",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor-pdf.git",
+      "commit": "cdcab580e98b",
+      "filePath": "docs/modules/theme/pages/table.adoc",
+      "lineRange": {
+        "start": 341,
+        "end": 391
+      },
+      "syntaxFeatures": [
+        "cols",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Use only as secondary evidence for synthetic theme table variants. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Multiple tables in one source file should remain independently detectable."
+    },
+    {
+      "id": "rw-asciidoctor-syntax-reference",
+      "sourceId": "asciidoctor",
+      "sourceUrl": "https://github.com/asciidoctor/asciidoctor.git",
+      "commit": "07fbd12b0cb5",
+      "filePath": "data/reference/syntax.adoc",
+      "lineRange": {
+        "start": 253,
+        "end": 276
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes",
+        "escaped-pipe"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create synthetic syntax reference table with safe placeholder strings.",
+      "expectedBehavior": "Reference syntax containing escaped pipe characters should retain source-safe boundaries."
+    },
+    {
+      "id": "rw-cf-conventions-appf-03",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/appf.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "appf.adoc",
+      "lineRange": {
+        "start": 431,
+        "end": 613
+      },
+      "syntaxFeatures": [
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-cf-conventions-appj-04",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/appj.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "appj.adoc",
+      "lineRange": {
+        "start": 95,
+        "end": 121
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-cf-conventions-ch02-05",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch02.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch02.adoc",
+      "lineRange": {
+        "start": 329,
+        "end": 371
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-cf-conventions-ch04-02",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch04.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch04.adoc",
+      "lineRange": {
+        "start": 288,
+        "end": 300
+      },
+      "syntaxFeatures": [
+        "header",
+        "colspan",
+        "rowspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-cf-conventions-ch09-01",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch09.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch09.adoc",
+      "lineRange": {
+        "start": 328,
+        "end": 425
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-cf-conventions-ch09-06",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch09.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch09.adoc",
+      "lineRange": {
+        "start": 22,
+        "end": 44
+      },
+      "syntaxFeatures": [
+        "header",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-cf-conventions-ch09-07",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch09.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch09.adoc",
+      "lineRange": {
+        "start": 191,
+        "end": 236
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-cf-conventions-ch09-08",
+      "sourceId": "cf-conventions",
+      "sourceUrl": "https://github.com/cf-convention/cf-conventions/blob/31949e7b5590/ch09.adoc",
+      "commit": "31949e7b5590",
+      "filePath": "ch09.adoc",
+      "lineRange": {
+        "start": 247,
+        "end": 292
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-cloudevents-04",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/cloudevents.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/cloudevents.adoc",
+      "lineRange": {
+        "start": 62,
+        "end": 160
+      },
+      "syntaxFeatures": [
+        "header",
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-someip-01",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/someip.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/someip.adoc",
+      "lineRange": {
+        "start": 69,
+        "end": 93
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-someip-02",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/someip.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/someip.adoc",
+      "lineRange": {
+        "start": 111,
+        "end": 133
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-someip-03",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/someip.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/someip.adoc",
+      "lineRange": {
+        "start": 284,
+        "end": 309
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-someip-05",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/someip.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/someip.adoc",
+      "lineRange": {
+        "start": 260,
+        "end": 275
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eclipse-uprotocol-spec-someip-06",
+      "sourceId": "eclipse-uprotocol-spec",
+      "sourceUrl": "https://github.com/eclipse-uprotocol/up-spec/blob/94b76ad3b808/up-l1/someip.adoc",
+      "commit": "94b76ad3b808",
+      "filePath": "up-l1/someip.adoc",
+      "lineRange": {
+        "start": 225,
+        "end": 237
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eventuate-tram-core-readme-01",
+      "sourceId": "eventuate-tram-core",
+      "sourceUrl": "https://github.com/eventuate-tram/eventuate-tram-core/blob/28a57e270f7a/README.adoc",
+      "commit": "28a57e270f7a",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 11,
+        "end": 16
+      },
+      "syntaxFeatures": [
+        "cols",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-eventuate-tram-core-readme-02",
+      "sourceId": "eventuate-tram-core",
+      "sourceUrl": "https://github.com/eventuate-tram/eventuate-tram-core/blob/28a57e270f7a/README.adoc",
+      "commit": "28a57e270f7a",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 223,
+        "end": 226
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-gbif-effective-nodes-guidance-300-en-04",
+      "sourceId": "gbif-effective-nodes-guidance",
+      "sourceUrl": "https://github.com/gbif/doc-effective-nodes-guidance/blob/a2d795566ce9/300.en.adoc",
+      "commit": "a2d795566ce9",
+      "filePath": "300.en.adoc",
+      "lineRange": {
+        "start": 24,
+        "end": 34
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-gbif-effective-nodes-guidance-300-en-05",
+      "sourceId": "gbif-effective-nodes-guidance",
+      "sourceUrl": "https://github.com/gbif/doc-effective-nodes-guidance/blob/a2d795566ce9/300.en.adoc",
+      "commit": "a2d795566ce9",
+      "filePath": "300.en.adoc",
+      "lineRange": {
+        "start": 61,
+        "end": 71
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-gbif-effective-nodes-guidance-500-en-03",
+      "sourceId": "gbif-effective-nodes-guidance",
+      "sourceUrl": "https://github.com/gbif/doc-effective-nodes-guidance/blob/a2d795566ce9/500.en.adoc",
+      "commit": "a2d795566ce9",
+      "filePath": "500.en.adoc",
+      "lineRange": {
+        "start": 48,
+        "end": 140
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-gbif-effective-nodes-guidance-505-box-en-01",
+      "sourceId": "gbif-effective-nodes-guidance",
+      "sourceUrl": "https://github.com/gbif/doc-effective-nodes-guidance/blob/a2d795566ce9/505-box.en.adoc",
+      "commit": "a2d795566ce9",
+      "filePath": "505-box.en.adoc",
+      "lineRange": {
+        "start": 5,
+        "end": 43
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-gbif-effective-nodes-guidance-605-box-en-02",
+      "sourceId": "gbif-effective-nodes-guidance",
+      "sourceUrl": "https://github.com/gbif/doc-effective-nodes-guidance/blob/a2d795566ce9/605-box.en.adoc",
+      "commit": "a2d795566ce9",
+      "filePath": "605-box.en.adoc",
+      "lineRange": {
+        "start": 5,
+        "end": 18
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "a-cell",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-jakartaee-specification-committee-names-01",
+      "sourceId": "jakartaee-specification-committee",
+      "sourceUrl": "https://github.com/jakartaee/specification-committee/blob/fa29968bbd3f/names.adoc",
+      "commit": "fa29968bbd3f",
+      "filePath": "names.adoc",
+      "lineRange": {
+        "start": 14,
+        "end": 235
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "rowspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-jakartaee-specification-committee-steps-javaee-to-jakartaee-02",
+      "sourceId": "jakartaee-specification-committee",
+      "sourceUrl": "https://github.com/jakartaee/specification-committee/blob/fa29968bbd3f/steps_javaee_to_jakartaee.adoc",
+      "commit": "fa29968bbd3f",
+      "filePath": "steps_javaee_to_jakartaee.adoc",
+      "lineRange": {
+        "start": 90,
+        "end": 98
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-documentation-bots-01",
+      "sourceId": "jenkins-documentation",
+      "sourceUrl": "https://github.com/jenkins-infra/documentation/blob/ff06a732fc13/bots.adoc",
+      "commit": "ff06a732fc13",
+      "filePath": "bots.adoc",
+      "lineRange": {
+        "start": 11,
+        "end": 17
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-documentation-bots-02",
+      "sourceId": "jenkins-documentation",
+      "sourceUrl": "https://github.com/jenkins-infra/documentation/blob/ff06a732fc13/bots.adoc",
+      "commit": "ff06a732fc13",
+      "filePath": "bots.adoc",
+      "lineRange": {
+        "start": 31,
+        "end": 37
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-documentation-bots-03",
+      "sourceId": "jenkins-documentation",
+      "sourceUrl": "https://github.com/jenkins-infra/documentation/blob/ff06a732fc13/bots.adoc",
+      "commit": "ff06a732fc13",
+      "filePath": "bots.adoc",
+      "lineRange": {
+        "start": 51,
+        "end": 57
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-documentation-github-apps-04",
+      "sourceId": "jenkins-documentation",
+      "sourceUrl": "https://github.com/jenkins-infra/documentation/blob/ff06a732fc13/github-apps.adoc",
+      "commit": "ff06a732fc13",
+      "filePath": "github-apps.adoc",
+      "lineRange": {
+        "start": 10,
+        "end": 16
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-documentation-github-apps-05",
+      "sourceId": "jenkins-documentation",
+      "sourceUrl": "https://github.com/jenkins-infra/documentation/blob/ff06a732fc13/github-apps.adoc",
+      "commit": "ff06a732fc13",
+      "filePath": "github-apps.adoc",
+      "lineRange": {
+        "start": 40,
+        "end": 46
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-ssh-steps-plugin-readme-01",
+      "sourceId": "jenkins-ssh-steps-plugin",
+      "sourceUrl": "https://github.com/jenkinsci/ssh-steps-plugin/blob/498243a110e2/README.adoc",
+      "commit": "498243a110e2",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 23,
+        "end": 147
+      },
+      "syntaxFeatures": [
+        "a-cell",
+        "block-content",
+        "escaped-pipe",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-jenkins-ssh-steps-plugin-readme-02",
+      "sourceId": "jenkins-ssh-steps-plugin",
+      "sourceUrl": "https://github.com/jenkinsci/ssh-steps-plugin/blob/498243a110e2/README.adoc",
+      "commit": "498243a110e2",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 152,
+        "end": 184
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-ssh-steps-plugin-readme-03",
+      "sourceId": "jenkins-ssh-steps-plugin",
+      "sourceUrl": "https://github.com/jenkinsci/ssh-steps-plugin/blob/498243a110e2/README.adoc",
+      "commit": "498243a110e2",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 197,
+        "end": 223
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-jenkins-ssh-steps-plugin-readme-04",
+      "sourceId": "jenkins-ssh-steps-plugin",
+      "sourceUrl": "https://github.com/jenkinsci/ssh-steps-plugin/blob/498243a110e2/README.adoc",
+      "commit": "498243a110e2",
+      "filePath": "README.adoc",
+      "lineRange": {
+        "start": 281,
+        "end": 301
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-laelf-03",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/laelf.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "laelf.adoc",
+      "lineRange": {
+        "start": 192,
+        "end": 905
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-laelf-04",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/laelf.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "laelf.adoc",
+      "lineRange": {
+        "start": 17,
+        "end": 39
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-laelf-05",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/laelf.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "laelf.adoc",
+      "lineRange": {
+        "start": 97,
+        "end": 125
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-laelf-06",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/laelf.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "laelf.adoc",
+      "lineRange": {
+        "start": 918,
+        "end": 957
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-lapcs-01",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/lapcs.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "lapcs.adoc",
+      "lineRange": {
+        "start": 261,
+        "end": 284
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "rowspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-lapcs-02",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/lapcs.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "lapcs.adoc",
+      "lineRange": {
+        "start": 416,
+        "end": 436
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "rowspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-loongson-la-abi-specs-lapcs-07",
+      "sourceId": "loongson-la-abi-specs",
+      "sourceUrl": "https://github.com/loongson/la-abi-specs/blob/44ef5f63e175/lapcs.adoc",
+      "commit": "44ef5f63e175",
+      "filePath": "lapcs.adoc",
+      "lineRange": {
+        "start": 17,
+        "end": 39
+      },
+      "syntaxFeatures": [
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-neo4j-apoc-collection-list-functions-06",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/modules/ROOT/pages/data-structures/collection-list-functions.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/modules/ROOT/pages/data-structures/collection-list-functions.adoc",
+      "lineRange": {
+        "start": 16,
+        "end": 66
+      },
+      "syntaxFeatures": [
+        "data-format",
+        "custom-separator"
+      ],
+      "supportClassification": "non-goal",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Record as non-goal evidence and create a synthetic diagnostic fixture without copying source text.",
+      "expectedBehavior": "Editor should preserve source and avoid structured edit, with diagnostics or fallback guidance."
+    },
+    {
+      "id": "rw-neo4j-apoc-functions-05",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/functions.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/functions.adoc",
+      "lineRange": {
+        "start": 65,
+        "end": 104
+      },
+      "syntaxFeatures": [
+        "header",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-neo4j-apoc-index-01",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/modules/ROOT/pages/deprecations-and-additions/index.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/modules/ROOT/pages/deprecations-and-additions/index.adoc",
+      "lineRange": {
+        "start": 14,
+        "end": 98
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-neo4j-apoc-index-02",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/modules/ROOT/pages/deprecations-and-additions/index.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/modules/ROOT/pages/deprecations-and-additions/index.adoc",
+      "lineRange": {
+        "start": 103,
+        "end": 605
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose. Connected via neutral synthetic fixture; external source text is not vendored.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-neo4j-apoc-meta-04",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/modules/ROOT/pages/database-introspection/meta.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/modules/ROOT/pages/database-introspection/meta.adoc",
+      "lineRange": {
+        "start": 16,
+        "end": 27
+      },
+      "syntaxFeatures": [
+        "data-format",
+        "custom-separator",
+        "table-attributes"
+      ],
+      "supportClassification": "non-goal",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Record as non-goal evidence and create a synthetic diagnostic fixture without copying source text.",
+      "expectedBehavior": "Editor should preserve source and avoid structured edit, with diagnostics or fallback guidance."
+    },
+    {
+      "id": "rw-neo4j-apoc-mixedbread-03",
+      "sourceId": "neo4j-apoc",
+      "sourceUrl": "https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/940033f21e82/docs/asciidoc/modules/ROOT/pages/ml/mixedbread.adoc",
+      "commit": "940033f21e82",
+      "filePath": "docs/asciidoc/modules/ROOT/pages/ml/mixedbread.adoc",
+      "lineRange": {
+        "start": 150,
+        "end": 183
+      },
+      "syntaxFeatures": [
+        "a-cell",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-openapi-processor-parser-dev-01",
+      "sourceId": "openapi-processor-parser",
+      "sourceUrl": "https://github.com/openapi-processor/openapi-parser/blob/f17da29e9b88/DEV.adoc",
+      "commit": "f17da29e9b88",
+      "filePath": "DEV.adoc",
+      "lineRange": {
+        "start": 9,
+        "end": 21
+      },
+      "syntaxFeatures": [
+        "basic-psv"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-clause-02-conformance-02",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/clause_02_conformance.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "clause_02_conformance.adoc",
+      "lineRange": {
+        "start": 10,
+        "end": 21
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "rowspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-clause-07-abstract-03",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/clause_07_abstract.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "clause_07_abstract.adoc",
+      "lineRange": {
+        "start": 41,
+        "end": 52
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-clause-07-abstract-05",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/clause_07_abstract.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "clause_07_abstract.adoc",
+      "lineRange": {
+        "start": 349,
+        "end": 358
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-clause-07-abstract-06",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/clause_07_abstract.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "clause_07_abstract.adoc",
+      "lineRange": {
+        "start": 91,
+        "end": 97
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-clause-13-query-04",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/clause_13_query.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "clause_13_query.adoc",
+      "lineRange": {
+        "start": 118,
+        "end": 140
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-opengeospatial-gss-swg-requirements-class-01",
+      "sourceId": "opengeospatial-gss-swg",
+      "sourceUrl": "https://github.com/opengeospatial/gss-swg/blob/2ee15a34d3ee/requirements/requirements_class.adoc",
+      "commit": "2ee15a34d3ee",
+      "filePath": "requirements/requirements_class.adoc",
+      "lineRange": {
+        "start": 2,
+        "end": 16
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan",
+        "cell-attribute-continuation",
+        "hardbreak-continuation",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic fixture for cell-scoped attribute entries and continuation lines.",
+      "expectedBehavior": "Parser should keep cell-scoped attribute entries and continuation lines in the same cell without exposing duplicate-cell false positives."
+    },
+    {
+      "id": "rw-react-awesome-query-builder-config-01",
+      "sourceId": "react-awesome-query-builder",
+      "sourceUrl": "https://github.com/ukrbublik/react-awesome-query-builder/blob/446689d523d6/CONFIG.adoc",
+      "commit": "446689d523d6",
+      "filePath": "CONFIG.adoc",
+      "lineRange": {
+        "start": 244,
+        "end": 289
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-react-awesome-query-builder-config-02",
+      "sourceId": "react-awesome-query-builder",
+      "sourceUrl": "https://github.com/ukrbublik/react-awesome-query-builder/blob/446689d523d6/CONFIG.adoc",
+      "commit": "446689d523d6",
+      "filePath": "CONFIG.adoc",
+      "lineRange": {
+        "start": 199,
+        "end": 236
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-react-awesome-query-builder-config-03",
+      "sourceId": "react-awesome-query-builder",
+      "sourceUrl": "https://github.com/ukrbublik/react-awesome-query-builder/blob/446689d523d6/CONFIG.adoc",
+      "commit": "446689d523d6",
+      "filePath": "CONFIG.adoc",
+      "lineRange": {
+        "start": 348,
+        "end": 400
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-react-awesome-query-builder-config-04",
+      "sourceId": "react-awesome-query-builder",
+      "sourceUrl": "https://github.com/ukrbublik/react-awesome-query-builder/blob/446689d523d6/CONFIG.adoc",
+      "commit": "446689d523d6",
+      "filePath": "CONFIG.adoc",
+      "lineRange": {
+        "start": 417,
+        "end": 449
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-redhat-lab-docker-eap-lab-01",
+      "sourceId": "redhat-lab-docker-eap",
+      "sourceUrl": "https://github.com/redhat-developer/lab-docker-jboss-eap/blob/e64bbc28cf61/lab.adoc",
+      "commit": "e64bbc28cf61",
+      "filePath": "lab.adoc",
+      "lineRange": {
+        "start": 5,
+        "end": 11
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-redhat-ocp4-vsphere-workshop-deploy-01",
+      "sourceId": "redhat-ocp4-vsphere-workshop",
+      "sourceUrl": "https://github.com/redhat-cop/ocp4-vsphere-workshop/blob/c5ac4d39f82e/deploy.adoc",
+      "commit": "c5ac4d39f82e",
+      "filePath": "deploy.adoc",
+      "lineRange": {
+        "start": 75,
+        "end": 100
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-brs-acpi-01",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/acpi.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "acpi.adoc",
+      "lineRange": {
+        "start": 16,
+        "end": 38
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-riscv-brs-acpi-04",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/non-normative/acpi.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "non-normative/acpi.adoc",
+      "lineRange": {
+        "start": 56,
+        "end": 69
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-brs-acpi-06",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/acpi.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "acpi.adoc",
+      "lineRange": {
+        "start": 50,
+        "end": 75
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-brs-brs-tests-07",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/brs_tests.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "brs_tests.adoc",
+      "lineRange": {
+        "start": 26,
+        "end": 61
+      },
+      "syntaxFeatures": [
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-riscv-brs-smbios-05",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/smbios.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "smbios.adoc",
+      "lineRange": {
+        "start": 59,
+        "end": 71
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-brs-uefi-02",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/uefi.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "uefi.adoc",
+      "lineRange": {
+        "start": 15,
+        "end": 36
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-riscv-brs-uefi-03",
+      "sourceId": "riscv-brs",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-brs/blob/0f2ab2ed9d33/uefi.adoc",
+      "commit": "0f2ab2ed9d33",
+      "filePath": "uefi.adoc",
+      "lineRange": {
+        "start": 55,
+        "end": 73
+      },
+      "syntaxFeatures": [
+        "colspan",
+        "block-content",
+        "table-attributes"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-appendix-01",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/appendix.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "appendix.adoc",
+      "lineRange": {
+        "start": 28,
+        "end": 40
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-appendix-02",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/appendix.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "appendix.adoc",
+      "lineRange": {
+        "start": 70,
+        "end": 82
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-dmextsec-03",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/dmextsec.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "dmextsec.adoc",
+      "lineRange": {
+        "start": 126,
+        "end": 134
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-dmextsec-06",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/dmextsec.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "dmextsec.adoc",
+      "lineRange": {
+        "start": 101,
+        "end": 107
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-sdsec-04",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/sdsec.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "sdsec.adoc",
+      "lineRange": {
+        "start": 101,
+        "end": 108
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-external-debug-security-sdsec-05",
+      "sourceId": "riscv-external-debug-security",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-external-debug-security/blob/53ab0df9f002/sdsec.adoc",
+      "commit": "53ab0df9f002",
+      "filePath": "sdsec.adoc",
+      "lineRange": {
+        "start": 118,
+        "end": 125
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-matrix-spec-inst-list-01",
+      "sourceId": "riscv-matrix-spec",
+      "sourceUrl": "https://github.com/riscv-stc/riscv-matrix-spec/blob/b781b463674d/inst-list.adoc",
+      "commit": "b781b463674d",
+      "filePath": "inst-list.adoc",
+      "lineRange": {
+        "start": 5,
+        "end": 33
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-matrix-spec-inst-list-02",
+      "sourceId": "riscv-matrix-spec",
+      "sourceUrl": "https://github.com/riscv-stc/riscv-matrix-spec/blob/b781b463674d/inst-list.adoc",
+      "commit": "b781b463674d",
+      "filePath": "inst-list.adoc",
+      "lineRange": {
+        "start": 37,
+        "end": 159
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-matrix-spec-inst-list-03",
+      "sourceId": "riscv-matrix-spec",
+      "sourceUrl": "https://github.com/riscv-stc/riscv-matrix-spec/blob/b781b463674d/inst-list.adoc",
+      "commit": "b781b463674d",
+      "filePath": "inst-list.adoc",
+      "lineRange": {
+        "start": 275,
+        "end": 329
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-matrix-spec-inst32-list-04",
+      "sourceId": "riscv-matrix-spec",
+      "sourceUrl": "https://github.com/riscv-stc/riscv-matrix-spec/blob/b781b463674d/inst32-list.adoc",
+      "commit": "b781b463674d",
+      "filePath": "inst32-list.adoc",
+      "lineRange": {
+        "start": 3,
+        "end": 29
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-matrix-spec-inst32-list-05",
+      "sourceId": "riscv-matrix-spec",
+      "sourceUrl": "https://github.com/riscv-stc/riscv-matrix-spec/blob/b781b463674d/inst32-list.adoc",
+      "commit": "b781b463674d",
+      "filePath": "inst32-list.adoc",
+      "lineRange": {
+        "start": 242,
+        "end": 296
+      },
+      "syntaxFeatures": [
+        "cols",
+        "colspan"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-01",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 63,
+        "end": 87
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "colspan",
+        "rowspan",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic span fixture that preserves the same span shape.",
+      "expectedBehavior": "Grid projection should preserve spans and write-back should avoid normalizing unrelated source."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-02",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 439,
+        "end": 473
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-03",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 41,
+        "end": 56
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-04",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 498,
+        "end": 512
+      },
+      "syntaxFeatures": [
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-05",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 22,
+        "end": 33
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-06",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 223,
+        "end": 234
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-performance-events-body-07",
+      "sourceId": "riscv-performance-events",
+      "sourceUrl": "https://github.com/riscv/riscv-performance-events/blob/a80a12386966/body.adoc",
+      "commit": "a80a12386966",
+      "filePath": "body.adoc",
+      "lineRange": {
+        "start": 121,
+        "end": 130
+      },
+      "syntaxFeatures": [
+        "cols",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-uefi-boot-protocol-02",
+      "sourceId": "riscv-uefi",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-uefi/blob/d2b8a4ca190e/boot_protocol.adoc",
+      "commit": "d2b8a4ca190e",
+      "filePath": "boot_protocol.adoc",
+      "lineRange": {
+        "start": 78,
+        "end": 83
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-uefi-boot-protocol-03",
+      "sourceId": "riscv-uefi",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-uefi/blob/d2b8a4ca190e/boot_protocol.adoc",
+      "commit": "d2b8a4ca190e",
+      "filePath": "boot_protocol.adoc",
+      "lineRange": {
+        "start": 69,
+        "end": 73
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-riscv-uefi-intro-01",
+      "sourceId": "riscv-uefi",
+      "sourceUrl": "https://github.com/riscv-non-isa/riscv-uefi/blob/d2b8a4ca190e/intro.adoc",
+      "commit": "d2b8a4ca190e",
+      "filePath": "intro.adoc",
+      "lineRange": {
+        "start": 8,
+        "end": 22
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part1-02",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part1.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part1.adoc",
+      "lineRange": {
+        "start": 39,
+        "end": 52
+      },
+      "syntaxFeatures": [
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part1-07",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part1.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part1.adoc",
+      "lineRange": {
+        "start": 21,
+        "end": 28
+      },
+      "syntaxFeatures": [
+        "header"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part3-01",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part3.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part3.adoc",
+      "lineRange": {
+        "start": 36,
+        "end": 56
+      },
+      "syntaxFeatures": [
+        "header",
+        "table-attributes"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part3-03",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part3.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part3.adoc",
+      "lineRange": {
+        "start": 214,
+        "end": 267
+      },
+      "syntaxFeatures": [
+        "cols"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part3-04",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part3.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part3.adoc",
+      "lineRange": {
+        "start": 302,
+        "end": 354
+      },
+      "syntaxFeatures": [
+        "cols"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part3-05",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part3.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part3.adoc",
+      "lineRange": {
+        "start": 707,
+        "end": 728
+      },
+      "syntaxFeatures": [
+        "cols"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-tmforum-api-guide-part3-06",
+      "sourceId": "tmforum-api-guide",
+      "sourceUrl": "https://github.com/tmforum-rand/ig1353-api-developers-guide/blob/856d8ff8a54e/part3.adoc",
+      "commit": "856d8ff8a54e",
+      "filePath": "part3.adoc",
+      "lineRange": {
+        "start": 784,
+        "end": 797
+      },
+      "syntaxFeatures": [
+        "cols"
+      ],
+      "supportClassification": "structured-supported",
+      "candidateStatus": "candidate-only",
+      "fixtureStrategy": "Create a neutral synthetic PSV fixture with generic headers and values.",
+      "expectedBehavior": "Parser, Grid, and write-back should preserve the structured PSV table without source normalization."
+    },
+    {
+      "id": "rw-zimbra-adminguide-adminconsole-01",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/adminconsole.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "adminconsole.adoc",
+      "lineRange": {
+        "start": 949,
+        "end": 1019
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "colspan",
+        "rowspan",
+        "a-cell"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-02",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 502,
+        "end": 644
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-03",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 702,
+        "end": 755
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-04",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 762,
+        "end": 809
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-05",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 817,
+        "end": 858
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-06",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 898,
+        "end": 957
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "a-cell",
+        "block-content",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    },
+    {
+      "id": "rw-zimbra-adminguide-cmdlineutils-07",
+      "sourceId": "zimbra-adminguide",
+      "sourceUrl": "https://github.com/Zimbra/adminguide/blob/16565e53c73f/cmdlineutils.adoc",
+      "commit": "16565e53c73f",
+      "filePath": "cmdlineutils.adoc",
+      "lineRange": {
+        "start": 1896,
+        "end": 1990
+      },
+      "syntaxFeatures": [
+        "cols",
+        "header",
+        "colspan",
+        "a-cell",
+        "escaped-pipe"
+      ],
+      "supportClassification": "preview-raw-supported",
+      "candidateStatus": "ready-for-synthetic-reproduction",
+      "fixtureStrategy": "Create a neutral synthetic block-cell fixture with equivalent structure and generic prose.",
+      "expectedBehavior": "Parser should keep the block content as one cell and expose raw editing plus preview without flattening."
+    }
+  ],
+  "nextSteps": [
+    "Use representativeSelection to decide which neutral synthetic fixtures cover real-world syntax shapes.",
+    "When adding new real-world-derived fixture coverage, update this manifest, the compat manifest, and the support matrix together.",
+    "Keep unknown-license sources candidate-only until license and attribution are resolved."
+  ],
+  "coverageSummary": {
+    "sourceCount": 29,
+    "candidateCount": 130,
+    "bySupportClassification": {
+      "preview-raw-supported": 42,
+      "structured-supported": 85,
+      "non-goal": 3
+    },
+    "byCandidateStatus": {
+      "ready-for-synthetic-reproduction": 108,
+      "candidate-only": 22
+    },
+    "topSyntaxFeatures": {
+      "cols": 90,
+      "table-attributes": 63,
+      "header": 59,
+      "a-cell": 33,
+      "block-content": 30,
+      "colspan": 27,
+      "escaped-pipe": 13,
+      "rowspan": 10,
+      "data-format": 2,
+      "custom-separator": 2,
+      "configuration-reference": 1,
+      "column-alignment": 1,
+      "format-csv": 1,
+      "format-tsv": 1,
+      "format-dsv": 1,
+      "plain-continuation": 1,
+      "duplicate-cells": 1,
+      "long-reference-table": 1,
+      "migration-reference": 1,
+      "large-reference-table": 1,
+      "basic-psv": 1,
+      "cell-attribute-continuation": 1,
+      "hardbreak-continuation": 1
+    },
+    "scopeNote": "Broad scan covers official Asciidoctor/Antora projects plus public technical specification and documentation repositories found via GitHub code search. Candidate entries record metadata only."
+  },
+  "representativeSelection": {
+    "status": "ready-candidates-connected-to-compat-gate",
+    "policy": "External source text is not copied. Selected real-world candidates are represented by neutral synthetic fixtures in the Asciidoctor compatibility corpus.",
+    "targetCount": 111,
+    "selection": [
+      {
+        "candidateId": "rw-openapi-processor-parser-dev-01",
+        "fixtureId": "basic-psv",
+        "reason": "basic PSV table from public documentation"
+      },
+      {
+        "candidateId": "rw-antora-version-facets",
+        "fixtureId": "header-option",
+        "reason": "header option and column layout"
+      },
+      {
+        "candidateId": "rw-asciidoctor-js-customization-overview",
+        "fixtureId": "header-option",
+        "reason": "header-oriented reference table"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-align-column",
+        "fixtureId": "cols-mixed",
+        "reason": "column alignment and cols metadata"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch09-01",
+        "fixtureId": "cols-mixed",
+        "reason": "mixed cols and header table"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-align-column",
+        "fixtureId": "column-style-inheritance",
+        "reason": "column alignment inheritance"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-character-replacement",
+        "fixtureId": "column-style-inheritance",
+        "reason": "column metadata with escaped content"
+      },
+      {
+        "candidateId": "rw-asciidoctor-kroki-configuration",
+        "fixtureId": "column-asciidoc-style",
+        "reason": "column a-style block behavior"
+      },
+      {
+        "candidateId": "rw-asciidoc-book-template-book-01",
+        "fixtureId": "column-asciidoc-style",
+        "reason": "block column source pattern"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-table-ref",
+        "fixtureId": "span-style-alignment",
+        "reason": "span and duplicate syntax reference"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch04-02",
+        "fixtureId": "span-style-alignment",
+        "reason": "colspan and rowspan in public reference table"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-01",
+        "fixtureId": "span-style-alignment",
+        "reason": "large span-heavy technical table"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-table-ref",
+        "fixtureId": "duplicate-style",
+        "reason": "duplicate shorthand reference"
+      },
+      {
+        "candidateId": "rw-riscv-matrix-spec-inst-list-01",
+        "fixtureId": "duplicate-style",
+        "reason": "duplicate shorthand in technical specification table"
+      },
+      {
+        "candidateId": "rw-asciidoctor-convert-templates",
+        "fixtureId": "escaped-separator",
+        "reason": "escaped pipe in table content"
+      },
+      {
+        "candidateId": "rw-react-awesome-query-builder-config-01",
+        "fixtureId": "escaped-separator",
+        "reason": "escaped pipe with HTML-like source patterns"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-cell-examples",
+        "fixtureId": "block-cell-rich",
+        "reason": "AsciiDoc block cell examples"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-verbatim-highlight-lines",
+        "fixtureId": "block-cell-rich",
+        "reason": "block cell with rich content boundary"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-cloudevents-04",
+        "fixtureId": "block-cell-rich",
+        "reason": "block content plus table attributes"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch09-08",
+        "fixtureId": "table-attributes-preview",
+        "reason": "table attributes retained for preview"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-adminconsole-01",
+        "fixtureId": "real-world-wide-block-column",
+        "reason": "wide table with span and block-style column shape"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-07",
+        "fixtureId": "real-world-wide-block-column",
+        "reason": "wide table with escaped separator and block-style cells"
+      },
+      {
+        "candidateId": "rw-gbif-effective-nodes-guidance-505-box-en-01",
+        "fixtureId": "real-world-wide-block-column",
+        "reason": "block cell and colspan shape from documentation"
+      },
+      {
+        "candidateId": "rw-riscv-matrix-spec-inst-list-02",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "duplicate shorthand in instruction-style table"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-data-format",
+        "fixtureId": "csv-data-table",
+        "reason": "data table non-goal reference"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-collection-list-functions-06",
+        "fixtureId": "tsv-data-table",
+        "reason": "custom/data format non-goal reference"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-meta-04",
+        "fixtureId": "dsv-data-table",
+        "reason": "data format with attributes non-goal reference"
+      },
+      {
+        "candidateId": "rw-asciidoctor-errors-warnings",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "long documentation reference table with plain cells"
+      },
+      {
+        "candidateId": "rw-antora-environment-variables",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "large plain reference table with long values"
+      },
+      {
+        "candidateId": "rw-riscv-brs-acpi-04",
+        "fixtureId": "real-world-stacked-attributes",
+        "reason": "stacked cols / header / display attributes in technical table"
+      },
+      {
+        "candidateId": "rw-riscv-brs-smbios-05",
+        "fixtureId": "real-world-stacked-attributes",
+        "reason": "stacked table attributes with header in reference table"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-appendix-01",
+        "fixtureId": "real-world-stacked-attributes",
+        "reason": "attribute-heavy technical specification table"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-someip-01",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-02",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-03",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-04",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-05",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-zimbra-adminguide-cmdlineutils-06",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block cell with escaped pipe and cell-looking source text"
+      },
+      {
+        "candidateId": "rw-riscv-brs-acpi-01",
+        "fixtureId": "real-world-block-colspan-attributes",
+        "reason": "block content with colspan and table attributes"
+      },
+      {
+        "candidateId": "rw-riscv-brs-uefi-02",
+        "fixtureId": "real-world-block-colspan-attributes",
+        "reason": "block content with colspan and table attributes"
+      },
+      {
+        "candidateId": "rw-riscv-brs-uefi-03",
+        "fixtureId": "real-world-block-colspan-attributes",
+        "reason": "block content with colspan and table attributes"
+      },
+      {
+        "candidateId": "rw-antora-cli-options",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch02-05",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-eventuate-tram-core-readme-01",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-react-awesome-query-builder-config-02",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-react-awesome-query-builder-config-03",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-react-awesome-query-builder-config-04",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "explicit short a-cell with inline content"
+      },
+      {
+        "candidateId": "rw-antora-supported-components",
+        "fixtureId": "real-world-plain-continuation-cell",
+        "reason": "plain multiline cell continuation without explicit a-cell"
+      },
+      {
+        "candidateId": "rw-asciidoctor-pdf-list-theme",
+        "fixtureId": "real-world-plain-continuation-cell",
+        "reason": "plain multiline cell continuation without explicit a-cell"
+      },
+      {
+        "candidateId": "rw-asciidoctor-pdf-theme-table",
+        "fixtureId": "real-world-plain-continuation-cell",
+        "reason": "plain multiline cell continuation without explicit a-cell"
+      },
+      {
+        "candidateId": "rw-opengeospatial-gss-swg-requirements-class-01",
+        "fixtureId": "real-world-cell-attribute-continuation",
+        "reason": "cell-scoped attribute entries and hardbreak continuation without duplicate shorthand"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-someip-02",
+        "fixtureId": "real-world-plain-list-continuation",
+        "reason": "plain cell list and note continuation in table with header metadata"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-someip-03",
+        "fixtureId": "real-world-plain-list-continuation",
+        "reason": "plain cell list and note continuation in table with header metadata"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-someip-05",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "short explicit a-cell with table attributes"
+      },
+      {
+        "candidateId": "rw-eclipse-uprotocol-spec-someip-06",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "short explicit a-cell with table attributes"
+      },
+      {
+        "candidateId": "rw-asciidoctor-kroki-syntax",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-cf-conventions-appj-04",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch09-07",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-gbif-effective-nodes-guidance-300-en-04",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-gbif-effective-nodes-guidance-300-en-05",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-gbif-effective-nodes-guidance-500-en-03",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-jakartaee-specification-committee-steps-javaee-to-jakartaee-02",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-riscv-uefi-boot-protocol-02",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-riscv-uefi-boot-protocol-03",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-riscv-uefi-intro-01",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "plain reference table with implicit header, links, inline markup, and compact rows"
+      },
+      {
+        "candidateId": "rw-jenkins-documentation-bots-01",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-documentation-bots-02",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-documentation-bots-03",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-documentation-github-apps-04",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-documentation-github-apps-05",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-ssh-steps-plugin-readme-02",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-ssh-steps-plugin-readme-03",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-jenkins-ssh-steps-plugin-readme-04",
+        "fixtureId": "real-world-vertical-plain-table",
+        "reason": "vertical one-cell-per-line table with compact plain rows"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-appendix-02",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-dmextsec-03",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-dmextsec-06",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-sdsec-04",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-external-debug-security-sdsec-05",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-02",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long table delimiter and hardbreak continuation rows"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-03",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "compact technical reference table with plain cells"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-05",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "compact technical reference table with plain cells"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-06",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "compact technical reference table with plain cells"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-07",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "compact technical reference table with plain cells"
+      },
+      {
+        "candidateId": "rw-eventuate-tram-core-readme-02",
+        "fixtureId": "real-world-image-macro-table",
+        "reason": "image macro values inside plain PSV cells"
+      },
+      {
+        "candidateId": "rw-antora-resource-id-coordinates",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "rowspan and colspan in reference table with xref-like content"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-block-name-table",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "block-like table content with escaped separator and source-looking text"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-document-attributes-duplicate",
+        "fixtureId": "real-world-plain-continuation-cell",
+        "reason": "plain multiline continuation in reference table"
+      },
+      {
+        "candidateId": "rw-asciidoc-lang-toc-ref",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "rowspan and colspan in table-attribute reference"
+      },
+      {
+        "candidateId": "rw-asciidoctor-api-options",
+        "fixtureId": "real-world-explicit-a-cell-option-table",
+        "reason": "explicit a-cell option table with multiline list content"
+      },
+      {
+        "candidateId": "rw-asciidoctor-syntax-reference",
+        "fixtureId": "real-world-escaped-pipe-reference",
+        "reason": "escaped pipe with table attributes"
+      },
+      {
+        "candidateId": "rw-cf-conventions-ch09-06",
+        "fixtureId": "real-world-header-colspan",
+        "reason": "header row with colspan cells"
+      },
+      {
+        "candidateId": "rw-gbif-effective-nodes-guidance-605-box-en-02",
+        "fixtureId": "real-world-block-colspan-attributes",
+        "reason": "explicit a-cell with colspan and table attributes"
+      },
+      {
+        "candidateId": "rw-jenkins-ssh-steps-plugin-readme-01",
+        "fixtureId": "real-world-block-escaped-pipe",
+        "reason": "a-cell block content with escaped pipe and table attributes"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-functions-05",
+        "fixtureId": "real-world-explicit-a-cell-short",
+        "reason": "header table with explicit a-cell content"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-index-01",
+        "fixtureId": "real-world-explicit-a-cell-option-table",
+        "reason": "explicit a-cell with multiline content in header table"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-mixedbread-03",
+        "fixtureId": "real-world-explicit-a-cell-option-table",
+        "reason": "explicit a-cell block content with table attributes"
+      },
+      {
+        "candidateId": "rw-riscv-brs-acpi-06",
+        "fixtureId": "real-world-header-colspan",
+        "reason": "colspan with table attributes"
+      },
+      {
+        "candidateId": "rw-riscv-brs-brs-tests-07",
+        "fixtureId": "real-world-plain-list-continuation",
+        "reason": "block-like plain continuation with table attributes"
+      },
+      {
+        "candidateId": "rw-riscv-matrix-spec-inst-list-03",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "colspan-heavy technical table rows"
+      },
+      {
+        "candidateId": "rw-riscv-matrix-spec-inst32-list-04",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "colspan-heavy technical table rows"
+      },
+      {
+        "candidateId": "rw-riscv-matrix-spec-inst32-list-05",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "colspan-heavy technical table rows"
+      },
+      {
+        "candidateId": "rw-riscv-performance-events-body-04",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "header table with table attributes"
+      },
+      {
+        "candidateId": "rw-antora-configure-content-sources",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "configuration reference table with plain link cells"
+      },
+      {
+        "candidateId": "rw-asciidoctor-diagram-vega",
+        "fixtureId": "real-world-link-reference-table",
+        "reason": "diagram support matrix with cols and header"
+      },
+      {
+        "candidateId": "rw-asciidoctor-js-migration-guide",
+        "fixtureId": "real-world-long-reference-table",
+        "reason": "migration reference table with inline code"
+      },
+      {
+        "candidateId": "rw-asciidoctor-pdf-arrange-block",
+        "fixtureId": "real-world-explicit-a-cell-option-table",
+        "reason": "large a-cell block content with spans and rich blocks"
+      },
+      {
+        "candidateId": "rw-asciidoctor-pdf-running-content",
+        "fixtureId": "real-world-plain-list-continuation",
+        "reason": "large reference table with source-like continuation values"
+      },
+      {
+        "candidateId": "rw-asciidoctor-pdf-theme-table-later",
+        "fixtureId": "real-world-plain-list-continuation",
+        "reason": "theme table with source-like continuation values"
+      },
+      {
+        "candidateId": "rw-cf-conventions-appf-03",
+        "fixtureId": "real-world-long-delimiter-continuation",
+        "reason": "long-delimiter attribute table with continued descriptions"
+      },
+      {
+        "candidateId": "rw-jakartaee-specification-committee-names-01",
+        "fixtureId": "real-world-span-duplicate-mix",
+        "reason": "large reference table with rowspan and links"
+      },
+      {
+        "candidateId": "rw-neo4j-apoc-index-02",
+        "fixtureId": "real-world-explicit-a-cell-option-table",
+        "reason": "large a-cell table with source blocks"
+      }
+    ]
+  }
+}

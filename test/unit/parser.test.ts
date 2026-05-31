@@ -62,6 +62,29 @@ describe("parseAsciiDocTable", () => {
     expect(grid.diagnostics).toEqual([]);
   });
 
+  it("keeps non-marker lines after a completed row as trailing cell continuation", () => {
+    const source =
+      "|===\n" +
+      "2+|Section note {set:cellbgcolor:#dddddd}\n" +
+      "|Label |Value\n" +
+      "|Item 1 |https://example.invalid/item-1 +\n" +
+      "continued note\n" +
+      "{set:cellbgcolor:#ffffff}\n" +
+      "|Item 2 |Done\n" +
+      "|===\n";
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(parsed.rows).toHaveLength(4);
+    expect(parsed.rows[2].cells[1].contentRaw).toBe("https://example.invalid/item-1 +\ncontinued note\n{set:cellbgcolor:#ffffff}");
+    expect(grid.cells[2][1]).toMatchObject({
+      kind: "origin",
+      contentRaw: "https://example.invalid/item-1 +\ncontinued note\n{set:cellbgcolor:#ffffff}"
+    });
+    expect(grid.diagnostics).toEqual([]);
+  });
+
   it("keeps seven-column hard line break continuation cells without ragged diagnostics", () => {
     const source = fixtureCompat("hardbreak-continuation.adoc");
     const parsed = parseAsciiDocTable(source);
@@ -104,10 +127,36 @@ describe("parseAsciiDocTable", () => {
     const grid = projectGridModel(parsed);
 
     expect(parsed.rows).toHaveLength(2);
+    expect(parsed.rows[0].cells.map((cell) => cell.contentRaw)).toEqual([" hello", " world"]);
     expect(parsed.rows[1].cells.map((cell) => cell.contentRaw)).toEqual([" Plain", " Cell"]);
     expect(grid.cells[1][0]).toMatchObject({ kind: "origin", sourceCellId: "cell:1:0" });
     expect(grid.cells[1][1]).toMatchObject({ kind: "origin", sourceCellId: "cell:1:1" });
     expect(grid.diagnostics.map((diagnostic) => diagnostic.code)).not.toContain("grid.ragged-row");
+  });
+
+  it("keeps list and note continuations in a completed plain cell", () => {
+    const source =
+      "[cols=\"1,2\",options=\"header\"]\n" +
+      "|===\n" +
+      "|Name |Description\n" +
+      "|Item A |Summary line.\n" +
+      "\n" +
+      "* First point\n" +
+      "* Second point\n" +
+      "\n" +
+      "NOTE: Additional note. +\n" +
+      "More note text.\n" +
+      "|Item B |Done\n" +
+      "|===\n";
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(parsed.rows).toHaveLength(3);
+    expect(parsed.rows[1].cells[1].contentRaw).toBe(
+      "Summary line.\n\n* First point\n* Second point\n\nNOTE: Additional note. +\nMore note text."
+    );
+    expect(grid.diagnostics).toEqual([]);
   });
 
   it("keeps row-span occupancy while grouping multiline logical rows", () => {
@@ -181,7 +230,8 @@ describe("parseAsciiDocTable", () => {
     expect(emitNoopTable(parsed)).toBe(source);
     expect(parsed.rows).toHaveLength(1);
     expect(parsed.rows[0].cells[2]).toMatchObject({
-      style: "a",
+      style: undefined,
+      effectiveStyle: "a",
       isBlockContent: true
     });
     expect(parsed.rows[0].cells[2].cellSpecRaw).toBe("");
@@ -194,6 +244,25 @@ describe("parseAsciiDocTable", () => {
       style: "a"
     });
     expect(grid.diagnostics).toEqual([]);
+  });
+
+  it("keeps explicit cell metadata separate from inherited effective column metadata", () => {
+    const parsed = parseAsciiDocTable("[cols=\"m,>s\"]\n|===\n| A ^| B\n|===\n");
+    const grid = projectGridModel(parsed);
+
+    expect(parsed.rows[0].cells[0]).toMatchObject({
+      style: undefined,
+      horizontalAlign: undefined,
+      effectiveStyle: "m"
+    });
+    expect(parsed.rows[0].cells[1]).toMatchObject({
+      style: undefined,
+      horizontalAlign: "center",
+      effectiveStyle: "s",
+      effectiveHorizontalAlign: "center"
+    });
+    expect(grid.cells[0][0]).toMatchObject({ kind: "origin", style: "m" });
+    expect(grid.cells[0][1]).toMatchObject({ kind: "origin", style: "s", horizontalAlign: "center" });
   });
 
   it("keeps cell style and alignment specs as metadata without diagnostics", () => {

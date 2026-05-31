@@ -67,7 +67,6 @@ export async function refreshPanelFromEditor(
     ? createMissingTableFallbackModel()
     : await createRefreshedTableEditorModel(tableBlock.raw, diagnostics);
   panel.webview.html = renderTableEditorHtml(model, createNonce(), { selectedSourceCellId }, createTableEditorLabels());
-  panel.reveal(vscode.ViewColumn.Beside, true);
 }
 
 export async function createRefreshedTableEditorModel(tableSource: string, diagnostics: readonly TableDiagnostic[] = []): Promise<WebviewAppModel> {
@@ -120,4 +119,3 @@ export async function renderCurrentTablePreview(editor: vscode.TextEditor, table
   }
   return renderTableEditorPreview(tableBlock.raw);
 }
-

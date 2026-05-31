@@ -1,0 +1,15 @@
+.Real-world synthetic plain continuation cells
+[cols="1,3,1"]
+|===
+|Name |Description |Status
+
+|Alpha
+|First description line.
+Second description line without a new cell marker.
+|Ready
+
+|Beta
+|Another description +
+with a hard line break continuation.
+|Open
+|===

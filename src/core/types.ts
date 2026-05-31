@@ -36,6 +36,10 @@ export interface TableAttributes {
   separator?: string;
   options: string[];
   columns: TableColumnSpec[];
+  lines: TableAttributeLine[];
+  entries: TableAttributeEntry[];
+  title?: TableTitle;
+  named: Record<string, string>;
 }
 
 export interface TableColumnSpec {
@@ -45,6 +49,29 @@ export interface TableColumnSpec {
   horizontalAlign?: "left" | "center" | "right";
   verticalAlign?: "top" | "middle" | "bottom";
   style?: string;
+}
+
+export interface TableAttributeLine {
+  raw: string;
+  range: SourceRange;
+  entries: TableAttributeEntry[];
+}
+
+export interface TableAttributeEntry {
+  kind: "named" | "option" | "positional";
+  raw: string;
+  range: SourceRange;
+  name?: string;
+  value?: string;
+  valueRange?: SourceRange;
+  quote?: "\"" | "'";
+}
+
+export interface TableTitle {
+  raw: string;
+  text: string;
+  range: SourceRange;
+  valueRange: SourceRange;
 }
 
 export interface RetainedSegment {
@@ -70,6 +97,9 @@ export interface LosslessTableCell {
   style?: string;
   horizontalAlign?: "left" | "center" | "right";
   verticalAlign?: "top" | "middle" | "bottom";
+  effectiveStyle?: string;
+  effectiveHorizontalAlign?: "left" | "center" | "right";
+  effectiveVerticalAlign?: "top" | "middle" | "bottom";
   isBlockContent: boolean;
   errors: TableDiagnostic[];
 }

@@ -200,6 +200,58 @@ export function renderWebviewEditingScript(): string {
             selectedSourceCellId: selectedSourceCellId()
           });
         };
+        const isFormControlEventTarget = (target) => target instanceof HTMLElement &&
+          target !== contentEditor &&
+          Boolean(target.closest("input, select, textarea"));
+        const requestCellStyleUpdate = (update) => {
+          if (editorMode !== "edit") {
+            return;
+          }
+          const sourceCellIds = selectedStyleSourceCellIds();
+          if (!sourceCellIds) {
+            return;
+          }
+          postSourceMessage({
+            type: "request-update-cell-style",
+            sourceCellIds,
+            selectedSourceCellId: selectedSourceCellId(),
+            ...update
+          });
+        };
+        const tableSettingValue = (name) => {
+          const control = document.querySelector("[data-table-setting='" + name + "']");
+          if (control instanceof HTMLInputElement && control.type === "checkbox") {
+            return control.checked;
+          }
+          return control instanceof HTMLInputElement || control instanceof HTMLSelectElement ? control.value : "";
+        };
+        const requestColumnSpecUpdate = () => {
+          if (!selectedCell || selectedCell.dataset.kind !== "origin") {
+            showClipboardDiagnostic(labels.structureEditBlockedOrigin);
+            return;
+          }
+          postSourceMessage({
+            type: "request-update-column-spec",
+            columnIndex: Number(selectedCell.dataset.col || "0"),
+            widthRaw: tableSettingValue("column-width") || undefined,
+            style: tableSettingValue("column-style") || undefined,
+            selectedSourceCellId: selectedSourceCellId()
+          });
+        };
+        const requestTableAppearanceUpdate = () => {
+          postSourceMessage({
+            type: "request-update-table-appearance",
+            title: tableSettingValue("title") || undefined,
+            id: tableSettingValue("id") || undefined,
+            role: tableSettingValue("role") || undefined,
+            width: tableSettingValue("width") || undefined,
+            frame: tableSettingValue("frame") || undefined,
+            grid: tableSettingValue("grid") || undefined,
+            stripes: tableSettingValue("stripes") || undefined,
+            autowidth: tableSettingValue("autowidth"),
+            selectedSourceCellId: selectedSourceCellId()
+          });
+        };
         window.addEventListener("message", (event) => {
           const message = event.data || {};
           if (message.type === "row-column-edit-result") {
@@ -222,6 +274,10 @@ export function renderWebviewEditingScript(): string {
             showResultDiagnostic(labels.undoRedo, message.result);
           } else if (message.type === "format-table-result") {
             showResultDiagnostic(labels.formatTable, message.result);
+          } else if (message.type === "cell-style-update-result") {
+            showResultDiagnostic(labels.cellStyleUpdate, message.result);
+          } else if (message.type === "table-settings-update-result") {
+            showResultDiagnostic(labels.tableSettingsUpdate, message.result);
           } else if (message.type === "set-editor-mode-for-review") {
             setEditorMode(message.mode);
             requestAnimationFrame(() => requestAnimationFrame(capture));
@@ -258,6 +314,22 @@ export function renderWebviewEditingScript(): string {
         for (const button of formatModeButtons) {
           button.addEventListener("click", () => setFormatMode(button.dataset.formatMode || "table-layout"));
         }
+        for (const button of cellStyleButtons) {
+          button.addEventListener("click", () => {
+            const action = button.dataset.action || "";
+            requestCellStyleUpdate({
+              horizontalAlign: action === "cell-align-left" ? "left" : action === "cell-align-center" ? "center" : "right"
+            });
+          });
+        }
+        cellStyleSelect?.addEventListener("change", () => {
+          const value = cellStyleSelect instanceof HTMLSelectElement ? cellStyleSelect.value : "";
+          if (value) {
+            requestCellStyleUpdate({ style: value });
+          }
+        });
+        applyColumnSpecButton?.addEventListener("click", requestColumnSpecUpdate);
+        applyTableAppearanceButton?.addEventListener("click", requestTableAppearanceUpdate);
         contextMenu?.addEventListener("click", (event) => {
           const button = event.target instanceof HTMLElement ? event.target.closest("button[data-action]") : null;
           if (!(button instanceof HTMLButtonElement)) {
@@ -277,6 +349,12 @@ export function renderWebviewEditingScript(): string {
             requestRowColumnEdit("request-delete-row");
           } else if (action === "delete-column") {
             requestRowColumnEdit("request-delete-column");
+          } else if (action === "mark-header") {
+            postSourceMessage({ type: "request-update-header-footer", header: true, selectedSourceCellId: selectedSourceCellId() });
+          } else if (action === "mark-noheader") {
+            postSourceMessage({ type: "request-update-header-footer", noheader: true, selectedSourceCellId: selectedSourceCellId() });
+          } else if (action === "toggle-footer") {
+            postSourceMessage({ type: "request-update-header-footer", footer: true, selectedSourceCellId: selectedSourceCellId() });
           }
         });
         mergeButton?.addEventListener("click", () => {
@@ -308,6 +386,9 @@ export function renderWebviewEditingScript(): string {
           });
         });
         document.addEventListener("keydown", (event) => {
+          if (isFormControlEventTarget(event.target)) {
+            return;
+          }
           const isMacUndoRedo = event.metaKey && !event.ctrlKey && !event.altKey && event.key.toLowerCase() === "z";
           const isCtrlUndo = event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "z";
           const isCtrlShiftRedo = event.ctrlKey && !event.metaKey && !event.altKey && event.shiftKey && event.key.toLowerCase() === "z";
@@ -387,7 +468,7 @@ export function renderWebviewEditingScript(): string {
           }
         }, true);
         document.addEventListener("copy", (event) => {
-          if (editorMode !== "edit" || !selectedCell || editingCell) {
+          if (editorMode !== "edit" || !selectedCell || editingCell || isFormControlEventTarget(event.target)) {
             return;
           }
           const text = selectedClipboardText();
@@ -400,7 +481,7 @@ export function renderWebviewEditingScript(): string {
           showClipboardDiagnostic(selectedRangeCells().length > 0 ? labels.copiedSelectedRange : labels.copiedSelectedCell, { autoClear: true });
         });
         document.addEventListener("paste", (event) => {
-          if (editorMode !== "edit" || !selectedCell || editingCell) {
+          if (editorMode !== "edit" || !selectedCell || editingCell || isFormControlEventTarget(event.target)) {
             return;
           }
           const html = event.clipboardData?.getData("text/html") || "";

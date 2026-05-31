@@ -16,6 +16,8 @@
 
 https://example.com[Example link]
 
+The \| character remains content.
+
 2+^.^m|Centered span
 |Open
 |Span with style and alignment
@@ -25,6 +27,6 @@ https://example.com[Example link]
 
 |Total
 |Rows
-|4
+|5
 |Footer row
 |===

@@ -67,25 +67,48 @@ body {
   font-weight: 600;
   white-space: nowrap;
 }
-.status {
-  flex: 1 1 120px;
-  min-width: 0;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  color: var(--table-editor-description-foreground);
-  white-space: nowrap;
-}
 .command-bar {
   display: flex;
   align-items: center;
   flex: 0 1 auto;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   overflow-x: auto;
+  padding-right: 12px;
+  scrollbar-width: thin;
+}
+.toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+.style-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.style-toolbar button,
+.style-toolbar select {
+  min-height: 28px;
+  color: var(--table-editor-secondary-button-foreground);
+  background: var(--table-editor-secondary-button-background);
+  border: 1px solid var(--grid-border);
+  border-radius: 3px;
+  font: inherit;
+}
+.style-toolbar button {
+  box-sizing: border-box;
+  width: 28px;
+  min-width: 28px;
+  padding: 3px;
+}
+.style-toolbar select {
+  width: 88px;
+  max-width: 88px;
 }
 .toolbar-button {
+  box-sizing: border-box;
   min-width: 32px;
   min-height: 28px;
   padding: 3px 8px;
@@ -100,13 +123,8 @@ body {
   display: inline-grid;
   place-items: center;
   width: 32px;
+  min-width: 32px;
   padding: 3px;
-}
-.toolbar-button.icon-label-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
 }
 .toolbar-button svg {
   width: 16px;

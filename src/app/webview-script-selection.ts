@@ -46,6 +46,18 @@ export function renderWebviewSelectionScript(): string {
           }
           return true;
         };
+        const selectedStyleSourceCellIds = () => {
+          if (!selectedCell) {
+            return null;
+          }
+          const rangeCells = selectedRangeCells();
+          const targets = rangeCells.length > 0 ? rangeCells : [selectedCell];
+          if (!validatePlainRange(targets)) {
+            showClipboardDiagnostic(labels.styleEditBlockedPlainRange);
+            return null;
+          }
+          return targets.map((target) => target.dataset.sourceCellId || "");
+        };
         const mergeSourceCellIdsForRange = (cells) => {
           if (cells.length === 0) {
             return null;

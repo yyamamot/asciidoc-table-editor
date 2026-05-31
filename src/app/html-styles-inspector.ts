@@ -44,6 +44,62 @@ export function renderInspectorStyles(): string {
 .inspector label:has([hidden]) {
   display: none;
 }
+.table-settings {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  padding-right: 8px;
+  border-top: 1px solid var(--grid-border);
+}
+.table-settings details {
+  box-sizing: border-box;
+  border: 1px solid var(--grid-border);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--table-editor-background) 78%, transparent);
+}
+.table-settings summary {
+  min-height: 28px;
+  padding: 5px 7px;
+  cursor: pointer;
+  color: var(--table-editor-foreground);
+  font-weight: 600;
+}
+.table-settings summary:focus {
+  outline: 1px solid var(--table-editor-focus-border);
+  outline-offset: -1px;
+}
+.table-settings details[open] summary {
+  border-bottom: 1px solid var(--grid-border);
+}
+.table-settings h3 {
+  margin: 0;
+  font-size: 12px;
+}
+.settings-grid {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+.settings-grid label {
+  display: grid;
+  gap: 3px;
+  color: var(--table-editor-description-foreground);
+}
+.settings-grid .checkbox-label {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 30px;
+}
+.settings-grid input,
+.settings-grid select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 26px;
+  color: var(--table-editor-input-foreground);
+  background: var(--table-editor-input-background);
+  border: 1px solid var(--vscode-input-border, var(--grid-border));
+}
 .inspector button {
   width: 100%;
   min-height: 28px;

@@ -5,7 +5,7 @@ import { createTableEditorPanel } from "./panel";
 import { registerTableEditorMessageRouter } from "./message-router";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorPreview } from "./table-editor-preview";
-import { applyBlockCellSourceUpdate, applyCellContentsUpdate, applyCellContentUpdate, applyFormatReview, applyImportedPaste, applyMergeCells, applyPlainCellBlockSourceReplace, applyRectangularPaste, applyRevealSourceCell, applyRowColumnEdit, applyUndoRedo, applyUnmergeCell, openFormatReviewInPanel } from "./command-webview-handlers";
+import { applyAppearanceUpdate, applyBlockCellSourceUpdate, applyCellContentsUpdate, applyCellContentUpdate, applyCellStyleUpdate, applyColumnSpecUpdate, applyFormatReview, applyHeaderFooterUpdate, applyImportedPaste, applyMergeCells, applyPlainCellBlockSourceReplace, applyRectangularPaste, applyRevealSourceCell, applyRowColumnEdit, applyUndoRedo, applyUnmergeCell, openFormatReviewInPanel } from "./command-webview-handlers";
 import { createNonce, resolveTargetEditor, writeUiReviewSnapshotIfRequested, type OpenTableEditorCommandResult } from "./command-utils";
 import type { CellContentReplacement, OpenTableEditorTarget, RowColumnEditMessage } from "./types";
 import { applyImportedTablePasteToEditor } from "./table-editor-document-edits";
@@ -56,7 +56,11 @@ export function registerOpenEditorCommand(): vscode.Disposable {
           formatReview = nextFormatReview;
         }
       }),
-      applyFormatTable: (message) => void applyFormatReview(editor, panel, tableStartOffset, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId)
+      applyFormatTable: (message) => void applyFormatReview(editor, panel, tableStartOffset, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId),
+      updateCellStyle: (message) => void applyCellStyleUpdate(editor, panel, tableStartOffset, message as { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }),
+      updateHeaderFooter: (message) => void applyHeaderFooterUpdate(editor, panel, tableStartOffset, message as { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }),
+      updateColumnSpec: (message) => void applyColumnSpecUpdate(editor, panel, tableStartOffset, message as { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }),
+      updateTableAppearance: (message) => void applyAppearanceUpdate(editor, panel, tableStartOffset, message as { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string })
     });
     panel.webview.html = html;
     return {
@@ -68,4 +72,3 @@ export function registerOpenEditorCommand(): vscode.Disposable {
     };
   });
 }
-

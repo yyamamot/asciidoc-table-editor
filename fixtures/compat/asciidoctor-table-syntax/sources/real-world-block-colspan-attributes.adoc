@@ -1,0 +1,24 @@
+.Real-world synthetic block span table
+[#real-world-block-span%autowidth.stretch]
+[cols="1,2,3a"]
+|===
+|Column A |Column B |Notes
+
+2+|Combined plain heading
+|AsciiDoc block content for the combined row.
+
+* First block note
+* Second block note
+
+|Alpha
+|Type A
+|Regular block content.
+
+|Beta
+2+a|Block content spans two columns.
+
+[source]
+----
+sample value
+----
+|===

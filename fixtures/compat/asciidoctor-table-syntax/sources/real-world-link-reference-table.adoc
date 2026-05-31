@@ -1,0 +1,17 @@
+.Real-world synthetic link reference table
+[cols="2,1"]
+|===
+|Name |Identifier
+
+|https://example.invalid/project-alpha[Project Alpha]
+|`alpha`
+
+|https://example.invalid/project-beta[Project Beta]
+|`beta`
+
+|https://example.invalid/project-gamma[Project Gamma] footnote:[Available in hosted deployments.]
+|`gamma`
+
+|*Important entry*
+|`important`
+|===

@@ -47,9 +47,12 @@ export function parseRowCells(
       cells.push({
         ...baseCell,
         nodeId: `cell:${rowIndex}:${startCellIndex + cells.length}`,
-        style: effectiveStyle,
-        horizontalAlign: effectiveHorizontalAlign,
-        verticalAlign: effectiveVerticalAlign,
+        style: parsedSpec.style,
+        horizontalAlign: parsedSpec.horizontalAlign,
+        verticalAlign: parsedSpec.verticalAlign,
+        effectiveStyle,
+        effectiveHorizontalAlign,
+        effectiveVerticalAlign,
         isBlockContent: effectiveStyle === "a",
         duplicateCount: duplicateCount > 1 ? duplicateCount : undefined,
         duplicateIndex: duplicateCount > 1 ? duplicateIndex : undefined,
@@ -221,4 +224,3 @@ function alignValue(value: string, axis: "horizontal" | "vertical"): "left" | "c
 function normalizeSpan(value: number): number {
   return Number.isInteger(value) && value > 0 ? value : 1;
 }
-

@@ -1,0 +1,18 @@
+.Real-world synthetic vertical plain table
+|===
+|Key
+|Type
+|Description
+
+|name
+|String, *Mandatory*
+|Human readable name.
+
+|host
+|String, *Mandatory*
+|Host name or address.
+
+|port
+|Integer
+|Network port number.
+|===

@@ -1,0 +1,12 @@
+.Real-world synthetic header colspan table
+|===============
+|Feature type 2+|Description |Link
+
+|h|Form of data h|Required coordinates h|
+
+|**point** 2+|A single point record
+|<<point-example>>
+
+|**series** 2+|A series of records
+|<<series-example>>
+|===============

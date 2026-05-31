@@ -14,7 +14,7 @@ export function parseAsciiDocTable(source: string): TableDocument {
       ? undefined
       : lines.find((line) => line.index > startLine.index && line.text.trim() === startDelimiterRaw);
   const errors: TableDiagnostic[] = [];
-  const attributes = parseTableAttributes(lines, startLine?.index ?? -1);
+  const attributes = parseTableAttributes(source, lines, startLine?.index ?? -1);
   const separator = attributes.separator ?? "|";
 
   if (startLine === undefined) {

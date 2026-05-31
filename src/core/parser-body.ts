@@ -29,6 +29,7 @@ export function parseBodyRows(
         occupied: boolean[];
       }
     | undefined;
+  let pendingPlainContinuationBlankLines: SourceLine[] = [];
 
   const startRow = (line: { offset: number }): NonNullable<typeof current> => ({
     rowIndex: rows.length,
@@ -61,6 +62,7 @@ export function parseBodyRows(
     if (current === undefined) {
       return;
     }
+    pendingPlainContinuationBlankLines = [];
     for (const cell of current.cells) {
       const delimiter = cell.isBlockContent ? openDelimitedBlockDelimiter(cell.contentRaw) : undefined;
       if (delimiter !== undefined) {
@@ -128,9 +130,21 @@ export function parseBodyRows(
     const trailingCell = current?.cells.at(-1);
     return trailingCell !== undefined && !trailingCell.isBlockContent && trailingCell.contentRaw.trimEnd().endsWith("+");
   };
-  const appendContinuationToTrailingPlainCell = (line: { offset: number; text: string; raw: string }): boolean => {
+  const canContinueTrailingPlainCell = (): boolean => {
     const trailingCell = current?.cells.at(-1);
-    if (current === undefined || trailingCell === undefined || trailingCell.isBlockContent || !trailingPlainCellWantsHardBreakContinuation()) {
+    return current !== undefined && trailingCell !== undefined && !trailingCell.isBlockContent;
+  };
+  const appendContinuationToTrailingPlainCell = (
+    line: { offset: number; text: string; raw: string },
+    options: { requireHardBreak: boolean }
+  ): boolean => {
+    const trailingCell = current?.cells.at(-1);
+    if (
+      current === undefined ||
+      trailingCell === undefined ||
+      trailingCell.isBlockContent ||
+      (options.requireHardBreak && !trailingPlainCellWantsHardBreakContinuation())
+    ) {
       return false;
     }
 
@@ -142,10 +156,23 @@ export function parseBodyRows(
     current.endOffset = line.offset + line.raw.length;
     return true;
   };
+  const appendPendingPlainContinuationBlankLines = (): void => {
+    if (pendingPlainContinuationBlankLines.length === 0) {
+      return;
+    }
+    for (const blankLine of pendingPlainContinuationBlankLines) {
+      appendContinuationToTrailingPlainCell(blankLine, { requireHardBreak: false });
+    }
+    pendingPlainContinuationBlankLines = [];
+  };
 
   for (const line of bodyLines) {
     if (line.text.trim().length === 0) {
       if (appendContinuationToTrailingBlockCell(line)) {
+        continue;
+      }
+      if (rowComplete() && canContinueTrailingPlainCell()) {
+        pendingPlainContinuationBlankLines.push(line);
         continue;
       }
       if (rowComplete()) {
@@ -159,15 +186,19 @@ export function parseBodyRows(
     }
     let cells = parseRowCells(source, line.text, line.offset, current.rowIndex, current.cells.length, nextOpenColumn(), options.separator, options.columns);
     if (cells.length > 0 && rowComplete()) {
+      pendingPlainContinuationBlankLines = [];
       flush();
       current = startRow(line);
       cells = parseRowCells(source, line.text, line.offset, current.rowIndex, current.cells.length, nextOpenColumn(), options.separator, options.columns);
     }
-    if (cells.length === 0 && appendContinuationToTrailingPlainCell(line)) {
-      if (rowComplete() && !trailingPlainCellWantsHardBreakContinuation()) {
-        flush();
+    if (cells.length === 0 && (trailingPlainCellWantsHardBreakContinuation() || canContinueTrailingPlainCell())) {
+      appendPendingPlainContinuationBlankLines();
+      if (
+        appendContinuationToTrailingPlainCell(line, { requireHardBreak: true }) ||
+        appendContinuationToTrailingPlainCell(line, { requireHardBreak: false })
+      ) {
+        continue;
       }
-      continue;
     }
     if (cells.length === 0 && appendContinuationToTrailingBlockCell(line)) {
       continue;
@@ -177,13 +208,8 @@ export function parseBodyRows(
     for (const cell of cells) {
       placeCell(current.occupied, cell);
     }
-    const lastCell = current.cells.at(-1);
-    if (rowComplete() && lastCell?.isBlockContent !== true && !trailingPlainCellWantsHardBreakContinuation()) {
-      flush();
-    }
   }
 
   flush();
   return rows;
 }
-

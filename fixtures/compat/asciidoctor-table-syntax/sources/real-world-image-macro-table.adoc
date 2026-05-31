@@ -1,0 +1,6 @@
+.Real-world synthetic image macro table
+|===
+|Channel |Badge
+|Preview |image::https://example.invalid/badges/preview.svg[link="https://example.invalid/releases/preview"]
+|Release |image::https://example.invalid/badges/release.svg[link="https://example.invalid/releases/stable"]
+|===

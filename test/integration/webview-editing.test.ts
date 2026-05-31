@@ -122,6 +122,21 @@ describe("webview editing interactions", () => {
     });
   });
 
+  it("does not start cell editing while typing in table settings controls", async () => {
+    const harness = await createHarness("|===\n| A | B\n|===\n");
+    const titleInput = harness.window.document.querySelector("[data-table-setting='title']") as HTMLInputElement | null;
+
+    expect(titleInput).not.toBeNull();
+    titleInput?.focus();
+    titleInput!.value = "Draft title";
+    titleInput?.dispatchEvent(new harness.window.KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "D" }) as unknown as Event);
+    titleInput?.dispatchEvent(new harness.window.KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "ArrowRight" }) as unknown as Event);
+
+    expect(harness.messages.filter((message) => message.type === "update-cell-content")).toEqual([]);
+    expect(harness.cell("cell:0:0").getAttribute("contenteditable")).toBeNull();
+    expect(titleInput?.value).toBe("Draft title");
+  });
+
   it("drives Shift+Arrow range selection, copy, paste, and clear through DOM events", async () => {
     const source = "|===\n| A | B\n| C | D\n|===\n";
     const harness = await createHarness(source);

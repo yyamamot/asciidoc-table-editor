@@ -1,0 +1,19 @@
+.Real-world synthetic block cell with escaped pipe
+[options="header",cols="1,3a"]
+|===
+|Name |Notes
+
+|Alpha
+|This block cell keeps pipe-like text as content.
+
+* Use the \| separator literally
+* Keep `A \| B` as text
+
+[source]
+----
+value | still not a table cell
+----
+
+|Beta
+|Plain block paragraph.
+|===

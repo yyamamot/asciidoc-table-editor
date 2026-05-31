@@ -1,0 +1,21 @@
+.Real-world synthetic wide table
+[%autowidth.stretch]
+[cols="1,2,>2,4a"]
+|===
+|Column A |Column B |Column C |Notes
+
+|Item 1
+|Type A
+|Ready
+|Example paragraph.
+
+* First note
+* Second note
+
+https://example.com[Example link]
+
+|Item 2
+|Type B
+|Open
+|Another paragraph.
+|===

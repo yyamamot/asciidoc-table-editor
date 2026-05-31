@@ -1,0 +1,21 @@
+.Real-world synthetic explicit a-cell option table
+[cols="1,2,1,2a"]
+|===
+|Name |Description |Default |Allowed values
+
+|`:sample`
+|Sets a sample option with multiline details.
+No substitutions are applied to this neutral description.
+|_not set_
+a|Supported values:
+
+* `alpha`
+* `beta`
+
+See https://example.invalid/options[Options].
+
+|`:mode`
+|Selects the processing mode.
+|`safe`
+|`safe`, `fast`, or `strict`
+|===

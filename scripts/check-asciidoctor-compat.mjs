@@ -72,7 +72,7 @@ function compareFixture(core, asciidoctor, fixture) {
   const parserCells = parsed.rows.flatMap((row) => row.cells).map((cell) => ({
     rowSpan: cell.rowSpan,
     colSpan: cell.colSpan,
-    style: normalizeParserStyle(cell.style),
+    style: normalizeParserStyle(cell.effectiveStyle ?? cell.style),
     blockContent: cell.isBlockContent
   }));
   const oracleCells = fixture.compareOracle === false ? [] : extractOracleCells(asciidoctor, source);

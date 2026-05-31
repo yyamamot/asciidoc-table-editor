@@ -68,7 +68,7 @@ describe("webview table editor shell", () => {
     expect(html).toContain(".diagnostics:empty");
     expect(html).toContain('data-review-target="diagnostics" aria-live="polite" tabindex="-1"></footer>');
     expect(html).toContain('class="toolbar-button icon-button"');
-    expect(html).toContain('class="toolbar-button icon-label-button"');
+    expect(html).toContain('class="toolbar-group"');
     expect(html).toContain('data-icon-source="codicon"');
     expect(html).toContain('data-icon-source="inline"');
     expect(html).toContain('aria-label="Undo"');
@@ -85,8 +85,10 @@ describe("webview table editor shell", () => {
     expect(html).toContain('data-action="unmerge-cell"');
     expect(html).toContain('data-icon-name="merge-cells"');
     expect(html).toContain('data-icon-name="unmerge-cells"');
-    expect(html).toContain("<span>Merge</span>");
-    expect(html).toContain("<span>Unmerge</span>");
+    expect(html).toContain('aria-label="Merge selected cells"');
+    expect(html).toContain('aria-label="Unmerge selected cell"');
+    expect(html).not.toContain("<span>Merge</span>");
+    expect(html).not.toContain("<span>Unmerge</span>");
     expect(html).toContain('data-action="update-cell-content"');
     expect(html).toContain("Block Source");
     expect(html).toContain("block-cell-update-result");

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { deletePlainColumn, deletePlainRow, findAsciiDocTableBlock, insertPlainColumnAfter, insertPlainColumnBefore, insertPlainRowAfter, insertPlainRowBefore, mergePlainCellsHorizontally, parseAsciiDocTable, pasteImportedTable, pasteRectangularPlainTable, replaceBlockCellContent, replacePlainCellContent, replacePlainCellContents, replacePlainCellWithBlockContent, unmergePlainCellHorizontally, type WriteBackResult } from "../core";
+import { deletePlainColumn, deletePlainRow, findAsciiDocTableBlock, insertPlainColumnAfter, insertPlainColumnBefore, insertPlainRowAfter, insertPlainRowBefore, mergePlainCellsHorizontally, parseAsciiDocTable, pasteImportedTable, pasteRectangularPlainTable, replaceBlockCellContent, replacePlainCellContent, replacePlainCellContents, replacePlainCellStyles, replacePlainCellWithBlockContent, unmergePlainCellHorizontally, updateColumnSpec, updateTableAppearance, updateTableHeaderFooter, type ColumnSpecUpdate, type TableAppearanceUpdate, type TableHeaderFooterUpdate, type WriteBackResult } from "../core";
 import type { BlockCellContentReplacement, CellContentReplacement, CellContentUpdateResult, ImportedTablePastePayload, PlainCellBlockReplacement, RectangularPastePayload, RowColumnEditMessage } from "./types";
 
 export async function applyPlainCellContentToEditor(
@@ -177,6 +177,38 @@ export async function applyPlainCellBlockContentToEditor(
   return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
+export async function applyPlainCellStyleToEditor(
+  editor: vscode.TextEditor,
+  tableStartOffset: number,
+  request: { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom" }
+): Promise<CellContentUpdateResult> {
+  return applyTableWriteBack(editor, tableStartOffset, (source) => replacePlainCellStyles(parseAsciiDocTable(source), request));
+}
+
+export async function applyTableHeaderFooterToEditor(
+  editor: vscode.TextEditor,
+  tableStartOffset: number,
+  request: TableHeaderFooterUpdate
+): Promise<CellContentUpdateResult> {
+  return applyTableWriteBack(editor, tableStartOffset, (source) => updateTableHeaderFooter(parseAsciiDocTable(source), request));
+}
+
+export async function applyColumnSpecToEditor(
+  editor: vscode.TextEditor,
+  tableStartOffset: number,
+  request: ColumnSpecUpdate
+): Promise<CellContentUpdateResult> {
+  return applyTableWriteBack(editor, tableStartOffset, (source) => updateColumnSpec(parseAsciiDocTable(source), request));
+}
+
+export async function applyTableAppearanceToEditor(
+  editor: vscode.TextEditor,
+  tableStartOffset: number,
+  request: TableAppearanceUpdate
+): Promise<CellContentUpdateResult> {
+  return applyTableWriteBack(editor, tableStartOffset, (source) => updateTableAppearance(parseAsciiDocTable(source), request));
+}
+
 export async function applyHorizontalMergeToEditor(
   editor: vscode.TextEditor,
   tableStartOffset: number,
@@ -235,6 +267,35 @@ async function applyTableBlockReplacement(
     ok: true,
     diagnostics: []
   };
+}
+
+async function applyTableWriteBack(
+  editor: vscode.TextEditor,
+  tableStartOffset: number,
+  createWriteBack: (tableSource: string) => WriteBackResult
+): Promise<CellContentUpdateResult> {
+  const source = editor.document.getText();
+  const tableBlock = findAsciiDocTableBlock(source, tableStartOffset);
+  if (tableBlock === undefined) {
+    return {
+      ok: false,
+      diagnostics: [{
+        code: "writeback.table-not-found",
+        severity: "error",
+        message: "Target AsciiDoc table block was not found"
+      }]
+    };
+  }
+
+  const writeBack = createWriteBack(tableBlock.raw);
+  if (!writeBack.ok) {
+    return {
+      ok: false,
+      diagnostics: writeBack.diagnostics
+    };
+  }
+
+  return applyTableBlockReplacement(editor, tableBlock, writeBack);
 }
 
 export async function applyTableBlockSourceReplacement(

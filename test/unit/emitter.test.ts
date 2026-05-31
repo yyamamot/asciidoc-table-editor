@@ -15,7 +15,11 @@ import {
   replacePlainCellContent,
   replacePlainCellWithBlockContent,
   replacePlainCellContents,
-  unmergePlainCellHorizontally
+  replacePlainCellStyles,
+  unmergePlainCellHorizontally,
+  updateColumnSpec,
+  updateTableAppearance,
+  updateTableHeaderFooter
 } from "../../src/core";
 
 describe("write-back emitter", () => {
@@ -69,6 +73,65 @@ describe("write-back emitter", () => {
     expect(result).toEqual({
       ok: true,
       source: "|===\n| A | Bee\n| Sea | D\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("patches explicit cell style and alignment without changing content", () => {
+    const table = parseAsciiDocTable("[cols=\"m\"]\n|===\n| A >| B\n|===\n");
+    const result = replacePlainCellStyles(table, {
+      sourceCellIds: ["cell:0:0", "cell:0:1"],
+      style: "s",
+      horizontalAlign: "center",
+      verticalAlign: "middle"
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[cols=\"m\"]\n|===\n^.^s| A ^.^s| B\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("patches header footer options through table attributes", () => {
+    const result = updateTableHeaderFooter(parseAsciiDocTable("[%header]\n|===\n| A | B\n|===\n"), {
+      noheader: true,
+      footer: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[options=noheader,footer]\n|===\n| A | B\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("expands cols multiplier to explicit specs when a column is edited", () => {
+    const result = updateColumnSpec(parseAsciiDocTable("[cols=3*]\n|===\n| A | B | C\n|===\n"), {
+      columnIndex: 1,
+      widthRaw: "2",
+      horizontalAlign: "right",
+      style: "m"
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[cols=\",2>m,\"]\n|===\n| A | B | C\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("patches table appearance attributes and title", () => {
+    const result = updateTableAppearance(parseAsciiDocTable(".Old\n[frame=ends]\n|===\n| A | B\n|===\n"), {
+      title: "New",
+      width: "75%",
+      frame: "all",
+      autowidth: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: ".New\n[frame=all]\n[width=75%]\n[options=autowidth]\n|===\n| A | B\n|===\n",
       diagnostics: []
     });
   });

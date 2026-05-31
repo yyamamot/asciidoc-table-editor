@@ -1,0 +1,10 @@
+.Real-world synthetic long delimiter continuation
+|=====================================================================
+|Category |Allowed combinations
+|Mode A |* Item A
+|Mode B |* Item A +
+         * Item B
+|Mode C |* Item A +
+         * Item B +
+         * Item C
+|=====================================================================

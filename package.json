@@ -3,7 +3,7 @@
   "displayName": "AsciiDoc Table Editor",
   "publisher": "yyamamot",
   "description": "Edit AsciiDoc tables in a visual grid inside VS Code",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "repository": {
     "type": "git",
