@@ -26,6 +26,26 @@ describe("parseAsciiDocTable", () => {
     expect(source.slice(parsed.rows[0].cells[0].range.start.offset, parsed.rows[0].cells[0].range.end.offset)).toBe("| A");
   });
 
+  it("keeps table appearance attributes as structured metadata", () => {
+    const source = ".Quarterly Report\n[%autowidth]\n[cols=\"1,2a\",id=report-table,role=summary,width=75%,frame=ends,grid=rows,stripes=even]\n|===\n| A | B\n|===\n";
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.attributes.title).toMatchObject({ text: "Quarterly Report" });
+    expect(parsed.attributes.options).toContain("autowidth");
+    expect(parsed.attributes.named).toMatchObject({
+      id: "report-table",
+      role: "summary",
+      width: "75%",
+      frame: "ends",
+      grid: "rows",
+      stripes: "even"
+    });
+    expect(parsed.attributes.columns).toMatchObject([
+      { index: 0, raw: "1", widthRaw: "1" },
+      { index: 1, raw: "2a", widthRaw: "2", style: "a" }
+    ]);
+  });
+
   it("keeps variable table delimiters byte-for-byte on no-op round-trip", () => {
     const source = "[%autowidth.stretch]\n|====\n|Actor |Endpoint |Command |Description |System A |System B |System C\n|User |GET /status |show status |Status check |Yes |Yes |No\n|====\n";
     const parsed = parseAsciiDocTable(source);

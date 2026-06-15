@@ -48,7 +48,7 @@ ${renderTableEditorStyles(model)}
         ${renderFallbackGuidance(model, labels)}
         ${grid}
       </div>
-      ${renderInspector(model, labels)}
+      ${renderInspector(model, labels, options.selectedSourceCellId)}
     </section>
     ${model.mode === "table-grid" && model.formatReview !== undefined ? renderFormatReview(model, labels) : ""}
     ${model.mode === "table-grid" ? renderBottomCellEditor(model, labels) : ""}

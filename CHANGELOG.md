@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix Column spec and Table appearance panels so existing source values are loaded into the controls.
+
 ## 0.0.3
 
 - Support cell style and alignment controls in the Table Editor.

@@ -71,8 +71,10 @@ export async function refreshPanelFromEditor(
 
 export async function createRefreshedTableEditorModel(tableSource: string, diagnostics: readonly TableDiagnostic[] = []): Promise<WebviewAppModel> {
   const preview = await renderTableEditorPreview(tableSource);
-  return createWebviewAppModel(projectGridModel(parseAsciiDocTable(tableSource)), {
+  const table = parseAsciiDocTable(tableSource);
+  return createWebviewAppModel(projectGridModel(table), {
     preview: preview.preview,
+    tableAttributes: table.attributes,
     diagnostics: [...preview.diagnostics, ...diagnostics]
   });
 }

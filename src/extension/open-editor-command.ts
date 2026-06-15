@@ -33,7 +33,7 @@ export function registerOpenEditorCommand(): vscode.Disposable {
     const parsed = parseAsciiDocTable(tableBlock.raw);
     const grid = projectGridModel(parsed);
     const preview = await renderTableEditorPreview(tableBlock.raw);
-    const model = createWebviewAppModel(grid, preview);
+    const model = createWebviewAppModel(grid, { ...preview, tableAttributes: parsed.attributes });
     const html = renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels());
     const tableStartOffset = tableBlock.range.start.offset;
     const panel = createTableEditorPanel();

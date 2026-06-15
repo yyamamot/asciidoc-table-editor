@@ -58,6 +58,7 @@ export async function createFormatPreviewModel(
       changed: false,
       model: createWebviewAppModel(projectGridModel(parsed), {
         preview: preview.preview,
+        tableAttributes: parsed.attributes,
         diagnostics: [...preview.diagnostics, ...diagnostics]
       })
     };
@@ -69,6 +70,7 @@ export async function createFormatPreviewModel(
     formatReview,
     model: createWebviewAppModel(projectGridModel(parsed), {
       preview: preview.preview,
+      tableAttributes: parsed.attributes,
       diagnostics: preview.diagnostics,
       formatReview
     })

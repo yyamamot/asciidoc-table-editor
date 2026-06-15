@@ -19,13 +19,14 @@ export function renderGrid(model: WebviewAppModel, options: RenderTableEditorOpt
   const cells = model.cells
     .flat()
     .filter((cell): cell is Extract<GridCell, { kind: "origin" }> => cell !== undefined && cell.kind === "origin")
-    .map((cell, index) => renderCell(cell, renderOptions, labels, `cell-layout-${index}`))
+    .map((cell, index) => renderCell(cell, model.columns[cell.col], renderOptions, labels, `cell-layout-${index}`))
     .join("");
   return `<style nonce="${escapeHtml(nonce)}">${layoutCss}</style><div class="grid" role="grid" data-review-target="table-grid" aria-label="${escapeHtml(labels.tableGrid)}" aria-rowcount="${model.rowCount}" aria-colcount="${model.columnCount}">${cells}</div>`;
 }
 
 function renderCell(
   cell: Extract<GridCell, { kind: "origin" }>,
+  columnSpec: WebviewAppModel["columns"][number] | undefined,
   options: RenderTableEditorOptions,
   labels: TableEditorWebviewLabels,
   layoutClass: string
@@ -46,7 +47,7 @@ function renderCell(
     cell.sourceCellId
   )}" title="${escapeHtml(
     cell.contentRaw.trim()
-  )}" data-row="${cell.row}" data-col="${cell.col}" data-row-role="${cell.role}" data-style="${escapeHtml(cell.style ?? "")}" data-horizontal-align="${cell.horizontalAlign ?? ""}" data-vertical-align="${cell.verticalAlign ?? ""}" data-row-span="${cell.rowSpan}" data-col-span="${cell.colSpan}" data-content="${escapeHtml(
+  )}" data-row="${cell.row}" data-col="${cell.col}" data-row-role="${cell.role}" data-style="${escapeHtml(cell.style ?? "")}" data-horizontal-align="${cell.horizontalAlign ?? ""}" data-vertical-align="${cell.verticalAlign ?? ""}" data-column-width="${escapeHtml(columnSpec?.widthRaw ?? "")}" data-column-style="${escapeHtml(columnSpec?.style ?? "")}" data-row-span="${cell.rowSpan}" data-col-span="${cell.colSpan}" data-content="${escapeHtml(
     cell.contentRaw.trim()
   )}" data-leading="${escapeHtml(
     leading

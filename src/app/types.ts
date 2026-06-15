@@ -1,14 +1,27 @@
-import type { GridCell, TableDiagnostic, TableFormatMode } from "../core";
+import type { GridCell, TableColumnSpec, TableDiagnostic, TableFormatMode } from "../core";
 
 export interface WebviewAppModel {
   readonly mode: "table-grid" | "fallback";
   readonly tableId: string;
   readonly rowCount: number;
   readonly columnCount: number;
+  readonly columns: readonly TableColumnSpec[];
   readonly cells: GridCell[][];
+  readonly tableAppearance: WebviewTableAppearanceModel;
   readonly preview: WebviewPreviewModel;
   readonly formatReview?: WebviewFormatReviewModel;
   readonly diagnostics: TableDiagnostic[];
+}
+
+export interface WebviewTableAppearanceModel {
+  readonly title?: string;
+  readonly id?: string;
+  readonly role?: string;
+  readonly width?: string;
+  readonly frame?: string;
+  readonly grid?: string;
+  readonly stripes?: string;
+  readonly autowidth: boolean;
 }
 
 export interface WebviewPreviewModel {

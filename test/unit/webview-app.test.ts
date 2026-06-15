@@ -209,6 +209,39 @@ describe("webview table editor shell", () => {
     expect(html).toContain("box-shadow: inset 0 -1px 0");
   });
 
+  it("renders parsed column spec and table appearance values in settings controls", () => {
+    const table = parseAsciiDocTable(".Quarterly Report\n[%autowidth]\n[cols=\"1,2a\",id=report-table,role=summary,width=75%,frame=ends,grid=rows,stripes=even]\n|===\n| A | B\n|===\n");
+    const model = createWebviewAppModel(projectGridModel(table), { tableAttributes: table.attributes });
+    const html = renderTableEditorHtml(model, "testNonce", { selectedSourceCellId: "cell:0:1" });
+
+    expect(model.columns).toMatchObject([
+      { index: 0, widthRaw: "1" },
+      { index: 1, widthRaw: "2", style: "a" }
+    ]);
+    expect(model.tableAppearance).toEqual({
+      title: "Quarterly Report",
+      id: "report-table",
+      role: "summary",
+      width: "75%",
+      frame: "ends",
+      grid: "rows",
+      stripes: "even",
+      autowidth: true
+    });
+    expect(html).toContain('data-table-setting="column-width" type="text" value="2"');
+    expect(html).toContain('<option value="a" selected>a</option>');
+    expect(html).toContain('data-table-setting="title" type="text" value="Quarterly Report"');
+    expect(html).toContain('data-table-setting="id" type="text" value="report-table"');
+    expect(html).toContain('data-table-setting="role" type="text" value="summary"');
+    expect(html).toContain('data-table-setting="width" type="text" value="75%"');
+    expect(html).toContain('<option value="ends" selected>ends</option>');
+    expect(html).toContain('<option value="rows" selected>rows</option>');
+    expect(html).toContain('<option value="even" selected>even</option>');
+    expect(html).toContain('data-table-setting="autowidth" type="checkbox" checked');
+    expect(html).toContain('data-column-width="2"');
+    expect(html).toContain('data-column-style="a"');
+  });
+
   it("renders cell alignment metadata for interaction and review hooks", () => {
     const grid = projectGridModel(parseAsciiDocTable("|===\n^.^a| Rich\n|===\n"));
     const html = renderTableEditorHtml(createWebviewAppModel(grid), "testNonce");

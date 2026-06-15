@@ -117,6 +117,8 @@ export function renderWebviewSelectionScript(): string {
           const readonly = cell.getAttribute("aria-readonly") === "true";
           updateField("readonly", labels.grid + ": " + (readonly ? labels.readonly : labels.editable));
           updateField("content", cell.dataset.content || (cell.dataset.coveredBy ? labels.coveredBy + " " + cell.dataset.coveredBy : ""));
+          updateTableSetting("column-width", cell.dataset.columnWidth || "");
+          updateTableSetting("column-style", cell.dataset.columnStyle || "");
           const editContent = cell.dataset.editContent || cell.dataset.content || "";
           const blockContent = cell.dataset.block === "true";
           const plainEditable = !readonly && !blockContent;
@@ -180,6 +182,14 @@ export function renderWebviewSelectionScript(): string {
           suppressClickSelectionAfterMouseRange = mouseRangeMoved;
           mouseRangeSelecting = false;
           mouseRangeMoved = false;
+        };
+        const updateTableSetting = (name, value) => {
+          const control = document.querySelector("[data-table-setting='" + name + "']");
+          if (control instanceof HTMLInputElement && control.type === "checkbox") {
+            control.checked = value === "true";
+          } else if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement) {
+            control.value = value;
+          }
         };
         const isEditableOriginCell = (cell) => Boolean(cell && cell.dataset.kind === "origin" && cell.getAttribute("aria-readonly") !== "true");
         const isPlainPasteTarget = (cell) => isEditableOriginCell(cell) && cell.dataset.rowSpan === "1" && cell.dataset.colSpan === "1";

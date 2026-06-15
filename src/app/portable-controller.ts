@@ -254,6 +254,7 @@ async function refreshPortableSession(options: {
     selectedSourceCellId: options.selectedSourceCellId,
     model: createWebviewAppModel(projectGridModel(table), {
       preview,
+      tableAttributes: table.attributes,
       diagnostics: options.diagnostics === undefined ? undefined : [...options.diagnostics],
       formatReview: options.formatReview
     })

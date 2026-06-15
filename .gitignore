@@ -3,6 +3,7 @@ dist/
 out/
 coverage/
 .tmp/
+.serena/
 .vscode-test/
 *.vsix
 *.swp

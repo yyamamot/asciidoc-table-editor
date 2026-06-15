@@ -48,6 +48,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
       const diagnostics = formatResults.flatMap((result) => result.diagnostics);
       const model = createWebviewAppModel(projectGridModel(parsed), {
         preview: preview.preview,
+        tableAttributes: parsed.attributes,
         diagnostics: [...preview.diagnostics, ...diagnostics]
       });
       return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels()), diagnostics: model.diagnostics };
@@ -58,6 +59,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
       const preview = await renderTableEditorPreview(tableBlock.raw);
       const model = createWebviewAppModel(projectGridModel(parsed), {
         preview: preview.preview,
+        tableAttributes: parsed.attributes,
         diagnostics: preview.diagnostics
       });
       return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels()), diagnostics: model.diagnostics };
@@ -67,6 +69,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
     const formatReview = createFormatReviewModel(tableBlock.raw, changedResults, recommendedTableFormatMode(parsed), createTableEditorLabels());
     const model = createWebviewAppModel(projectGridModel(parsed), {
       preview: preview.preview,
+      tableAttributes: parsed.attributes,
       diagnostics: preview.diagnostics,
       formatReview
     });
@@ -87,4 +90,3 @@ export function registerFormatTableCommand(): vscode.Disposable {
     };
   });
 }
-
