@@ -1,5 +1,6 @@
 import type { SourceRange } from "./types";
 import { tableDelimiterRaw } from "./table-delimiter";
+import { blockDelimiter, updateDelimitedBlockStack } from "./parser-blocks";
 
 export interface TableBlockMatch {
   raw: string;
@@ -11,24 +12,17 @@ export function findAsciiDocTableBlocks(source: string): TableBlockMatch[] {
   const blocks: TableBlockMatch[] = [];
   let startIndex = -1;
   let startDelimiterRaw: string | undefined;
-  let skippedDelimitedBlock: string | undefined;
+  let delimitedBlockStack: readonly string[] = [];
 
   for (let index = 0; index < lines.length; index += 1) {
-    const trimmed = lines[index].text.trim();
-    if (skippedDelimitedBlock !== undefined) {
-      if (trimmed === skippedDelimitedBlock) {
-        skippedDelimitedBlock = undefined;
-      }
+    const line = lines[index].text;
+    const delimitedBlock = blockDelimiter(line);
+    if (delimitedBlockStack.length > 0 || delimitedBlock !== undefined) {
+      delimitedBlockStack = updateDelimitedBlockStack(delimitedBlockStack, line);
       continue;
     }
 
-    const delimitedBlock = tableOpaqueDelimitedBlock(trimmed);
-    if (delimitedBlock !== undefined) {
-      skippedDelimitedBlock = delimitedBlock;
-      continue;
-    }
-
-    const delimiterRaw = tableDelimiterRaw(trimmed);
+    const delimiterRaw = tableDelimiterRaw(line.trim());
     if (delimiterRaw === undefined) {
       continue;
     }
@@ -86,14 +80,10 @@ function isTableMetadataLine(text: string | undefined): boolean {
   if (text === undefined || text.length === 0) {
     return false;
   }
-  return (text.startsWith("[") && text.endsWith("]")) || text.startsWith(".");
-}
-
-function tableOpaqueDelimitedBlock(text: string): string | undefined {
-  if (/^-{4,}$/.test(text) || /^\.{4,}$/.test(text) || /^_{4,}$/.test(text) || /^\+{4,}$/.test(text) || /^\*{4,}$/.test(text)) {
-    return text;
+  if (blockDelimiter(text) !== undefined) {
+    return false;
   }
-  return undefined;
+  return (text.startsWith("[") && text.endsWith("]")) || text.startsWith(".");
 }
 
 function splitLines(source: string): Array<{ offset: number; text: string; raw: string }> {

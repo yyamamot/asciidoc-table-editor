@@ -2,6 +2,33 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { emitNoopTable, parseAsciiDocTable, projectGridModel } from "../../src/core";
+import { blockDelimiter, openDelimitedBlockDelimiter, updateDelimitedBlockStack } from "../../src/core/parser-blocks";
+
+describe("delimited block state", () => {
+  it.each(["----", "-----", "------", "....", ".....", "......", "====", "=====", "======", "____", "_____", "______", "****", "*****", "******", "++++", "+++++", "++++++", "////", "/////", "//////", "--"])(
+    "recognizes %s as a delimiter",
+    (delimiter) => {
+      expect(blockDelimiter(`  ${delimiter}  `)).toBe(delimiter);
+    }
+  );
+
+  it.each(["-", "---", ".", "...", "===", "___", "***", "+++", "///", "-=-="])(
+    "does not recognize %s as a delimiter",
+    (delimiter) => {
+      expect(blockDelimiter(delimiter)).toBeUndefined();
+    }
+  );
+
+  it("tracks different and same-family nested blocks with exact LIFO closing", () => {
+    let stack: readonly string[] = [];
+    for (const line of ["-----", "....", "......", "......", "....", "-----"]) {
+      stack = updateDelimitedBlockStack(stack, line);
+    }
+    expect(stack).toEqual([]);
+    expect(openDelimitedBlockDelimiter("-----\n------\n------\n-----")).toBeUndefined();
+    expect(openDelimitedBlockDelimiter("-----\n------\n-----")).toBe("-----");
+  });
+});
 
 describe("parseAsciiDocTable", () => {
   it("creates a lossless scaffold document", () => {
@@ -528,6 +555,48 @@ describe("parseAsciiDocTable", () => {
     expect(grid.diagnostics).toEqual([]);
   });
 
+  it.each(["-----", "......", "=====", "______", "*****", "++++++", "/////", "--"])(
+    "keeps cell and table delimiters inside a %s block cell",
+    (delimiter) => {
+      const source =
+        `|===\r\na| ${delimiter}\r\n` +
+        "| not a table cell\r\n" +
+        "2+| not a span\r\n" +
+        "|===\r\n" +
+        `${delimiter}\r\n` +
+        "| after\r\n" +
+        "|===\r\n";
+      const parsed = parseAsciiDocTable(source);
+      const grid = projectGridModel(parsed);
+
+      expect(emitNoopTable(parsed)).toBe(source);
+      expect(parsed.delimiter.endRaw).toBe("|===");
+      expect(parsed.rows).toHaveLength(2);
+      expect(parsed.rows[0].cells).toHaveLength(1);
+      expect(parsed.rows[0].cells[0].contentRaw).toContain("|===\r\n");
+      expect(parsed.rows[1].cells[0].contentRaw).toBe(" after");
+      expect(grid.diagnostics).toEqual([]);
+    }
+  );
+
+  it("keeps differently nested delimited blocks opaque until exact LIFO closure", () => {
+    const source =
+      "|===\n" +
+      "a| -----\n" +
+      "......\n" +
+      "|===\n" +
+      "......\n" +
+      "-----\n" +
+      "| after\n" +
+      "|===\n";
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.rows).toHaveLength(2);
+    expect(parsed.rows[0].cells[0].contentRaw).toContain("......\n|===\n......\n-----");
+    expect(parsed.rows[1].cells[0].contentRaw).toBe(" after");
+    expect(projectGridModel(parsed).diagnostics).toEqual([]);
+  });
+
   it("keeps the block-cell-boundary fixture from treating source lines as cells", () => {
     const source = fixture("block-cell-boundary", "source.adoc");
     const parsed = parseAsciiDocTable(source);
@@ -537,7 +606,7 @@ describe("parseAsciiDocTable", () => {
     expect(parsed.rows[0].cells).toHaveLength(2);
     expect(parsed.rows[0].cells[0]).toMatchObject({
       isBlockContent: true,
-      contentRaw: " [source]\n----\n| not a table cell\n2+| not a span\n----"
+      contentRaw: " [source]\n------\n.....\n| not a table cell\n2+| not a span\n.....\n------\n--\n| still not a table cell\n--"
     });
     expect(parsed.rows[0].cells[1]).toMatchObject({ contentRaw: " After block" });
     expect(grid.rowCount).toBe(2);

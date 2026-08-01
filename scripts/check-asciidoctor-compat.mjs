@@ -69,6 +69,7 @@ function compareFixture(core, asciidoctor, fixture) {
   const source = readFileSync(sourcePath, "utf8");
   const parsed = core.parseAsciiDocTable(source);
   const grid = core.projectGridModel(parsed);
+  const documentTables = core.findAsciiDocTableBlocks(source);
   const parserCells = parsed.rows.flatMap((row) => row.cells).map((cell) => ({
     rowSpan: cell.rowSpan,
     colSpan: cell.colSpan,
@@ -135,6 +136,26 @@ function compareFixture(core, asciidoctor, fixture) {
     }
   }
 
+  if (typeof fixture.expectDocumentTableCount === "number" && documentTables.length !== fixture.expectDocumentTableCount) {
+    failures.push(`document-table-count ${documentTables.length} != ${fixture.expectDocumentTableCount}`);
+  }
+
+  if (Array.isArray(fixture.expectDocumentTableRawContains)) {
+    for (const expectedRaw of fixture.expectDocumentTableRawContains) {
+      if (!documentTables.some((table) => table.raw.includes(expectedRaw))) {
+        failures.push(`no detected document table contains ${JSON.stringify(expectedRaw)}`);
+      }
+    }
+  }
+
+  if (Array.isArray(fixture.expectDocumentTableRawExcludes)) {
+    for (const excludedRaw of fixture.expectDocumentTableRawExcludes) {
+      if (documentTables.some((table) => table.raw.includes(excludedRaw))) {
+        failures.push(`detected document table contains excluded source ${JSON.stringify(excludedRaw)}`);
+      }
+    }
+  }
+
   if (fixture.structuredEdit === true && diagnostics.some((diagnostic) => diagnostic.severity === "error")) {
     failures.push(`structured fixture has error diagnostics: ${diagnostics.map((diagnostic) => diagnostic.code).join(", ")}`);
   }
@@ -148,6 +169,7 @@ function compareFixture(core, asciidoctor, fixture) {
     checks: fixture.checks ?? [],
     parserCells,
     oracleCells,
+    documentTableCount: documentTables.length,
     diagnostics,
     failures,
     passed: failures.length === 0

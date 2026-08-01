@@ -332,9 +332,50 @@
       "compareOracle": false,
       "expectNoGridDiagnostics": true,
       "expectBlockContentCells": 1,
+      "expectDocumentTableCount": 1,
+      "expectDocumentTableRawContains": [
+        "| still not a table cell"
+      ],
       "checks": [
         "block-cell",
-        "source-block-boundary"
+        "source-block-boundary",
+        "variable-delimiter",
+        "nested-delimited-block",
+        "open-block"
+      ]
+    },
+    {
+      "id": "delimited-block-document-boundary",
+      "category": "structured-supported",
+      "source": "fixtures/lossless/delimited-block-document-boundary/source.adoc",
+      "status": "supported",
+      "structuredEdit": true,
+      "compareOracle": false,
+      "expectNoGridDiagnostics": true,
+      "expectParserCellCount": 2,
+      "expectGridColumnCount": 2,
+      "expectDocumentTableCount": 1,
+      "expectDocumentTableRawContains": [
+        "LIVE-TABLE"
+      ],
+      "expectDocumentTableRawExcludes": [
+        "FAKE-NESTED",
+        "FAKE-EXAMPLE",
+        "FAKE-QUOTE",
+        "FAKE-SIDEBAR",
+        "FAKE-PASSTHROUGH",
+        "FAKE-COMMENT",
+        "FAKE-OPEN",
+        "FAKE-UNCLOSED"
+      ],
+      "checks": [
+        "document-detector",
+        "variable-delimiter",
+        "nested-delimited-block",
+        "comment-block",
+        "passthrough-block",
+        "open-block",
+        "unclosed-block-fail-closed"
       ]
     },
     {

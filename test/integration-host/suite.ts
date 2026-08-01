@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import * as vscode from "vscode";
 import { testBlockCellContentWriteBackCommandUsesVSCodeStack, testBlockCellSourceRevealCommand } from "./block-cell.test";
-import { testAsciiDocTableCodeLensOpensTargetTable, testAsciiDocTableCodeLensTargetsTableBlocks } from "./codelens.test";
+import { testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks, testAsciiDocTableCodeLensOpensTargetTable, testAsciiDocTableCodeLensTargetsTableBlocks } from "./codelens.test";
 import { testUnsupportedCsvTableFallsBack } from "./fallback.test";
 import { testAsciiDocTableFormatCodeLensShowsReview } from "./format.test";
 import { testHorizontalMergeWriteBackCommand, testHorizontalUnmergeWriteBackCommand } from "./merge.test";
@@ -12,6 +12,7 @@ import { testColsAttributeBatchWriteBackCommand, testCustomSeparatorWriteBackCom
 export async function run(): Promise<void> {
   await activateExtension();
   await testAsciiDocTableCodeLensTargetsTableBlocks();
+  await testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks();
   await testAsciiDocTableCodeLensOpensTargetTable();
   await testAsciiDocTableFormatCodeLensShowsReview();
   await testPlainCellContentWriteBackCommand();

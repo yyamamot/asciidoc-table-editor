@@ -9,13 +9,26 @@ export function parseAsciiDocTable(source: string): TableDocument {
   const lines = splitLines(source);
   const startLine = lines.find((line) => tableDelimiterRaw(line.text.trim()) !== undefined);
   const startDelimiterRaw = startLine === undefined ? undefined : tableDelimiterRaw(startLine.text.trim());
-  const endLine =
-    startLine === undefined || startDelimiterRaw === undefined
-      ? undefined
-      : lines.find((line) => line.index > startLine.index && line.text.trim() === startDelimiterRaw);
   const errors: TableDiagnostic[] = [];
   const attributes = parseTableAttributes(source, lines, startLine?.index ?? -1);
   const separator = attributes.separator ?? "|";
+  const endCandidates =
+    startLine === undefined || startDelimiterRaw === undefined
+      ? []
+      : lines.filter((line) => line.index > startLine.index && line.text.trim() === startDelimiterRaw);
+  const endLine =
+    attributes.format !== undefined && attributes.format !== "psv"
+      ? endCandidates[0]
+      : endCandidates.find((candidate) => {
+          const candidateRows = parseBodyRows(source, lines.slice((startLine?.index ?? -1) + 1, candidate.index), {
+            columns: attributes.columns,
+            expectedColumnCount: attributes.columnCount,
+            separator
+          });
+          return !candidateRows.some((row) =>
+            row.cells.some((cell) => cell.errors.some((error) => error.code === "block-cell.unclosed-delimited-block"))
+          );
+        }) ?? endCandidates[0];
 
   if (startLine === undefined) {
     errors.push({

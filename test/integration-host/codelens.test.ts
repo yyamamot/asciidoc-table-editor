@@ -37,6 +37,42 @@ export async function testAsciiDocTableCodeLensTargetsTableBlocks(): Promise<voi
   await closeAllEditors();
 }
 
+export async function testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks(): Promise<void> {
+  const editor = await openAsciiDocDocument([
+    "|===",
+    "| LIVE | table",
+    "|===",
+    "",
+    "-----",
+    "......",
+    "|===",
+    "| FAKE-NESTED | hidden",
+    "|===",
+    "......",
+    "-----",
+    "",
+    "+++++",
+    "|===",
+    "| FAKE-PASSTHROUGH | hidden",
+    "|===",
+    "+++++",
+    "",
+    "/////",
+    "|===",
+    "| FAKE-UNCLOSED | hidden",
+    "|==="
+  ].join("\n"));
+
+  const lenses = await vscode.commands.executeCommand<vscode.CodeLens[]>(
+    "vscode.executeCodeLensProvider",
+    editor.document.uri
+  );
+
+  assert.equal(lenses.length, 2, "expected CodeLens only for the live table outside opaque blocks");
+  assert.deepEqual(lenses.map((lens) => lens.range.start.line), [0, 0]);
+  await closeAllEditors();
+}
+
 export async function testAsciiDocTableCodeLensOpensTargetTable(): Promise<void> {
   const editor = await openAsciiDocDocument([
     "|===",
@@ -67,4 +103,3 @@ export async function testAsciiDocTableCodeLensOpensTargetTable(): Promise<void>
   assert.equal(vscode.window.activeTextEditor?.selection.active.line, 4);
   await closeAllEditors();
 }
-

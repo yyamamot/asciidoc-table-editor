@@ -113,6 +113,141 @@ describe("findAsciiDocTableBlock", () => {
     expect(blocks[0]?.raw).toBe("|===\n| A | B\n|===\n");
   });
 
+  it.each([
+    ["five-character listing", "-----"],
+    ["six-character literal", "......"],
+    ["five-character example", "====="],
+    ["six-character quote", "______"],
+    ["five-character sidebar", "*****"],
+    ["six-character passthrough", "++++++"],
+    ["five-character comment", "/////"],
+    ["open block", "--"]
+  ])("ignores table-looking source inside %s blocks", (_name, delimiter) => {
+    const source = [
+      delimiter,
+      "|===",
+      "| sample | not a live table",
+      "|===",
+      delimiter,
+      "|===",
+      "| A | B",
+      "|===",
+      ""
+    ].join("\n");
+
+    const blocks = findAsciiDocTableBlocks(source);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.raw).toBe("|===\n| A | B\n|===\n");
+  });
+
+  it("keeps table delimiters inside a block cell opaque", () => {
+    const source = [
+      "|===",
+      "a| before",
+      "-----",
+      "|===",
+      "| sample | not a closing delimiter",
+      "|===",
+      "-----",
+      "| after",
+      "|===",
+      ""
+    ].join("\n");
+
+    const blocks = findAsciiDocTableBlocks(source);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.raw).toBe(source);
+  });
+
+  it("tracks different-family and different-length nested blocks", () => {
+    const source = [
+      "-----",
+      "+++++",
+      "------",
+      "|===",
+      "| nested | not a live table",
+      "|===",
+      "------",
+      "+++++",
+      "-----",
+      "|===",
+      "| A | B",
+      "|===",
+      ""
+    ].join("\n");
+
+    const blocks = findAsciiDocTableBlocks(source);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.raw).toBe("|===\n| A | B\n|===\n");
+  });
+
+  it("fails closed after an unclosed top-level delimited block", () => {
+    const source = [
+      "|===",
+      "| before",
+      "|===",
+      "-----",
+      "|===",
+      "| hidden | after the unclosed block",
+      "|===",
+      ""
+    ].join("\n");
+
+    const blocks = findAsciiDocTableBlocks(source);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.raw).toBe("|===\n| before\n|===\n");
+  });
+
+  it("does not return a table whose block cell is unclosed", () => {
+    const source = [
+      "|===",
+      "a| before",
+      "-----",
+      "|===",
+      "| hidden | not a closing delimiter",
+      "|===",
+      ""
+    ].join("\n");
+
+    expect(findAsciiDocTableBlocks(source)).toEqual([]);
+  });
+
+  it("does not include a preceding literal block delimiter as table metadata", () => {
+    const source = [
+      "....",
+      "literal content",
+      "....",
+      "|===",
+      "| A | B",
+      "|===",
+      ""
+    ].join("\n");
+
+    const blocks = findAsciiDocTableBlocks(source);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.raw).toBe("|===\n| A | B\n|===\n");
+  });
+
+  it("keeps mismatched delimiter lengths open instead of cross-closing", () => {
+    const source = [
+      "-----",
+      "------",
+      "-----",
+      "------",
+      "|===",
+      "| hidden | strict LIFO leaves the outer block open",
+      "|===",
+      ""
+    ].join("\n");
+
+    expect(findAsciiDocTableBlocks(source)).toEqual([]);
+  });
+
   it("keeps the manual fixture samples and quick reference available as live tables", () => {
     const source = readFileSync(join(process.cwd(), "fixtures", "manual", "basic.adoc"), "utf8");
     const blocks = findAsciiDocTableBlocks(source);
