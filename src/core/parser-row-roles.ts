@@ -1,5 +1,5 @@
 import type { LosslessTableRow, TableAttributes, TableDocument } from "./types";
-import type { SourceLine } from "./parser-source";
+import type { SourceLine, SourcePositionIndex } from "./parser-source";
 import { parseRowCells, spanWidth } from "./parser-cell-spec";
 
 export function applyRowRoles(
@@ -7,7 +7,8 @@ export function applyRowRoles(
   bodyLines: SourceLine[],
   attributes: TableAttributes,
   separator: string,
-  source: string
+  source: string,
+  positionIndex: SourcePositionIndex
 ): TableDocument["rows"] {
   if (rows.length === 0) {
     return rows;
@@ -17,7 +18,8 @@ export function applyRowRoles(
   const explicitHeader = options.has("header");
   const noHeader = options.has("noheader");
   const hasFooter = options.has("footer");
-  const hasHeader = explicitHeader || (!noHeader && isImplicitHeader(rows[0], bodyLines, attributes.columnCount, separator, source));
+  const hasHeader = explicitHeader ||
+    (!noHeader && isImplicitHeader(rows[0], bodyLines, attributes.columnCount, separator, source, positionIndex));
   const footerIndex = hasFooter && rows.length > 1 ? rows.length - 1 : -1;
 
   return rows.map((row, index) => ({
@@ -31,7 +33,8 @@ function isImplicitHeader(
   bodyLines: Array<Pick<SourceLine, "offset" | "text">>,
   columnCount: number | undefined,
   separator: string,
-  source: string
+  source: string,
+  positionIndex: SourcePositionIndex
 ): boolean {
   const firstBodyLine = bodyLines[0];
   const secondBodyLine = bodyLines[1];
@@ -39,10 +42,9 @@ function isImplicitHeader(
     return false;
   }
 
-  const firstLineCells = parseRowCells(source, firstBodyLine.text, firstBodyLine.offset, 0, 0, 0, separator, []);
+  const firstLineCells = parseRowCells(source, firstBodyLine.text, firstBodyLine.offset, 0, 0, 0, separator, [], positionIndex);
   const expectedColumnCount = columnCount ?? spanWidth(firstLineCells);
   return firstRow.range.start.offset === firstBodyLine.offset &&
     firstRow.raw.trim() === firstBodyLine.text.trim() &&
     spanWidth(firstLineCells) === expectedColumnCount;
 }
-

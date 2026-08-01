@@ -4,14 +4,15 @@ import { parseTableAttributes } from "./parser-attributes";
 import { parseBodyRows } from "./parser-body";
 import { materializeRetainedSegments } from "./parser-retained";
 import { applyRowRoles } from "./parser-row-roles";
-import { positionAt, splitLines } from "./parser-source";
+import { createSourcePositionIndex, positionAt, splitLines } from "./parser-source";
 
 export function parseAsciiDocTable(source: string): TableDocument {
+  const positionIndex = createSourcePositionIndex(source);
   const lines = splitLines(source);
   const startLine = lines.find((line) => tableDelimiterRaw(line.text.trim()) !== undefined);
   const startDelimiterRaw = startLine === undefined ? undefined : tableDelimiterRaw(startLine.text.trim());
   const errors: TableDiagnostic[] = [];
-  const attributes = parseTableAttributes(source, lines, startLine?.index ?? -1);
+  const attributes = parseTableAttributes(source, lines, startLine?.index ?? -1, positionIndex);
   const separator = attributes.separator ?? "|";
   const endCandidates =
     startLine === undefined || startDelimiterRaw === undefined
@@ -24,7 +25,8 @@ export function parseAsciiDocTable(source: string): TableDocument {
           const candidateRows = parseBodyRows(source, lines.slice((startLine?.index ?? -1) + 1, candidate.index), {
             columns: attributes.columns,
             expectedColumnCount: attributes.columnCount,
-            separator
+            separator,
+            positionIndex
           });
           return !candidateRows.some((row) =>
             row.cells.some((cell) => cell.errors.some((error) => error.code === "block-cell.unclosed-delimited-block"))
@@ -63,11 +65,17 @@ export function parseAsciiDocTable(source: string): TableDocument {
   const rows = attributes.format !== undefined && attributes.format !== "psv"
     ? []
     : applyRowRoles(
-        parseBodyRows(source, bodyLines, { columns: attributes.columns, expectedColumnCount: attributes.columnCount, separator }),
+        parseBodyRows(source, bodyLines, {
+          columns: attributes.columns,
+          expectedColumnCount: attributes.columnCount,
+          separator,
+          positionIndex
+        }),
         bodyLines,
         attributes,
         separator,
-        source
+        source,
+        positionIndex
       );
   const retained = materializeRetainedSegments(
     source,
@@ -82,7 +90,8 @@ export function parseAsciiDocTable(source: string): TableDocument {
     "retained:table",
     [startLine, endLine]
       .filter((line): line is NonNullable<typeof line> => line !== undefined)
-      .map((line) => ({ start: line.offset, end: line.offset + line.raw.length, kind: "separator" as const }))
+      .map((line) => ({ start: line.offset, end: line.offset + line.raw.length, kind: "separator" as const })),
+    positionIndex
   );
 
   return {
@@ -90,8 +99,8 @@ export function parseAsciiDocTable(source: string): TableDocument {
     kind: "table",
     raw: source,
     range: {
-      start: positionAt(source, 0),
-      end: positionAt(source, source.length)
+      start: positionAt(positionIndex, 0),
+      end: positionAt(positionIndex, source.length)
     },
     delimiter: {
       startRaw: startLine?.text ?? "",

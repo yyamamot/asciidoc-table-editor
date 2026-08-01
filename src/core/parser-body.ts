@@ -2,19 +2,24 @@ import type { LosslessTableCell, TableColumnSpec, TableDocument } from "./types"
 import { openDelimitedBlockDelimiter } from "./parser-blocks";
 import { parseRowCells, spanWidth } from "./parser-cell-spec";
 import { commentLineIndexes, materializeRetainedSegments } from "./parser-retained";
-import { positionAt, type SourceLine } from "./parser-source";
+import { positionAt, type SourceLine, type SourcePositionIndex } from "./parser-source";
 
 export function parseBodyRows(
   source: string,
   bodyLines: SourceLine[],
-  options: { columns: readonly TableColumnSpec[]; expectedColumnCount?: number; separator: string }
+  options: {
+    columns: readonly TableColumnSpec[];
+    expectedColumnCount?: number;
+    separator: string;
+    positionIndex: SourcePositionIndex;
+  }
 ): TableDocument["rows"] {
   const commentLines = commentLineIndexes(bodyLines);
   const firstCellLine = bodyLines.find(
     (line) =>
       line.text.trim().length > 0 &&
       !commentLines.has(line.index) &&
-      parseRowCells(source, line.text, line.offset, 0, 0, 0, options.separator, options.columns).length > 0
+      parseRowCells(source, line.text, line.offset, 0, 0, 0, options.separator, options.columns, options.positionIndex).length > 0
   );
   if (firstCellLine === undefined) {
     return [];
@@ -23,7 +28,19 @@ export function parseBodyRows(
   const expectedColumnCount = Math.max(
     1,
     options.expectedColumnCount ??
-      spanWidth(parseRowCells(source, firstCellLine.text, firstCellLine.offset, 0, 0, 0, options.separator, options.columns))
+      spanWidth(
+        parseRowCells(
+          source,
+          firstCellLine.text,
+          firstCellLine.offset,
+          0,
+          0,
+          0,
+          options.separator,
+          options.columns,
+          options.positionIndex
+        )
+      )
   );
   const rows: TableDocument["rows"] = [];
   let activeRowSpans: number[] = [];
@@ -80,8 +97,8 @@ export function parseBodyRows(
       role: "body",
       raw: source.slice(current.startOffset, current.endOffset),
       range: {
-        start: positionAt(source, current.startOffset),
-        end: positionAt(source, current.endOffset)
+        start: positionAt(options.positionIndex, current.startOffset),
+        end: positionAt(options.positionIndex, current.endOffset)
       },
       cells: current.cells,
       retained: materializeRetainedSegments(
@@ -90,7 +107,9 @@ export function parseBodyRows(
         current.cells
           .filter((cell) => cell.duplicateIndex === undefined || cell.duplicateIndex === 0)
           .map((cell) => ({ start: cell.range.start.offset, end: cell.range.end.offset })),
-        `retained:row:${current.rowIndex}`
+        `retained:row:${current.rowIndex}`,
+        [],
+        options.positionIndex
       ),
       errors: []
     });
@@ -128,7 +147,7 @@ export function parseBodyRows(
     const continuation = source.slice(trailingCell.range.end.offset, endOffset);
     trailingCell.raw += continuation;
     trailingCell.contentRaw += continuation;
-    trailingCell.range.end = positionAt(source, endOffset);
+    trailingCell.range.end = positionAt(options.positionIndex, endOffset);
     current.endOffset = line.offset + line.raw.length;
     return true;
   };
@@ -142,14 +161,14 @@ export function parseBodyRows(
   };
   const appendContinuationToTrailingPlainCell = (
     line: { offset: number; text: string; raw: string },
-    options: { requireHardBreak: boolean }
+    continuationOptions: { requireHardBreak: boolean }
   ): boolean => {
     const trailingCell = current?.cells.at(-1);
     if (
       current === undefined ||
       trailingCell === undefined ||
       trailingCell.isBlockContent ||
-      (options.requireHardBreak && !trailingPlainCellWantsHardBreakContinuation())
+      (continuationOptions.requireHardBreak && !trailingPlainCellWantsHardBreakContinuation())
     ) {
       return false;
     }
@@ -158,7 +177,7 @@ export function parseBodyRows(
     const continuation = source.slice(trailingCell.range.end.offset, endOffset);
     trailingCell.raw += continuation;
     trailingCell.contentRaw += continuation;
-    trailingCell.range.end = positionAt(source, endOffset);
+    trailingCell.range.end = positionAt(options.positionIndex, endOffset);
     current.endOffset = line.offset + line.raw.length;
     return true;
   };
@@ -208,7 +227,17 @@ export function parseBodyRows(
     }
     if (current === undefined) {
       const candidate = startRow(line);
-      const cells = parseRowCells(source, line.text, line.offset, candidate.rowIndex, 0, firstOpenColumn(candidate.occupied), options.separator, options.columns);
+      const cells = parseRowCells(
+        source,
+        line.text,
+        line.offset,
+        candidate.rowIndex,
+        0,
+        firstOpenColumn(candidate.occupied),
+        options.separator,
+        options.columns,
+        options.positionIndex
+      );
       if (cells.length === 0) {
         continue;
       }
@@ -221,12 +250,32 @@ export function parseBodyRows(
       continue;
     }
 
-    let cells = parseRowCells(source, line.text, line.offset, current.rowIndex, current.cells.length, nextOpenColumn(), options.separator, options.columns);
+    let cells = parseRowCells(
+      source,
+      line.text,
+      line.offset,
+      current.rowIndex,
+      current.cells.length,
+      nextOpenColumn(),
+      options.separator,
+      options.columns,
+      options.positionIndex
+    );
     if (cells.length > 0 && rowComplete()) {
       pendingPlainContinuationBlankLines = [];
       flush();
       current = startRow(line);
-      cells = parseRowCells(source, line.text, line.offset, current.rowIndex, current.cells.length, nextOpenColumn(), options.separator, options.columns);
+      cells = parseRowCells(
+        source,
+        line.text,
+        line.offset,
+        current.rowIndex,
+        current.cells.length,
+        nextOpenColumn(),
+        options.separator,
+        options.columns,
+        options.positionIndex
+      );
     }
     if (cells.length === 0 && (trailingPlainCellWantsHardBreakContinuation() || canContinueTrailingPlainCell())) {
       appendPendingPlainContinuationBlankLines();

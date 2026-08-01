@@ -1,11 +1,12 @@
-import type { SourceLine } from "./parser-source";
+import type { SourceLine, SourcePositionIndex } from "./parser-source";
 import { range } from "./parser-source";
 import type { TableAttributeEntry, TableAttributeLine, TableAttributes, TableColumnSpec, TableTitle } from "./types";
 
 export function parseTableAttributes(
   source: string,
   lines: SourceLine[],
-  delimiterLineIndex: number
+  delimiterLineIndex: number,
+  positionIndex: SourcePositionIndex
 ): TableAttributes {
   const empty = (): TableAttributes => ({ options: [], columns: [], lines: [], entries: [], named: {} });
   if (delimiterLineIndex <= 0) {
@@ -13,12 +14,12 @@ export function parseTableAttributes(
   }
 
   const attributeLines = collectTableAttributeLines(lines, delimiterLineIndex);
-  const title = collectTableTitle(source, lines, delimiterLineIndex, attributeLines);
+  const title = collectTableTitle(source, lines, delimiterLineIndex, attributeLines, positionIndex);
   if (attributeLines.length === 0) {
     return { ...empty(), title };
   }
 
-  const parsedLines = attributeLines.map((line) => parseAttributeLine(source, line));
+  const parsedLines = attributeLines.map((line) => parseAttributeLine(source, line, positionIndex));
   const entries = parsedLines.flatMap((line) => line.entries);
   const attributes = mergeAttributeLists(parsedLines.map((line) => entriesToAttributeMap(line.entries)));
   const columns = parseColumnSpecs(attributes.get("cols"));
@@ -52,7 +53,13 @@ function collectTableAttributeLines(
   return attributeLines.reverse();
 }
 
-function collectTableTitle(source: string, lines: SourceLine[], delimiterLineIndex: number, attributeLines: readonly SourceLine[]): TableTitle | undefined {
+function collectTableTitle(
+  source: string,
+  lines: SourceLine[],
+  delimiterLineIndex: number,
+  attributeLines: readonly SourceLine[],
+  positionIndex: SourcePositionIndex
+): TableTitle | undefined {
   const titleLineIndex = attributeLines[0]?.index === undefined ? delimiterLineIndex - 1 : attributeLines[0].index - 1;
   const line = lines[titleLineIndex];
   if (line === undefined) {
@@ -67,8 +74,8 @@ function collectTableTitle(source: string, lines: SourceLine[], delimiterLineInd
   return {
     raw: line.text,
     text: line.text.slice(trimmedStart + 1),
-    range: range(source, line.offset, line.offset + line.text.length),
-    valueRange: range(source, valueStart, valueEnd)
+    range: range(positionIndex, line.offset, line.offset + line.text.length),
+    valueRange: range(positionIndex, valueStart, valueEnd)
   };
 }
 
@@ -115,19 +122,26 @@ function entriesToAttributeMap(entries: readonly TableAttributeEntry[]): Map<str
   return attributes;
 }
 
-function parseAttributeLine(source: string, line: SourceLine): TableAttributeLine {
+function parseAttributeLine(source: string, line: SourceLine, positionIndex: SourcePositionIndex): TableAttributeLine {
   const text = line.text.trim();
   const trimmedStart = line.text.indexOf("[");
   const content = text.slice(1, -1);
   const contentOffset = line.offset + trimmedStart + 1;
   return {
     raw: line.text,
-    range: range(source, line.offset, line.offset + line.text.length),
-    entries: splitAttributePartsWithOffsets(content).map((part) => parseAttributeEntry(part.text, contentOffset + part.start, source))
+    range: range(positionIndex, line.offset, line.offset + line.text.length),
+    entries: splitAttributePartsWithOffsets(content).map((part) =>
+      parseAttributeEntry(part.text, contentOffset + part.start, source, positionIndex)
+    )
   };
 }
 
-function parseAttributeEntry(rawPart: string, rawStartOffset: number, source: string): TableAttributeEntry {
+function parseAttributeEntry(
+  rawPart: string,
+  rawStartOffset: number,
+  source: string,
+  positionIndex: SourcePositionIndex
+): TableAttributeEntry {
   const leading = rawPart.match(/^\s*/u)?.[0].length ?? 0;
   const trailing = rawPart.match(/\s*$/u)?.[0].length ?? 0;
   const trimmed = rawPart.trim();
@@ -135,7 +149,7 @@ function parseAttributeEntry(rawPart: string, rawStartOffset: number, source: st
   const end = rawStartOffset + rawPart.length - trailing;
   const base = {
     raw: trimmed,
-    range: range(source, start, end)
+    range: range(positionIndex, start, end)
   };
   if (trimmed.startsWith("%")) {
     return {
@@ -166,7 +180,7 @@ function parseAttributeEntry(rawPart: string, rawStartOffset: number, source: st
     ...base,
     name: name.toLowerCase(),
     value,
-    valueRange: range(source, valueStart, valueEnd),
+    valueRange: range(positionIndex, valueStart, valueEnd),
     quote
   };
 }

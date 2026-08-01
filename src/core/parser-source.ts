@@ -2,6 +2,20 @@ import type { SourcePosition, SourceRange } from "./types";
 
 export type SourceLine = { index: number; offset: number; text: string; raw: string };
 
+export interface SourcePositionIndex {
+  readonly lineStarts: readonly number[];
+}
+
+export function createSourcePositionIndex(source: string): SourcePositionIndex {
+  const lineStarts = [0];
+  for (let offset = 0; offset < source.length; offset += 1) {
+    if (source[offset] === "\n") {
+      lineStarts.push(offset + 1);
+    }
+  }
+  return { lineStarts };
+}
+
 export function splitLines(source: string): SourceLine[] {
   const lines: SourceLine[] = [];
   const linePattern = /.*(?:\r\n|\n|\r|$)/g;
@@ -25,25 +39,24 @@ export function splitLines(source: string): SourceLine[] {
   return lines;
 }
 
-export function range(source: string, start: number, end: number): SourceRange {
+export function range(index: SourcePositionIndex, start: number, end: number): SourceRange {
   return {
-    start: positionAt(source, start),
-    end: positionAt(source, end)
+    start: positionAt(index, start),
+    end: positionAt(index, end)
   };
 }
 
-export function positionAt(source: string, offset: number): SourcePosition {
-  let line = 0;
-  let column = 0;
-  for (let index = 0; index < offset; index += 1) {
-    const char = source[index];
-    if (char === "\n") {
-      line += 1;
-      column = 0;
+export function positionAt(index: SourcePositionIndex, offset: number): SourcePosition {
+  let low = 0;
+  let high = index.lineStarts.length;
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (index.lineStarts[middle] <= offset) {
+      low = middle + 1;
     } else {
-      column += 1;
+      high = middle;
     }
   }
-  return { offset, line, column };
+  const line = Math.max(0, low - 1);
+  return { offset, line, column: offset - index.lineStarts[line] };
 }
-

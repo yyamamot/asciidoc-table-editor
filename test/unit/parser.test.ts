@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { emitNoopTable, parseAsciiDocTable, projectGridModel, replacePlainCellStyles } from "../../src/core";
 import type { LosslessTable, RetainedSegment, SourceRange } from "../../src/core";
 import { blockDelimiter, openDelimitedBlockDelimiter, updateDelimitedBlockStack } from "../../src/core/parser-blocks";
+import { createSourcePositionIndex, positionAt } from "../../src/core/parser-source";
 
 describe("delimited block state", () => {
   it.each(["----", "-----", "------", "....", ".....", "......", "====", "=====", "======", "____", "_____", "______", "****", "*****", "******", "++++", "+++++", "++++++", "////", "/////", "//////", "--"])(
@@ -31,7 +32,52 @@ describe("delimited block state", () => {
   });
 });
 
+describe("source position index", () => {
+  it.each([
+    ["LF with final newline", "\n", true],
+    ["LF without final newline", "\n", false],
+    ["CRLF with final newline", "\r\n", true],
+    ["CRLF without final newline", "\r\n", false],
+    ["bare CR with existing column semantics", "\r", true]
+  ])("matches the UTF-16 prefix-scan oracle at every offset for %s", (_label, eol, finalNewline) => {
+    const source = `ASCII漢🙂${eol}次é${finalNewline ? eol : ""}`;
+    const index = createSourcePositionIndex(source);
+    const emojiOffset = source.indexOf("🙂");
+
+    expect(emojiOffset).toBeGreaterThanOrEqual(0);
+    for (let offset = 0; offset <= source.length; offset += 1) {
+      expect(positionAt(index, offset)).toEqual(positionAtForTest(source, offset));
+    }
+    expect(positionAt(index, emojiOffset + 1)).toEqual(positionAtForTest(source, emojiOffset + 1));
+  });
+});
+
 describe("parseAsciiDocTable", () => {
+  it("keeps every parser-owned range aligned with the prefix-scan position oracle", () => {
+    const source =
+      ".表🙂 title\r\n" +
+      "[%header]\n" +
+      "[cols=\"1,2a\",role=概要]\r\n" +
+      "|===\n" +
+      "| A | B\r\n" +
+      "\n" +
+      "// retained\n" +
+      "x*| C | D\r\n" +
+      "|===";
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.attributes.title).toBeDefined();
+    expect(parsed.attributes.lines).not.toHaveLength(0);
+    expect(parsed.attributes.entries).not.toHaveLength(0);
+    expect(parsed.rows).not.toHaveLength(0);
+    expect(parsed.rows.flatMap((row) => row.cells)).not.toHaveLength(0);
+    expect([...parsed.retained, ...parsed.rows.flatMap((row) => row.retained)]).not.toHaveLength(0);
+    expect(parsed.rows.flatMap((row) => row.cells.flatMap((cell) => cell.errors))).not.toHaveLength(0);
+
+    assertParserRangeIntegrity(source, parsed);
+    expect(emitNoopTable(parsed)).toBe(source);
+  });
+
   it("creates a lossless scaffold document", () => {
     const source = "|===\n| A | B\n|===\n";
     const parsed = parseAsciiDocTable(source);
@@ -936,6 +982,63 @@ function assertRetainedIntegrity(source: string, table: LosslessTable): void {
         .filter((cell) => cell.duplicateIndex === undefined || cell.duplicateIndex === 0)
         .map((cell) => cell.range)
     ]);
+  }
+}
+
+function assertParserRangeIntegrity(source: string, table: LosslessTable): void {
+  const assertRange = (range: SourceRange): void => {
+    expect(range.start).toEqual(positionAtForTest(source, range.start.offset));
+    expect(range.end).toEqual(positionAtForTest(source, range.end.offset));
+  };
+  const assertOwnedRaw = (range: SourceRange, raw: string): void => {
+    assertRange(range);
+    expect(source.slice(range.start.offset, range.end.offset)).toBe(raw);
+  };
+
+  assertOwnedRaw(table.range, table.raw);
+  if (table.attributes.title !== undefined) {
+    assertOwnedRaw(table.attributes.title.range, table.attributes.title.raw);
+    assertRange(table.attributes.title.valueRange);
+    expect(source.slice(table.attributes.title.valueRange.start.offset, table.attributes.title.valueRange.end.offset)).toBe(
+      table.attributes.title.text
+    );
+  }
+  for (const line of table.attributes.lines) {
+    assertOwnedRaw(line.range, line.raw);
+    for (const entry of line.entries) {
+      assertOwnedRaw(entry.range, entry.raw);
+      if (entry.valueRange !== undefined) {
+        assertRange(entry.valueRange);
+        expect(source.slice(entry.valueRange.start.offset, entry.valueRange.end.offset)).toBe(entry.value);
+      }
+    }
+  }
+  for (const row of table.rows) {
+    assertOwnedRaw(row.range, row.raw);
+    for (const cell of row.cells) {
+      assertOwnedRaw(cell.range, cell.raw);
+      for (const diagnostic of cell.errors) {
+        if (diagnostic.range !== undefined) {
+          assertRange(diagnostic.range);
+        }
+      }
+    }
+    for (const segment of row.retained) {
+      assertOwnedRaw(segment.range, segment.raw);
+    }
+    for (const diagnostic of row.errors) {
+      if (diagnostic.range !== undefined) {
+        assertRange(diagnostic.range);
+      }
+    }
+  }
+  for (const segment of table.retained) {
+    assertOwnedRaw(segment.range, segment.raw);
+  }
+  for (const diagnostic of table.errors) {
+    if (diagnostic.range !== undefined) {
+      assertRange(diagnostic.range);
+    }
   }
 }
 

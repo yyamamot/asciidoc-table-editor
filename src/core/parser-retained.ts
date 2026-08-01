@@ -1,5 +1,5 @@
 import type { RetainedSegment } from "./types";
-import { range, splitLines, type SourceLine } from "./parser-source";
+import { range, splitLines, type SourceLine, type SourcePositionIndex } from "./parser-source";
 
 interface OffsetRange {
   readonly start: number;
@@ -19,7 +19,8 @@ export function materializeRetainedSegments(
   scope: OffsetRange,
   ownedRanges: readonly OffsetRange[],
   nodeIdPrefix: string,
-  explicitRanges: readonly ExplicitRetainedRange[] = []
+  explicitRanges: readonly ExplicitRetainedRange[] = [],
+  positionIndex: SourcePositionIndex
 ): RetainedSegment[] {
   const explicit = explicitRanges
     .map((entry) => clippedCandidate(entry, scope))
@@ -47,7 +48,7 @@ export function materializeRetainedSegments(
       nodeId: `${nodeIdPrefix}:${index}`,
       kind: candidate.kind,
       raw: source.slice(candidate.start, candidate.end),
-      range: range(source, candidate.start, candidate.end)
+      range: range(positionIndex, candidate.start, candidate.end)
     }));
 }
 

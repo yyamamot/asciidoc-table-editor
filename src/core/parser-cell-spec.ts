@@ -1,5 +1,5 @@
 import type { LosslessTableCell, TableColumnSpec, TableDiagnostic } from "./types";
-import { range } from "./parser-source";
+import { range, type SourcePositionIndex } from "./parser-source";
 import { isKnownCellStyle } from "./cell-style";
 
 export function parseRowCells(
@@ -10,7 +10,8 @@ export function parseRowCells(
   startCellIndex: number,
   startColumnIndex: number,
   separator: string,
-  columns: readonly TableColumnSpec[]
+  columns: readonly TableColumnSpec[],
+  positionIndex: SourcePositionIndex
 ): LosslessTableCell[] {
   const markers = scanCellMarkers(lineText, separator);
   const cells: LosslessTableCell[] = [];
@@ -21,14 +22,14 @@ export function parseRowCells(
     const rawEndColumn = nextMarker?.markerStart ?? lineText.length;
     const rawStartOffset = lineOffset + marker.specStart;
     const rawEndOffset = lineOffset + rawEndColumn;
-    const parsedSpec = parseCellSpec(marker.cellSpecRaw, source, rawStartOffset);
+    const parsedSpec = parseCellSpec(marker.cellSpecRaw, source, rawStartOffset, positionIndex);
     const contentStartColumn = marker.delimiterColumn + 1;
     const duplicateCount = parsedSpec.duplicateCount;
     const duplicateGroupId = duplicateCount > 1 ? `duplicate:${rowIndex}:${startCellIndex + cells.length}` : undefined;
     const baseCell = {
       kind: "cell" as const,
       raw: source.slice(rawStartOffset, rawEndOffset),
-      range: range(source, rawStartOffset, rawEndOffset),
+      range: range(positionIndex, rawStartOffset, rawEndOffset),
       cellSpecRaw: marker.cellSpecRaw,
       delimiterRaw: separator,
       contentRaw: lineText.slice(contentStartColumn, rawEndColumn),
@@ -115,7 +116,8 @@ function isCellSpecCandidate(value: string): boolean {
 function parseCellSpec(
   cellSpecRaw: string,
   source: string,
-  rawStartOffset: number
+  rawStartOffset: number,
+  positionIndex: SourcePositionIndex
 ): {
   rowSpan: number;
   colSpan: number;
@@ -143,7 +145,7 @@ function parseCellSpec(
         code: "cell.spec.duplicate-unsupported",
         severity: "error",
         message: `Unsupported mixed duplicate cell spec: ${cellSpecRaw}`,
-        range: range(source, rawStartOffset, rawStartOffset + cellSpecRaw.length)
+        range: range(positionIndex, rawStartOffset, rawStartOffset + cellSpecRaw.length)
       });
       duplicateCount = 1;
       remaining = remaining.replace(/\*/gu, "");
@@ -153,7 +155,7 @@ function parseCellSpec(
       code: "cell.spec.duplicate-unsupported",
       severity: "error",
       message: `Unsupported mixed duplicate cell spec: ${remaining}`,
-      range: range(source, rawStartOffset, rawStartOffset + cellSpecRaw.length)
+      range: range(positionIndex, rawStartOffset, rawStartOffset + cellSpecRaw.length)
     });
     remaining = remaining.replace(/\*/gu, "");
   }
@@ -198,7 +200,7 @@ function parseCellSpec(
       code: "cell.spec.unsupported",
       severity: "warning",
       message: `Unsupported cell spec segment: ${remaining}`,
-      range: range(source, rawStartOffset, rawStartOffset + cellSpecRaw.length)
+      range: range(positionIndex, rawStartOffset, rawStartOffset + cellSpecRaw.length)
     });
   }
 
