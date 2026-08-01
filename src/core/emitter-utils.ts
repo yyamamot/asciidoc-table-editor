@@ -172,11 +172,12 @@ export function expandDuplicateShorthand(
     if (first === undefined) {
       continue;
     }
+    const cellSpecSuffix = first.cellSpecRaw.replace(/^\d+\*/u, "");
     sourceReplacements.push({
       start: first.range.start.offset,
       end: first.range.end.offset,
       text: sorted
-        .map((cell) => `${table.delimiter.separator}${replacements.get(cell.nodeId) ?? cell.contentRaw}`)
+        .map((cell) => `${cellSpecSuffix}${cell.delimiterRaw}${replacements.get(cell.nodeId) ?? cell.contentRaw}`)
         .join(" ")
     });
   }

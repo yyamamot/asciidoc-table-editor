@@ -215,8 +215,8 @@ describe("write-back emitter", () => {
     });
   });
 
-  it("expands duplicate shorthand before batch paste-style replacement", () => {
-    const table = parseAsciiDocTable("|===\n2*| A | C\n|===\n");
+  it("expands modifier duplicate shorthand before batch paste-style replacement", () => {
+    const table = parseAsciiDocTable("|===\n2*^.^s| A | C\n|===\n");
     const result = replacePlainCellContents(table, [
       { sourceCellId: "cell:0:0", contentRaw: " X" },
       { sourceCellId: "cell:0:1", contentRaw: " Y" }
@@ -224,51 +224,126 @@ describe("write-back emitter", () => {
 
     expect(result).toEqual({
       ok: true,
-      source: "|===\n| X | Y | C\n|===\n",
+      source: "|===\n^.^s| X ^.^s| Y | C\n|===\n",
       diagnostics: []
     });
   });
 
-  it("rejects duplicate expansion when style or alignment modifiers would be lost", () => {
-    const table = parseAsciiDocTable("|===\n2*>m| A\n|===\n");
-    const result = replacePlainCellContent(table, "cell:0:1", " B");
+  it("preserves duplicate modifiers during rectangular paste", () => {
+    const result = pasteRectangularPlainTable(parseAsciiDocTable("|===\n2*^.^s| A | C\n|===\n"), {
+      startSourceCellId: "cell:0:1",
+      rows: [["B"]]
+    });
 
-    expect(result).toMatchObject({
-      ok: false,
-      source: table.raw,
-      diagnostics: [expect.objectContaining({ code: "writeback.cell-replacement-validation-failed" })]
+    expect(result).toEqual({
+      ok: true,
+      source: "|===\n^.^s| A ^.^s| B | C\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(result.source).rows[0].cells.slice(0, 2)).toMatchObject([
+      { cellSpecRaw: "^.^s", style: "s", horizontalAlign: "center", verticalAlign: "middle" },
+      { cellSpecRaw: "^.^s", style: "s", horizontalAlign: "center", verticalAlign: "middle" }
+    ]);
+  });
+
+  it.each([
+    ["style", "s", { style: "s" }],
+    ["horizontal alignment", ">", { horizontalAlign: "right" }],
+    ["vertical alignment", ".^", { verticalAlign: "middle" }],
+    ["combined raw order", "^.^s", { style: "s", horizontalAlign: "center", verticalAlign: "middle" }]
+  ])("preserves duplicate %s during expansion", (_label, modifier, metadata) => {
+    const table = parseAsciiDocTable(`|===\n2*${modifier}| A\n|===\n`);
+    const result = replacePlainCellContent(table, "cell:0:1", " B");
+    const expectedSource = `|===\n${modifier}| A ${modifier}| B\n|===\n`;
+
+    expect(result).toEqual({
+      ok: true,
+      source: expectedSource,
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(expectedSource).rows[0].cells).toMatchObject([
+      { cellSpecRaw: modifier, ...metadata, errors: [] },
+      { cellSpecRaw: modifier, ...metadata, errors: [] }
+    ]);
+  });
+
+  it("preserves duplicate modifiers and delimiter raw text with a custom separator", () => {
+    const result = replacePlainCellContent(
+      parseAsciiDocTable("[separator=¦]\n|===\n2*>m¦ A\n|===\n"),
+      "cell:0:1",
+      " B"
+    );
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[separator=¦]\n|===\n>m¦ A >m¦ B\n|===\n",
+      diagnostics: []
     });
   });
 
-  it("expands duplicate shorthand before merge write-back", () => {
-    const table = parseAsciiDocTable("|===\n2*| A | C\n|===\n");
+  it("keeps non-target duplicate modifiers when imported paste replaces a target spec", () => {
+    const result = pasteImportedTable(parseAsciiDocTable("|===\n2*>m| A | C\n|===\n"), {
+      startSourceCellId: "cell:0:1",
+      rowCount: 1,
+      columnCount: 1,
+      cells: [{ row: 0, col: 0, rowSpan: 1, colSpan: 1, text: "B" }]
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "|===\n>m| A | B | C\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(result.source).rows[0].cells[0]).toMatchObject({
+      cellSpecRaw: ">m",
+      style: "m",
+      horizontalAlign: "right"
+    });
+  });
+
+  it("does not expand duplicate shorthand combined with a span", () => {
+    const table = parseAsciiDocTable("|===\n2*2+| A\n|===\n");
+    const result = replacePlainCellContent(table, "cell:0:0", " B");
+
+    expect(table.rows[0].cells[0].errors).toContainEqual(
+      expect.objectContaining({ code: "cell.spec.duplicate-unsupported" })
+    );
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.unsafe-cell-diagnostics" })]
+    });
+  });
+
+  it("expands modifier duplicate shorthand before merge write-back", () => {
+    const table = parseAsciiDocTable("|===\n2*^.^s| A | C\n|===\n");
     const result = mergePlainCellsHorizontally(table, {
       sourceCellIds: ["cell:0:0", "cell:0:1"]
     });
 
     expect(result).toEqual({
       ok: true,
-      source: "|===\n2+| A | C\n|===\n",
+      source: "|===\n2+^.^s| A | C\n|===\n",
       diagnostics: []
     });
   });
 
-  it("expands duplicate shorthand before row and column structure edit", () => {
-    const insertColumn = insertPlainColumnAfter(parseAsciiDocTable("|===\n2*| A\n|===\n"), {
+  it("expands modifier duplicate shorthand before row and column structure edit", () => {
+    const insertColumn = insertPlainColumnAfter(parseAsciiDocTable("|===\n2*>m| A\n|===\n"), {
       sourceCellId: "cell:0:0"
     });
-    const insertRow = insertPlainRowAfter(parseAsciiDocTable("|===\n2*| A\n|===\n"), {
+    const insertRow = insertPlainRowAfter(parseAsciiDocTable("|===\n2*>m| A\n|===\n"), {
       sourceCellId: "cell:0:0"
     });
 
     expect(insertColumn).toEqual({
       ok: true,
-      source: "|===\n| A |  | A\n|===\n",
+      source: "|===\n>m| A |  >m| A\n|===\n",
       diagnostics: []
     });
     expect(insertRow).toEqual({
       ok: true,
-      source: "|===\n| A | A\n|  | \n|===\n",
+      source: "|===\n>m| A >m| A\n|  | \n|===\n",
       diagnostics: []
     });
   });
