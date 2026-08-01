@@ -7,6 +7,12 @@
 - Honor explicit `cols` column counts when diagnosing ragged rows without synthesizing missing cells.
 - Preserve variable-length and nested delimited blocks, and ignore table-like source inside opaque blocks during table detection.
 - Reject unsafe plain and block cell replacements atomically when content would change separators, boundaries, or the parsed grid structure.
+- Resolve column insertions and deletions against the logical span-aware grid, and update supported `cols` metadata atomically without rewriting unrelated column specs.
+- Preserve duplicate-cell style and alignment modifiers, custom separators, and table-local line endings when expanding cells or inserting table attributes.
+- Retain comments, blank lines, unknown source, and inter-cell layout as table- or row-owned lossless segments, and diagnose unknown lowercase cell styles without rewriting their raw syntax.
+- Contain malformed clipboard HTML and invalid numeric entities as diagnostics or TSV fallback results instead of leaking parser exceptions or partial HTML cells.
+- Preserve block and multiline cell source, trailing whitespace, mixed line endings, and final-newline state when applying Cell-per-line formatting.
+- Improve large-table parsing with a shared UTF-16 source-position index and enforce all lossless fixtures through versioned summaries, no-op checks, Grid invariants, and deterministic property tests.
 
 ## 0.0.3
 
