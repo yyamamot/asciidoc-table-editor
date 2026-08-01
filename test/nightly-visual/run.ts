@@ -1,16 +1,19 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 import { runTests } from "@vscode/test-electron";
 import { buildDebugBundle, createHarnessEvent, type HarnessEvent, type HarnessScenarioSpec } from "../../src/harness";
 import { createRuntimeEvent, parseRuntimeJsonl, type RuntimeEvent } from "../../src/logging";
+import { resolveVSCodeTestExecutable } from "../support/vscode-test-launcher";
 
 async function main(): Promise<void> {
   const runId = `nightly-${new Date().toISOString().replaceAll(/[:.]/g, "-")}`;
   const workspacePath = process.cwd();
   const artifactRoot = join(workspacePath, ".tmp", "harness");
   const visualRoot = join(workspacePath, ".tmp", "nightly-visual", runId);
-  const userDataDir = join(visualRoot, "user-data");
-  const extensionsDir = join(visualRoot, "extensions");
+  const profileRoot = mkdtempSync(join(tmpdir(), "ate-visual-"));
+  const userDataDir = join(profileRoot, "user-data");
+  const extensionsDir = join(profileRoot, "extensions");
   const hostArtifactRoot = join(visualRoot, "host-artifacts");
   mkdirSync(userDataDir, { recursive: true });
   mkdirSync(extensionsDir, { recursive: true });
@@ -55,7 +58,16 @@ async function main(): Promise<void> {
   let runtimeEvents: RuntimeEvent[] = [];
 
   try {
+    const executable = await resolveVSCodeTestExecutable({ workspacePath, target: "current" });
+    console.log([
+      "VS Code nightly launcher:",
+      `version=${executable.requestedVersion}`,
+      `platform=${executable.platform}`,
+      `cache=${executable.cacheState}`,
+      `executable=${executable.executablePath}`
+    ].join(" "));
     await runTests({
+      vscodeExecutablePath: executable.executablePath,
       extensionDevelopmentPath: workspacePath,
       extensionTestsPath: join(workspacePath, "out", "test", "nightly-visual", "host.js"),
       launchArgs: [

@@ -64,6 +64,43 @@ describe("projectGridModel", () => {
     );
   });
 
+  it("uses the explicit column count as the minimum grid width", () => {
+    const table = tableFixture([[cell("c1")]], { columnCount: 3 });
+
+    const grid = projectGridModel(table);
+
+    expect(grid.columnCount).toBe(3);
+    expect(grid.cells[0]).toHaveLength(1);
+    expect(grid.diagnostics.filter((diagnostic) => diagnostic.code === "grid.ragged-row")).toHaveLength(2);
+  });
+
+  it("reports every row that is shorter than the explicit column count", () => {
+    const table = tableFixture([[cell("c1")], [cell("c2"), cell("c3")]], { columnCount: 3 });
+
+    const grid = projectGridModel(table);
+
+    expect(grid.columnCount).toBe(3);
+    expect(grid.diagnostics.filter((diagnostic) => diagnostic.code === "grid.ragged-row")).toHaveLength(3);
+  });
+
+  it("counts span coverage before reporting explicit-column gaps", () => {
+    const table = tableFixture([[cell("c1", { colSpan: 2 })]], { columnCount: 3 });
+
+    const grid = projectGridModel(table);
+
+    expect(grid.cells[0][1]).toMatchObject({ kind: "covered", sourceCellId: "c1" });
+    expect(grid.diagnostics.filter((diagnostic) => diagnostic.code === "grid.ragged-row")).toHaveLength(1);
+  });
+
+  it("keeps projected width when it exceeds the explicit column count", () => {
+    const table = tableFixture([[cell("c1"), cell("c2"), cell("c3")]], { columnCount: 2 });
+
+    const grid = projectGridModel(table);
+
+    expect(grid.columnCount).toBe(3);
+    expect(grid.diagnostics).toEqual([]);
+  });
+
   it("reports spans that extend beyond the source row count", () => {
     const table = tableFixture([[cell("c1", { rowSpan: 3 }), cell("c2")], [cell("c3")]]);
 
@@ -79,7 +116,7 @@ describe("projectGridModel", () => {
   });
 });
 
-function tableFixture(rows: LosslessTableCell[][]): LosslessTable {
+function tableFixture(rows: LosslessTableCell[][], options: { columnCount?: number } = {}): LosslessTable {
   return {
     nodeId: "table:test",
     kind: "table",
@@ -91,6 +128,7 @@ function tableFixture(rows: LosslessTableCell[][]): LosslessTable {
       separator: "|"
     },
     attributes: {
+      columnCount: options.columnCount,
       options: [],
       columns: [],
       lines: [],

@@ -3,7 +3,7 @@ import type { GridCell, GridModel, LosslessTable, LosslessTableCell, TableDiagno
 export function projectGridModel(table: LosslessTable): GridModel {
   const cells: GridCell[][] = [];
   const diagnostics: TableDiagnostic[] = [...table.errors];
-  let columnCount = 0;
+  let columnCount = table.attributes.columnCount ?? 0;
 
   table.rows.forEach((row, rowIndex) => {
     cells[rowIndex] ??= [];

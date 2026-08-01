@@ -12,6 +12,7 @@ if (options.help) {
 
 const requiredCommands = [
   ["pnpm", ["run", "verify"], "release baseline verify"],
+  ["pnpm", ["run", "test:integration:host", "--", "--target", "minimum"], "minimum VS Code Host integration"],
   ["pnpm", ["run", "test:package"], "VSIX/package smoke"],
   ["pnpm", ["run", "check:asciidoctor-compat"], "Asciidoctor compatibility"],
   ["pnpm", ["run", "perf:large-table"], "large table performance"],

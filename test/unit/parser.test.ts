@@ -227,6 +227,16 @@ describe("parseAsciiDocTable", () => {
     expect(grid.columns).toEqual(parsed.attributes.columns);
   });
 
+  it("reports cells missing from an explicit column count without synthesizing cells", () => {
+    const parsed = parseAsciiDocTable("[cols=3*]\n|===\n| A\n|===\n");
+    const grid = projectGridModel(parsed);
+
+    expect(parsed.attributes.columnCount).toBe(3);
+    expect(grid.columnCount).toBe(3);
+    expect(grid.cells[0]).toHaveLength(1);
+    expect(grid.diagnostics.filter((diagnostic) => diagnostic.code === "grid.ragged-row")).toHaveLength(2);
+  });
+
   it("inherits column style and alignment when a cell spec does not override them", () => {
     const source = "[cols=\"h,m,s,e\"]\n|===\n| A | B | C | D\ns| Explicit strong d| Explicit default >| Explicit right | Inherited emphasis\n|===\n";
     const parsed = parseAsciiDocTable(source);
