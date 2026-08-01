@@ -52,6 +52,7 @@ export function updateTableHeaderFooter(table: LosslessTable, request: TableHead
   if (unsafe !== undefined) {
     return blocked(table, unsafe);
   }
+  const eol = resolveTableEol(table.raw, delimiterStartOffset(table));
 
   const options = new Set(table.attributes.options);
   if (request.noheader === true) {
@@ -72,7 +73,7 @@ export function updateTableHeaderFooter(table: LosslessTable, request: TableHead
     options.delete("footer");
   }
 
-  return patchOptionsAttribute(table, Array.from(options), ["header", "footer", "noheader"]);
+  return patchOptionsAttribute(table, Array.from(options), ["header", "footer", "noheader"], eol);
 }
 
 export function updateColumnSpec(table: LosslessTable, request: ColumnSpecUpdate): WriteBackResult {
@@ -80,6 +81,7 @@ export function updateColumnSpec(table: LosslessTable, request: ColumnSpecUpdate
   if (unsafe !== undefined) {
     return blocked(table, unsafe);
   }
+  const eol = resolveTableEol(table.raw, delimiterStartOffset(table));
   if (!Number.isInteger(request.columnIndex) || request.columnIndex < 0) {
     return blocked(table, diagnostic("writeback.column-spec-index", "Column spec update requires a valid column index"));
   }
@@ -101,7 +103,7 @@ export function updateColumnSpec(table: LosslessTable, request: ColumnSpecUpdate
     verticalAlign: request.verticalAlign ?? existing?.verticalAlign,
     style: request.style ?? existing?.style
   });
-  return patchAttribute(table, "cols", columns.join(","), { quote: "\"" });
+  return patchAttribute(table, "cols", columns.join(","), { quote: "\"" }, eol);
 }
 
 export function updateTableAppearance(table: LosslessTable, request: TableAppearanceUpdate): WriteBackResult {
@@ -109,11 +111,12 @@ export function updateTableAppearance(table: LosslessTable, request: TableAppear
   if (unsafe !== undefined) {
     return blocked(table, unsafe);
   }
+  const eol = resolveTableEol(table.raw, delimiterStartOffset(table));
 
   let source = table.raw;
   let current = table;
   if (request.title !== undefined) {
-    source = patchTitle(current, request.title);
+    source = patchTitle(current, request.title, eol);
     current = parseAsciiDocTable(source);
   }
 
@@ -148,13 +151,13 @@ export function updateTableAppearance(table: LosslessTable, request: TableAppear
 
   let result: WriteBackResult = { ok: true, source: current.raw, diagnostics: [] };
   for (const replacement of replacements) {
-    result = patchAttribute(parseAsciiDocTable(result.source), replacement.name, replacement.value, { quote: replacement.quote });
+    result = patchAttribute(parseAsciiDocTable(result.source), replacement.name, replacement.value, { quote: replacement.quote }, eol);
     if (!result.ok) {
       return result;
     }
   }
   if (request.autowidth !== undefined) {
-    result = patchOption(parseAsciiDocTable(result.source), "autowidth", request.autowidth);
+    result = patchOption(parseAsciiDocTable(result.source), "autowidth", request.autowidth, eol);
   }
   return result;
 }
@@ -236,17 +239,17 @@ function hasUnsupportedDuplicateSpec(cellSpecRaw: string): boolean {
   return cellSpecRaw.includes("*");
 }
 
-function patchOption(table: LosslessTable, option: string, enabled: boolean): WriteBackResult {
+function patchOption(table: LosslessTable, option: string, enabled: boolean, eol: string): WriteBackResult {
   const options = new Set(table.attributes.options);
   if (enabled) {
     options.add(option);
   } else {
     options.delete(option);
   }
-  return patchOptionsAttribute(table, Array.from(options), [option]);
+  return patchOptionsAttribute(table, Array.from(options), [option], eol);
 }
 
-function patchOptionsAttribute(table: LosslessTable, options: readonly string[], controlled: readonly string[]): WriteBackResult {
+function patchOptionsAttribute(table: LosslessTable, options: readonly string[], controlled: readonly string[], eol: string): WriteBackResult {
   const controlledSet = new Set(controlled);
   const optionEntries = table.attributes.entries.filter((entry) => entry.kind === "option" && controlledSet.has((entry.value ?? "").toLowerCase()));
   const sourceWithoutOptionShorthand = optionEntries.length === 0
@@ -264,16 +267,17 @@ function patchOptionsAttribute(table: LosslessTable, options: readonly string[],
     for (const option of options) {
       remaining.add(option);
     }
-    return patchAttribute(reparsed, "options", Array.from(remaining).join(","), { omitWhenEmpty: true });
+    return patchAttribute(reparsed, "options", Array.from(remaining).join(","), { omitWhenEmpty: true }, eol);
   }
-  return patchAttribute(reparsed, "options", options.join(","), { omitWhenEmpty: true });
+  return patchAttribute(reparsed, "options", options.join(","), { omitWhenEmpty: true }, eol);
 }
 
 function patchAttribute(
   table: LosslessTable,
   name: string,
   value: string | undefined,
-  options: { quote?: "\"" | "'"; omitWhenEmpty?: boolean } = {}
+  options: { quote?: "\"" | "'"; omitWhenEmpty?: boolean },
+  eol: string
 ): WriteBackResult {
   const existing = findNamedEntry(table, name);
   if ((value === undefined || value.length === 0) && options.omitWhenEmpty) {
@@ -298,7 +302,7 @@ function patchAttribute(
     return { ok: true, source: table.raw, diagnostics: [] };
   }
 
-  const rendered = `[${renderNamedAttribute(name, value, options.quote)}]\n`;
+  const rendered = `[${renderNamedAttribute(name, value, options.quote)}]${eol}`;
   const insertAt = delimiterStartOffset(table);
   return {
     ok: true,
@@ -351,7 +355,7 @@ function optionEntryRemoval(table: LosslessTable, entry: TableAttributeEntry, co
   return entryRemoval(table.raw, entry);
 }
 
-function patchTitle(table: LosslessTable, title: string): string {
+function patchTitle(table: LosslessTable, title: string, eol: string): string {
   if (table.attributes.title !== undefined) {
     return applyReplacements(table.raw, [{
       start: table.attributes.title.valueRange.start.offset,
@@ -360,7 +364,7 @@ function patchTitle(table: LosslessTable, title: string): string {
     }]);
   }
   const insertAt = delimiterStartOffset(table);
-  return table.raw.slice(0, insertAt) + `.${title}\n` + table.raw.slice(insertAt);
+  return table.raw.slice(0, insertAt) + `.${title}${eol}` + table.raw.slice(insertAt);
 }
 
 function diagnostic(code: string, message: string, nodeId?: string): TableDiagnostic {
@@ -374,4 +378,12 @@ function delimiterStartOffset(table: LosslessTable): number {
   }
   const lineStart = table.raw.indexOf(delimiter);
   return lineStart < 0 ? 0 : lineStart;
+}
+
+function resolveTableEol(source: string, insertAt: number): string {
+  const before = source.slice(0, insertAt).match(/\r\n|\n|\r/gu);
+  if (before !== null && before.length > 0) {
+    return before[before.length - 1];
+  }
+  return source.slice(insertAt).match(/\r\n|\n|\r/u)?.[0] ?? "\n";
 }

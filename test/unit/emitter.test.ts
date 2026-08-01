@@ -204,6 +204,144 @@ describe("write-back emitter", () => {
     });
   });
 
+  it.each([
+    ["LF", "\n"],
+    ["CRLF", "\r\n"]
+  ])("uses the table-local %s line ending for new appearance lines", (_label, eol) => {
+    const source = `|===${eol}| A | B${eol}|===${eol}`;
+    const result = updateTableAppearance(parseAsciiDocTable(source), {
+      title: "New",
+      width: "75%",
+      frame: "all",
+      grid: "rows",
+      stripes: "even",
+      autowidth: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: `.New${eol}[width=75%]${eol}[frame=all]${eol}[grid=rows]${eol}[stripes=even]${eol}[options=autowidth]${eol}${source}`,
+      diagnostics: []
+    });
+  });
+
+  it.each([
+    ["LF", "\n"],
+    ["CRLF", "\r\n"]
+  ])("uses the table-local %s line ending for a new header footer options line", (_label, eol) => {
+    const source = `|===${eol}| A | B${eol}|===${eol}`;
+    const result = updateTableHeaderFooter(parseAsciiDocTable(source), {
+      header: true,
+      footer: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: `[options=header,footer]${eol}${source}`,
+      diagnostics: []
+    });
+  });
+
+  it("keeps the original line ending after removing option shorthand before insertion", () => {
+    const source = "[%header]\r\n|===\n| A | B\n|===\n";
+    const result = updateTableHeaderFooter(parseAsciiDocTable(source), {
+      noheader: true,
+      footer: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[options=noheader,footer]\r\n|===\n| A | B\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it.each([
+    ["LF", "\n"],
+    ["CRLF", "\r\n"]
+  ])("uses the table-local %s line ending for a new cols line", (_label, eol) => {
+    const source = `|===${eol}| A | B${eol}|===${eol}`;
+    const result = updateColumnSpec(parseAsciiDocTable(source), {
+      columnIndex: 1,
+      widthRaw: "2",
+      horizontalAlign: "right",
+      style: "m"
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: `[cols=",2>m"]${eol}${source}`,
+      diagnostics: []
+    });
+  });
+
+  it("prefers the last line ending before the delimiter for every new appearance line", () => {
+    const source = "[role=keep]\r\n|===\n| A | B\n|===\n";
+    const result = updateTableAppearance(parseAsciiDocTable(source), {
+      title: "New",
+      width: "75%",
+      frame: "all",
+      autowidth: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[role=keep]\r\n.New\r\n[width=75%]\r\n[frame=all]\r\n[options=autowidth]\r\n|===\n| A | B\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("falls forward to the first line ending when the delimiter has no preceding line ending", () => {
+    const source = "|===\r\n| A | B\n|===\n";
+    const result = updateTableAppearance(parseAsciiDocTable(source), {
+      title: "New",
+      frame: "all",
+      autowidth: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: ".New\r\n[frame=all]\r\n[options=autowidth]\r\n|===\r\n| A | B\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("preserves UTF-16 prefix and suffix text and a missing final newline around CRLF insertions", () => {
+    const prefix = "[role=keep😀]\r\n";
+    const suffix = "|===\r\n| 日本語😀 | B\r\n|===";
+    const result = updateTableAppearance(parseAsciiDocTable(prefix + suffix), {
+      title: "New",
+      width: "75%",
+      autowidth: true
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: `${prefix}.New\r\n[width=75%]\r\n[options=autowidth]\r\n${suffix}`,
+      diagnostics: []
+    });
+    if (!result.ok) {
+      throw new Error("appearance update unexpectedly failed");
+    }
+    expect(result.source.slice(0, prefix.length)).toBe(prefix);
+    expect(result.source.slice(-suffix.length)).toBe(suffix);
+    expect(result.source.endsWith("\r\n")).toBe(false);
+  });
+
+  it("patches existing title and attribute values without changing their line endings", () => {
+    const source = ".Old\r\n[frame=ends]\n|===\r\n| A | B\r|===\n";
+    const result = updateTableAppearance(parseAsciiDocTable(source), {
+      title: "New",
+      frame: "all"
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      source: ".New\r\n[frame=all]\n|===\r\n| A | B\r|===\n",
+      diagnostics: []
+    });
+  });
+
   it("expands duplicate shorthand when one duplicate cell is edited", () => {
     const table = parseAsciiDocTable("|===\n2*| A\n|===\n");
     const result = replacePlainCellContent(table, "cell:0:1", " B");
