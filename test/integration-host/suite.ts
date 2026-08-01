@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import * as vscode from "vscode";
-import { testBlockCellContentWriteBackCommandUsesVSCodeStack, testBlockCellSourceRevealCommand } from "./block-cell.test";
+import { testBlockCellContentWriteBackCommandUsesVSCodeStack, testBlockCellSourceRevealCommand, testUnsafeBlockCellContentLeavesDocumentUnchanged } from "./block-cell.test";
 import { testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks, testAsciiDocTableCodeLensOpensTargetTable, testAsciiDocTableCodeLensTargetsTableBlocks } from "./codelens.test";
 import { testUnsupportedCsvTableFallsBack } from "./fallback.test";
 import { testAsciiDocTableFormatCodeLensShowsReview } from "./format.test";
 import { testHorizontalMergeWriteBackCommand, testHorizontalUnmergeWriteBackCommand } from "./merge.test";
 import { testRowColumnStructureEditCommands } from "./structure.test";
 import { testPlainCellContentUndoRedoUsesVSCodeStack } from "./undo-redo.test";
-import { testColsAttributeBatchWriteBackCommand, testCustomSeparatorWriteBackCommand, testPlainCellContentsBatchWriteBackCommand, testPlainCellContentWriteBackCommand } from "./writeback.test";
+import { testColsAttributeBatchWriteBackCommand, testCustomSeparatorWriteBackCommand, testPlainCellContentsBatchWriteBackCommand, testPlainCellContentWriteBackCommand, testUnsafePlainCellContentLeavesDocumentUnchanged, testUnsafePlainCellContentsBatchLeavesDocumentUnchanged, testUnsafePlainToBlockContentLeavesDocumentUnchanged } from "./writeback.test";
 
 export async function run(): Promise<void> {
   await activateExtension();
@@ -19,6 +19,8 @@ export async function run(): Promise<void> {
   await testPlainCellContentsBatchWriteBackCommand();
   await testColsAttributeBatchWriteBackCommand();
   await testCustomSeparatorWriteBackCommand();
+  await testUnsafePlainCellContentLeavesDocumentUnchanged();
+  await testUnsafePlainCellContentsBatchLeavesDocumentUnchanged();
   await testHorizontalMergeWriteBackCommand();
   await testHorizontalUnmergeWriteBackCommand();
   await testRowColumnStructureEditCommands();
@@ -26,6 +28,8 @@ export async function run(): Promise<void> {
   await testPlainCellContentUndoRedoUsesVSCodeStack();
   await testBlockCellSourceRevealCommand();
   await testBlockCellContentWriteBackCommandUsesVSCodeStack();
+  await testUnsafeBlockCellContentLeavesDocumentUnchanged();
+  await testUnsafePlainToBlockContentLeavesDocumentUnchanged();
 }
 
 async function activateExtension(): Promise<void> {

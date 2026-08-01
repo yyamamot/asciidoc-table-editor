@@ -22,6 +22,26 @@ describe("webview editing interactions", () => {
     });
   });
 
+  it("rejects unsafe multiline single-cell content without changing source", async () => {
+    const source = "|===\n| A | B\n|===\n";
+    const harness = await createHarness(source);
+
+    harness.cell("cell:0:0").focus();
+    const editor = harness.textarea("contentRaw");
+    editor.value = "Alpha\n| injected";
+    harness.button("update-cell-content").click();
+
+    const result = applyWebviewMessage(source, harness.lastMessage("update-cell-content"));
+    expect(result).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({
+        code: "writeback.unsafe-plain-cell-content",
+        severity: "error"
+      })]
+    });
+  });
+
   it("edits the selected plain cell from the bottom cell editor bar", async () => {
     const source = "|===\n| A | B\n|===\n";
     const harness = await createHarness(source);
@@ -171,6 +191,26 @@ describe("webview editing interactions", () => {
         { sourceCellId: "cell:1:0", contentRaw: " " },
         { sourceCellId: "cell:1:1", contentRaw: " " }
       ]
+    });
+  });
+
+  it("rolls back the entire batch when one replacement contains a newline", async () => {
+    const source = "|===\n| A | B\n| C | D\n|===\n";
+    const result = applyWebviewMessage(source, {
+      type: "update-cell-contents",
+      replacements: [
+        { sourceCellId: "cell:0:0", contentRaw: " Alpha" },
+        { sourceCellId: "cell:0:1", contentRaw: " Beta\n| injected" }
+      ],
+      selectedSourceCellId: "cell:0:1"
+    });
+    expect(result).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({
+        code: "writeback.unsafe-plain-cell-content",
+        severity: "error"
+      })]
     });
   });
 

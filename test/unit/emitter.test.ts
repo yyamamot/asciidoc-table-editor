@@ -41,6 +41,49 @@ describe("write-back emitter", () => {
     });
   });
 
+  it("escapes unescaped default separators without double-escaping existing escapes", () => {
+    const table = parseAsciiDocTable("|===\n| A\n|===\n");
+
+    expect(replacePlainCellContent(table, "cell:0:0", " Pipe | value")).toMatchObject({
+      ok: true,
+      source: "|===\n| Pipe \\| value\n|===\n"
+    });
+    expect(replacePlainCellContent(table, "cell:0:0", " Existing \\| value")).toMatchObject({
+      ok: true,
+      source: "|===\n| Existing \\| value\n|===\n"
+    });
+    expect(replacePlainCellContent(table, "cell:0:0", " Double \\\\| value")).toMatchObject({
+      ok: true,
+      source: "|===\n| Double \\\\| value\n|===\n"
+    });
+  });
+
+  it("rejects every line-break form in plain cell content", () => {
+    const table = parseAsciiDocTable("|===\n| A\n|===\n");
+    for (const contentRaw of [" A\nB", " A\r\nB", " A\rB"]) {
+      const result = replacePlainCellContent(table, "cell:0:0", contentRaw);
+      expect(result).toMatchObject({
+        ok: false,
+        source: table.raw,
+        diagnostics: [expect.objectContaining({ code: "writeback.unsafe-plain-cell-content" })]
+      });
+    }
+  });
+
+  it("rejects a custom separator but preserves ordinary pipe characters", () => {
+    const table = parseAsciiDocTable("[separator=¦]\n|===\n¦ A\n|===\n");
+
+    expect(replacePlainCellContent(table, "cell:0:0", " Pipe | value")).toMatchObject({
+      ok: true,
+      source: "[separator=¦]\n|===\n¦ Pipe | value\n|===\n"
+    });
+    expect(replacePlainCellContent(table, "cell:0:0", " Unsafe ¦ value")).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.unsafe-plain-cell-content" })]
+    });
+  });
+
   it("patches merged origin cell content without changing span syntax", () => {
     const horizontal = replacePlainCellContent(parseAsciiDocTable("|===\n2+| Wide | Tail\n|===\n"), "cell:0:0", " Wider");
     const vertical = replacePlainCellContent(parseAsciiDocTable("|===\n.2+| Tall | A\n| B\n|===\n"), "cell:0:0", " Taller");
@@ -73,6 +116,31 @@ describe("write-back emitter", () => {
     expect(result).toEqual({
       ok: true,
       source: "|===\n| A | Bee\n| Sea | D\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("preflights every batch input before checking target structure", () => {
+    const table = parseAsciiDocTable("|===\n2+| Wide | Tail\n|===\n");
+    const result = replacePlainCellContents(table, [
+      { sourceCellId: "cell:0:0", contentRaw: " Wider" },
+      { sourceCellId: "cell:0:1", contentRaw: " Unsafe\nvalue" }
+    ]);
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.unsafe-plain-cell-content" })]
+    });
+  });
+
+  it("preserves attributes and non-target diagnostic cells during validated replacement", () => {
+    const source = "[cols=2*]\n|===\n| A qz| B\n|===\n";
+    const result = replacePlainCellContent(parseAsciiDocTable(source), "cell:0:0", " Updated");
+
+    expect(result).toEqual({
+      ok: true,
+      source: "[cols=2*]\n|===\n| Updated qz| B\n|===\n",
       diagnostics: []
     });
   });
@@ -161,6 +229,17 @@ describe("write-back emitter", () => {
     });
   });
 
+  it("rejects duplicate expansion when style or alignment modifiers would be lost", () => {
+    const table = parseAsciiDocTable("|===\n2*>m| A\n|===\n");
+    const result = replacePlainCellContent(table, "cell:0:1", " B");
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.cell-replacement-validation-failed" })]
+    });
+  });
+
   it("expands duplicate shorthand before merge write-back", () => {
     const table = parseAsciiDocTable("|===\n2*| A | C\n|===\n");
     const result = mergePlainCellsHorizontally(table, {
@@ -224,6 +303,20 @@ describe("write-back emitter", () => {
       ok: true,
       source: "|===\n| A | B |  | \n| C | x | y | z\n|  | p | q | r\n|===\n",
       diagnostics: []
+    });
+  });
+
+  it("rolls rectangular auto-expansion back to the operation-start source on unsafe input", () => {
+    const table = parseAsciiDocTable("|===\n| A | B\n|===\n");
+    const result = pasteRectangularPlainTable(table, {
+      startSourceCellId: "cell:0:1",
+      rows: [["safe", "unsafe\nvalue"]]
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.unsafe-plain-cell-content" })]
     });
   });
 
@@ -749,8 +842,43 @@ describe("write-back emitter", () => {
     expect(result.source).toBe("|===\na| * updated\n* next\n| plain\n|===\n");
   });
 
+  it("preserves block whitespace, CRLF, and balanced nested delimiters", () => {
+    const source = "[cols=2*]\r\n|===\r\na| old\r\n| next\r\n|===\r\n";
+    const table = parseAsciiDocTable(source);
+    const contentRaw = "  ----\r\n ..... \r\n....\r\n....\r\n ..... \r\n  ----  ";
+    const result = replaceBlockCellContent(table, { sourceCellId: "cell:0:0", contentRaw });
+
+    expect(result).toMatchObject({
+      ok: true,
+      source: `[cols=2*]\r\n|===\r\na|${contentRaw}\r\n| next\r\n|===\r\n`
+    });
+  });
+
+  it("rejects outer table delimiters and unclosed delimited blocks in block content", () => {
+    const table = parseAsciiDocTable("|===\na| old\n|===\n");
+    for (const contentRaw of [" value\n |=== ", " ----\nunclosed"]) {
+      const result = replaceBlockCellContent(table, { sourceCellId: "cell:0:0", contentRaw });
+      expect(result).toMatchObject({
+        ok: false,
+        source: table.raw,
+        diagnostics: [expect.objectContaining({ code: "writeback.unsafe-block-cell-content" })]
+      });
+    }
+  });
+
+  it("rejects block content that changes cell ownership after reparsing", () => {
+    const table = parseAsciiDocTable("|===\na| old\n|===\n");
+    const result = replaceBlockCellContent(table, { sourceCellId: "cell:0:0", contentRaw: " value | injected" });
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.cell-replacement-validation-failed" })]
+    });
+  });
+
   it("converts a plain cell to a block cell with targeted source replacement", () => {
-    const table = parseAsciiDocTable("|===\n| A | B\n|===\n");
+    const table = parseAsciiDocTable("[cols=2*]\n|===\n| A | B\n|===\n");
     const result = replacePlainCellWithBlockContent(table, {
       sourceCellId: "cell:0:0",
       contentRaw: " * item\n* next"
@@ -758,9 +886,42 @@ describe("write-back emitter", () => {
 
     expect(result).toEqual({
       ok: true,
-      source: "|===\na| * item\n* next\n| B\n|===\n",
+      source: "[cols=2*]\n|===\na| * item\n* next\n| B\n|===\n",
       diagnostics: []
     });
+  });
+
+  it("rejects plain-to-block conversion when inferred cardinality would change", () => {
+    const table = parseAsciiDocTable("|===\n| A | B\n|===\n");
+    const result = replacePlainCellWithBlockContent(table, {
+      sourceCellId: "cell:0:0",
+      contentRaw: " * item\n* next"
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: table.raw,
+      diagnostics: [expect.objectContaining({ code: "writeback.cell-replacement-validation-failed" })]
+    });
+  });
+
+  it("uses table-local CRLF and CR boundaries for plain-to-block conversion", () => {
+    const crlf = replacePlainCellWithBlockContent(parseAsciiDocTable("[cols=2*]\r\n|===\r\n| A | B\r\n|===\r\n"), {
+      sourceCellId: "cell:0:0",
+      contentRaw: " * one\r\n* two"
+    });
+    const cr = replacePlainCellWithBlockContent(parseAsciiDocTable("[cols=2*]\r|===\r| A | B\r|===\r"), {
+      sourceCellId: "cell:0:0",
+      contentRaw: " * one\r* two"
+    });
+    const mixed = replacePlainCellWithBlockContent(parseAsciiDocTable("[cols=2*]\n|===\r\n| A | B\n|===\n"), {
+      sourceCellId: "cell:0:0",
+      contentRaw: " * one\n* two"
+    });
+
+    expect(crlf).toMatchObject({ ok: true, source: "[cols=2*]\r\n|===\r\na| * one\r\n* two\r\n| B\r\n|===\r\n" });
+    expect(cr).toMatchObject({ ok: true, source: "[cols=2*]\r|===\ra| * one\r* two\r| B\r|===\r" });
+    expect(mixed).toMatchObject({ ok: true, source: "[cols=2*]\n|===\r\na| * one\n* two\r\n| B\n|===\n" });
   });
 
   it("blocks plain-to-block conversion for styled, spanned, and existing block cells", () => {

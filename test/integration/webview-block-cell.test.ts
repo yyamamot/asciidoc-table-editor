@@ -3,7 +3,7 @@ import { applyWebviewMessage, createHarness } from "./webview-harness";
 
 describe("webview block cell paste interactions", () => {
   it("pastes non-table unordered list HTML as a new block cell", async () => {
-    const source = "|===\n| A | B\n| C | D\n|===\n";
+    const source = "[cols=2*]\n|===\n| A | B\n| C | D\n|===\n";
     const harness = await createHarness(source);
     const html = [
       "<ul style=\"list-style-type: '—  '\">",
@@ -25,7 +25,7 @@ describe("webview block cell paste interactions", () => {
     const result = applyWebviewMessage(source, message);
     expect(result).toMatchObject({
       ok: true,
-      source: "|===\na| * A\n* B\n| B\n| C | D\n|===\n"
+      source: "[cols=2*]\n|===\na| * A\n* B\n| B\n| C | D\n|===\n"
     });
     const refreshed = await createHarness(result.source, message.selectedSourceCellId, undefined, {
       diagnostics: message.diagnostics
@@ -35,8 +35,26 @@ describe("webview block cell paste interactions", () => {
     expect(refreshed.textarea("contentRaw").value).toBe("* A\n* B");
   });
 
+  it("rejects an outer table delimiter when converting a plain cell to block source", async () => {
+    const source = "|===\n| A | B\n|===\n";
+    const result = applyWebviewMessage(source, {
+      type: "replace-cell-with-block-source",
+      sourceCellId: "cell:0:0",
+      contentRaw: " * item\n|===\n* tail",
+      selectedSourceCellId: "cell:0:0"
+    });
+    expect(result).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({
+        code: "writeback.unsafe-block-cell-content",
+        severity: "error"
+      })]
+    });
+  });
+
   it("pastes non-table ordered list HTML as a new block cell with inline mapping", async () => {
-    const source = "|===\n| A | B\n| C | D\n|===\n";
+    const source = "[cols=2*]\n|===\n| A | B\n| C | D\n|===\n";
     const harness = await createHarness(source);
     const html = "<ol><li><b>A</b></li><li><a href=\"https://example.com\">B</a></li></ol>";
 
@@ -51,7 +69,24 @@ describe("webview block cell paste interactions", () => {
     expect(message.diagnostics ?? []).toHaveLength(0);
     expect(applyWebviewMessage(source, message)).toMatchObject({
       ok: true,
-      source: "|===\na| . *A*\n. https://example.com[B]\n| B\n| C | D\n|===\n"
+      source: "[cols=2*]\n|===\na| . *A*\n. https://example.com[B]\n| B\n| C | D\n|===\n"
+    });
+  });
+
+  it("rejects plain-to-block conversion when implicit columns would change grid topology", async () => {
+    const source = "|===\n| A | B\n| C | D\n|===\n";
+    const harness = await createHarness(source);
+
+    harness.cell("cell:0:0").focus();
+    harness.pasteHtml("<ol><li>A</li><li>B</li></ol>", "A\nB");
+
+    expect(applyWebviewMessage(source, harness.lastMessage("replace-cell-with-block-source"))).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({
+        code: "writeback.cell-replacement-validation-failed",
+        severity: "error"
+      })]
     });
   });
 
@@ -171,6 +206,24 @@ describe("webview block cell paste interactions", () => {
     expect(applyWebviewMessage(source, message)).toMatchObject({
       ok: true,
       source: "|===\na| * item\n* next\n|===\n"
+    });
+  });
+
+  it("rejects an outer table delimiter in block source without changing source", async () => {
+    const source = "|===\na| * old\n| B\n|===\n";
+    const harness = await createHarness(source);
+
+    harness.cell("cell:0:0").focus();
+    harness.paste("* changed\n|===\n* tail");
+
+    const result = applyWebviewMessage(source, harness.lastMessage("update-block-cell-source"));
+    expect(result).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({
+        code: "writeback.unsafe-block-cell-content",
+        severity: "error"
+      })]
     });
   });
 

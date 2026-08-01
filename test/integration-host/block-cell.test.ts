@@ -68,3 +68,29 @@ export async function testBlockCellContentWriteBackCommandUsesVSCodeStack(): Pro
   await closeAllEditors();
 }
 
+export async function testUnsafeBlockCellContentLeavesDocumentUnchanged(): Promise<void> {
+  const originalSource = [
+    "= Table",
+    "",
+    "|===",
+    "a| * item",
+    "| Plain",
+    "|==="
+  ].join("\n");
+  const editor = await openAsciiDocDocument(originalSource);
+  editor.selection = new vscode.Selection(new vscode.Position(3, 0), new vscode.Position(3, 0));
+
+  const result = await vscode.commands.executeCommand<{
+    readonly ok: boolean;
+    readonly diagnostics: readonly { readonly code: string }[];
+  }>(
+    "asciidocTable.test.replaceBlockCellContent",
+    "cell:0:0",
+    " * updated\n|==="
+  );
+
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.diagnostics.map((diagnostic) => diagnostic.code), ["writeback.unsafe-block-cell-content"]);
+  assert.equal(editor.document.getText(), originalSource);
+  await closeAllEditors();
+}

@@ -120,6 +120,108 @@ describe("static site portability seed", () => {
     expect(formatReview.session.model.formatReview).toBeDefined();
   });
 
+  it("keeps portable sessions atomic for unsafe plain and block replacements", async () => {
+    let previewCalls = 0;
+    const previewAdapter = () => {
+      previewCalls += 1;
+      return {
+        tableHtml: "<table><tbody><tr><td>preview</td></tr></tbody></table>",
+        blockCellHtmlBySourceCellId: {}
+      };
+    };
+    const plainSession = await createPortableTableEditorSession({
+      source: "|===\n| A | B\n| C | D\n|===\n",
+      previewAdapter,
+      selectedSourceCellId: "cell:0:1"
+    });
+    expect(previewCalls).toBe(1);
+
+    const plainFailures = [
+      {
+        message: {
+          type: "update-cell-content" as const,
+          sourceCellId: "cell:0:0",
+          contentRaw: "Alpha\n| injected",
+          selectedSourceCellId: "cell:0:0"
+        },
+        code: "writeback.unsafe-plain-cell-content"
+      },
+      {
+        message: {
+          type: "update-cell-contents" as const,
+          replacements: [
+            { sourceCellId: "cell:0:0", contentRaw: "Alpha" },
+            { sourceCellId: "cell:0:1", contentRaw: "Beta\r\n| injected" }
+          ],
+          selectedSourceCellId: "cell:0:1"
+        },
+        code: "writeback.unsafe-plain-cell-content"
+      },
+      {
+        message: {
+          type: "replace-cell-with-block-source" as const,
+          sourceCellId: "cell:0:0",
+          contentRaw: "* item\n|===\n* tail",
+          selectedSourceCellId: "cell:0:0"
+        },
+        code: "writeback.unsafe-block-cell-content"
+      },
+      {
+        message: {
+          type: "replace-cell-with-block-source" as const,
+          sourceCellId: "cell:0:0",
+          contentRaw: " * item\n* tail",
+          selectedSourceCellId: "cell:0:0"
+        },
+        code: "writeback.cell-replacement-validation-failed"
+      }
+    ];
+
+    for (const failure of plainFailures) {
+      const result = await applyPortableTableEditorMessage(plainSession, failure.message);
+      expect(result.handled).toBe(true);
+      if (result.handled) {
+        expect(result.message?.result).toMatchObject({
+          ok: false,
+          diagnostics: [expect.objectContaining({ code: failure.code, severity: "error" })]
+        });
+      }
+      expect(result.session).toBe(plainSession);
+      expect(result.session.source).toBe(plainSession.source);
+      expect(result.session.model).toBe(plainSession.model);
+      expect(result.session.selectedSourceCellId).toBe("cell:0:1");
+      expect(previewCalls).toBe(1);
+    }
+
+    const blockSession = await createPortableTableEditorSession({
+      source: "|===\na| * old\n| B\n|===\n",
+      previewAdapter,
+      selectedSourceCellId: "cell:0:0"
+    });
+    expect(previewCalls).toBe(2);
+    const blockFailure = await applyPortableTableEditorMessage(blockSession, {
+      type: "update-block-cell-source",
+      sourceCellId: "cell:0:0",
+      contentRaw: "* changed\n|===\n* tail",
+      selectedSourceCellId: "cell:0:0"
+    });
+    expect(blockFailure.handled).toBe(true);
+    if (blockFailure.handled) {
+      expect(blockFailure.message?.result).toMatchObject({
+        ok: false,
+        diagnostics: [expect.objectContaining({
+          code: "writeback.unsafe-block-cell-content",
+          severity: "error"
+        })]
+      });
+    }
+    expect(blockFailure.session).toBe(blockSession);
+    expect(blockFailure.session.source).toBe(blockSession.source);
+    expect(blockFailure.session.model).toBe(blockSession.model);
+    expect(blockFailure.session.selectedSourceCellId).toBe("cell:0:0");
+    expect(previewCalls).toBe(2);
+  });
+
   it("keeps copied app/core files free of VS Code and Node Worker dependencies", () => {
     const portableFiles = [
       ...collectTypeScriptFiles(join(process.cwd(), "src", "app")),

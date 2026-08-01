@@ -3,6 +3,12 @@ import type { BlockCellContentReplacement, ImportedTablePasteRequest, PlainCellB
 import { projectGridModel } from "./grid-model";
 import { parseAsciiDocTable } from "./parser";
 import {
+  duplicateExpansionPreservesSemantics,
+  prepareBlockCellContent,
+  preparePlainCellContent,
+  validateCellReplacement
+} from "./writeback-validation";
+import {
   applyReplacements,
   blocked,
   cellNotFoundDiagnostic,
@@ -33,13 +39,23 @@ export function replacePlainCellContent(table: LosslessTable, sourceCellId: stri
     return blocked(table, unsafeDiagnostic);
   }
 
+  const prepared = preparePlainCellContent(table, nextContentRaw);
+  if (!prepared.ok) {
+    return blocked(table, { ...prepared.diagnostic, nodeId: sourceCellId });
+  }
+
   const contentStart = cell.range.end.offset - cell.contentRaw.length;
   const contentEnd = cell.range.end.offset;
-  return {
-    ok: true,
-    source: table.raw.slice(0, contentStart) + nextContentRaw + table.raw.slice(contentEnd),
-    diagnostics: []
-  };
+  const ordinal = cellOrdinal(table, sourceCellId);
+  if (ordinal === undefined) {
+    return blocked(table, cellNotFoundDiagnostic(sourceCellId));
+  }
+  return validateCellReplacement({
+    originalTable: table,
+    workingTable: table,
+    candidateSource: table.raw.slice(0, contentStart) + prepared.contentRaw + table.raw.slice(contentEnd),
+    targets: [{ ...ordinal, expectedContentRaw: prepared.contentRaw, transition: "plain" }]
+  });
 }
 
 export function replaceBlockCellContent(table: LosslessTable, replacement: BlockCellContentReplacement): WriteBackResult {
@@ -66,13 +82,23 @@ export function replaceBlockCellContent(table: LosslessTable, replacement: Block
     });
   }
 
+  const prepared = prepareBlockCellContent(table, replacement.contentRaw);
+  if (!prepared.ok) {
+    return blocked(table, { ...prepared.diagnostic, nodeId: replacement.sourceCellId });
+  }
+
   const contentStart = cell.range.end.offset - cell.contentRaw.length;
   const contentEnd = cell.range.end.offset;
-  return {
-    ok: true,
-    source: table.raw.slice(0, contentStart) + replacement.contentRaw + table.raw.slice(contentEnd),
-    diagnostics: []
-  };
+  const ordinal = cellOrdinal(table, replacement.sourceCellId);
+  if (ordinal === undefined) {
+    return blocked(table, cellNotFoundDiagnostic(replacement.sourceCellId));
+  }
+  return validateCellReplacement({
+    originalTable: table,
+    workingTable: table,
+    candidateSource: table.raw.slice(0, contentStart) + prepared.contentRaw + table.raw.slice(contentEnd),
+    targets: [{ ...ordinal, expectedContentRaw: prepared.contentRaw, transition: "block" }]
+  });
 }
 
 export function replacePlainCellWithBlockContent(table: LosslessTable, replacement: PlainCellBlockReplacement): WriteBackResult {
@@ -108,21 +134,41 @@ export function replacePlainCellWithBlockContent(table: LosslessTable, replaceme
     });
   }
 
+  const prepared = prepareBlockCellContent(table, replacement.contentRaw);
+  if (!prepared.ok) {
+    return blocked(table, { ...prepared.diagnostic, nodeId: replacement.sourceCellId });
+  }
+
   const suffix = table.raw.slice(cell.range.end.offset);
   const separatorAfterCell = new RegExp(`^[ \\t]+(?=${escapeRegExp(cell.delimiterRaw)})`, "u");
-  const normalizedSuffix = replacement.contentRaw.includes("\n") ? suffix.replace(separatorAfterCell, "") : suffix;
-  const cellBreak = replacement.contentRaw.includes("\n") && normalizedSuffix.startsWith(cell.delimiterRaw) ? "\n" : "";
-
-  return {
-    ok: true,
-    source: table.raw.slice(0, cell.range.start.offset) + `a${cell.delimiterRaw}${replacement.contentRaw}${cellBreak}` + normalizedSuffix,
-    diagnostics: []
-  };
+  const multiline = /\r|\n/u.test(prepared.contentRaw);
+  const normalizedSuffix = multiline ? suffix.replace(separatorAfterCell, "") : suffix;
+  const cellBreak = multiline && normalizedSuffix.startsWith(cell.delimiterRaw) && !/(?:\r\n|\n|\r)$/u.test(prepared.contentRaw)
+    ? tableLocalEol(table.raw, cell.range.start.offset, cell.range.end.offset)
+    : "";
+  const ordinal = cellOrdinal(table, replacement.sourceCellId);
+  if (ordinal === undefined) {
+    return blocked(table, cellNotFoundDiagnostic(replacement.sourceCellId));
+  }
+  return validateCellReplacement({
+    originalTable: table,
+    workingTable: table,
+    candidateSource: table.raw.slice(0, cell.range.start.offset) + `a${cell.delimiterRaw}${prepared.contentRaw}${cellBreak}` + normalizedSuffix,
+    targets: [{ ...ordinal, expectedContentRaw: prepared.contentRaw, transition: "plain-to-block" }]
+  });
 }
 
 export function replacePlainCellContents(table: LosslessTable, replacements: readonly PlainCellContentReplacement[]): WriteBackResult {
+  return replacePlainCellContentsInternal(table, table, replacements);
+}
+
+function replacePlainCellContentsInternal(
+  originalTable: LosslessTable,
+  initialWorkingTable: LosslessTable,
+  replacements: readonly PlainCellContentReplacement[]
+): WriteBackResult {
   if (replacements.length === 0) {
-    return blocked(table, {
+    return blocked(originalTable, {
       code: "writeback.empty-replacement-set",
       severity: "error",
       message: "No cell content replacements were provided"
@@ -131,11 +177,9 @@ export function replacePlainCellContents(table: LosslessTable, replacements: rea
 
   const seen = new Set<string>();
   const replacementMap = new Map<string, string>();
-  const ranges: Array<{ start: number; end: number; contentRaw: string }> = [];
-  let touchesDuplicateShorthand = false;
   for (const replacement of replacements) {
     if (seen.has(replacement.sourceCellId)) {
-      return blocked(table, {
+      return blocked(originalTable, {
         code: "writeback.duplicate-cell-replacement",
         severity: "error",
         message: `Cell ${replacement.sourceCellId} was targeted more than once`,
@@ -143,46 +187,60 @@ export function replacePlainCellContents(table: LosslessTable, replacements: rea
       });
     }
     seen.add(replacement.sourceCellId);
-    replacementMap.set(replacement.sourceCellId, replacement.contentRaw);
-
-    const cell = findCell(table, replacement.sourceCellId);
-    if (cell === undefined) {
-      return blocked(table, cellNotFoundDiagnostic(replacement.sourceCellId));
+    const prepared = preparePlainCellContent(initialWorkingTable, replacement.contentRaw);
+    if (!prepared.ok) {
+      return blocked(originalTable, { ...prepared.diagnostic, nodeId: replacement.sourceCellId });
     }
+    replacementMap.set(replacement.sourceCellId, prepared.contentRaw);
+  }
 
+  let touchesDuplicateShorthand = false;
+  for (const replacement of replacements) {
+    const cell = findCell(initialWorkingTable, replacement.sourceCellId);
+    if (cell === undefined) {
+      return blocked(originalTable, cellNotFoundDiagnostic(replacement.sourceCellId));
+    }
     const unsafeDiagnostic = getUnsafeCellDiagnostic(cell);
     if (unsafeDiagnostic !== undefined) {
-      return blocked(table, unsafeDiagnostic);
+      return blocked(originalTable, unsafeDiagnostic);
     }
-
     if ((cell.duplicateCount ?? 1) > 1) {
       touchesDuplicateShorthand = true;
     }
-
-    ranges.push({
-      start: cell.range.end.offset - cell.contentRaw.length,
-      end: cell.range.end.offset,
-      contentRaw: replacement.contentRaw
-    });
   }
 
+  let workingTable = initialWorkingTable;
   if (touchesDuplicateShorthand) {
-    const expandedTable = parseAsciiDocTable(expandDuplicateShorthand(table, replacementMap));
-    return replacePlainCellContents(expandedTable, replacements);
+    const expandedTable = parseAsciiDocTable(expandDuplicateShorthand(initialWorkingTable));
+    if (!duplicateExpansionPreservesSemantics(initialWorkingTable, expandedTable)) {
+      return blocked(originalTable, {
+        code: "writeback.cell-replacement-validation-failed",
+        severity: "error",
+        message: "Duplicate shorthand expansion would change cell style or alignment"
+      });
+    }
+    workingTable = expandedTable;
   }
 
+  const ranges: Array<{ start: number; end: number; contentRaw: string }> = [];
+  const targets: Array<{ rowOrdinal: number; cellOrdinal: number; expectedContentRaw: string; transition: "plain" }> = [];
+  for (const [sourceCellId, contentRaw] of replacementMap) {
+    const cell = findCell(workingTable, sourceCellId);
+    const ordinal = cellOrdinal(workingTable, sourceCellId);
+    if (cell === undefined || ordinal === undefined) {
+      return blocked(originalTable, cellNotFoundDiagnostic(sourceCellId));
+    }
+    ranges.push({ start: cell.range.end.offset - cell.contentRaw.length, end: cell.range.end.offset, contentRaw });
+    targets.push({ ...ordinal, expectedContentRaw: contentRaw, transition: "plain" });
+  }
   const source = ranges
     .sort((left, right) => right.start - left.start)
     .reduce(
       (current, replacement) => current.slice(0, replacement.start) + replacement.contentRaw + current.slice(replacement.end),
-      table.raw
+      workingTable.raw
     );
 
-  return {
-    ok: true,
-    source,
-    diagnostics: []
-  };
+  return validateCellReplacement({ originalTable, workingTable, candidateSource: source, targets });
 }
 
 export function pasteRectangularPlainTable(table: LosslessTable, request: RectangularPasteRequest): WriteBackResult {
@@ -228,7 +286,7 @@ export function pasteRectangularPlainTable(table: LosslessTable, request: Rectan
     }
   }
 
-  return replacePlainCellContents(expandedTable, replacements);
+  return replacePlainCellContentsInternal(table, expandedTable, replacements);
 }
 
 export function pasteImportedTable(table: LosslessTable, request: ImportedTablePasteRequest): WriteBackResult {
@@ -510,6 +568,24 @@ function rowContentEndOffset(rowRaw: string, rowEndOffset: number): number {
 
 function key(row: number, col: number): string {
   return `${row}:${col}`;
+}
+
+function cellOrdinal(table: LosslessTable, sourceCellId: string): { rowOrdinal: number; cellOrdinal: number } | undefined {
+  for (let rowOrdinal = 0; rowOrdinal < table.rows.length; rowOrdinal += 1) {
+    const cellOrdinal = table.rows[rowOrdinal].cells.findIndex((cell) => cell.nodeId === sourceCellId);
+    if (cellOrdinal >= 0) {
+      return { rowOrdinal, cellOrdinal };
+    }
+  }
+  return undefined;
+}
+
+function tableLocalEol(source: string, startOffset: number, endOffset: number): string {
+  const before = Array.from(source.slice(0, startOffset).matchAll(/\r\n|\n|\r/gu)).at(-1)?.[0];
+  if (before !== undefined) {
+    return before;
+  }
+  return source.slice(endOffset).match(/\r\n|\n|\r/u)?.[0] ?? "\n";
 }
 
 function escapeRegExp(value: string): string {
