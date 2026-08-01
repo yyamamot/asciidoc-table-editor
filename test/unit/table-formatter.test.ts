@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatAsciiDocTable, parseAsciiDocTable, recommendedTableFormatMode } from "../../src/core";
+import { formatAsciiDocTable, parseAsciiDocTable, projectGridModel, recommendedTableFormatMode } from "../../src/core";
 
 describe("formatAsciiDocTable", () => {
   it("aligns plain PSV table cells without touching delimiters", () => {
@@ -129,6 +129,147 @@ describe("formatAsciiDocTable", () => {
     expect(result).toMatchObject({ ok: true });
     expect(result.source).toContain("a| * item\n* detail");
     expect(result.source).toContain("| Plain");
+  });
+
+  it.each([
+    ["LF", "\n"],
+    ["CRLF", "\r\n"]
+  ])("preserves list block source including trailing whitespace with %s", (_label, eol) => {
+    const source =
+      `[cols=2*]${eol}` +
+      `|===${eol}` +
+      `a| * item  ${eol}` +
+      `* detail\t${eol}` +
+      `| Plain${eol}` +
+      `|===${eol}`;
+    const parsed = parseAsciiDocTable(source);
+    const originalCell = parsed.rows[0].cells[0];
+    const originalSlice = source.slice(originalCell.range.start.offset, originalCell.range.end.offset);
+    const result = formatAsciiDocTable(parsed, { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true, source });
+    expect(result.source).toContain(`* item  ${eol}* detail\t`);
+    const reparsed = parseAsciiDocTable(result.source);
+    const reparsedCell = reparsed.rows[0].cells[0];
+    expect(result.source.slice(reparsedCell.range.start.offset, reparsedCell.range.end.offset)).toBe(originalSlice);
+    expect(reparsedCell).toMatchObject({
+      raw: originalCell.raw,
+      contentRaw: originalCell.contentRaw,
+      isBlockContent: true
+    });
+  });
+
+  it.each([
+    ["LF", "\n"],
+    ["CRLF", "\r\n"]
+  ])("preserves delimited block source including trailing whitespace with %s", (_label, eol) => {
+    const source =
+      `[cols=2*]${eol}` +
+      `|===${eol}` +
+      `a| [source]${eol}` +
+      `----${eol}` +
+      `const value = 1;  ${eol}` +
+      `return value;\t${eol}` +
+      `----${eol}` +
+      `| Plain${eol}` +
+      `|===${eol}`;
+    const parsed = parseAsciiDocTable(source);
+    const originalCell = parsed.rows[0].cells[0];
+    const originalSlice = source.slice(originalCell.range.start.offset, originalCell.range.end.offset);
+    const result = formatAsciiDocTable(parsed, { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true, source });
+    expect(result.source).toContain(`const value = 1;  ${eol}return value;\t${eol}----`);
+    const reparsed = parseAsciiDocTable(result.source);
+    const reparsedCell = reparsed.rows[0].cells[0];
+    expect(result.source.slice(reparsedCell.range.start.offset, reparsedCell.range.end.offset)).toBe(originalSlice);
+    expect(reparsedCell).toMatchObject({
+      raw: originalCell.raw,
+      contentRaw: originalCell.contentRaw,
+      isBlockContent: true
+    });
+  });
+
+  it("preserves mixed block EOLs, body-external source, and a missing final newline", () => {
+    const blockSlice = "a| * item  \n* detail\t";
+    const source =
+      ".Mixed EOL table\r\n" +
+      "[cols=2*]\n" +
+      "|===\r\n" +
+      `${blockSlice}\r\n` +
+      "| Plain\r\n" +
+      "| C | D\n" +
+      "|===";
+    const result = formatAsciiDocTable(parseAsciiDocTable(source), { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true, changed: true });
+    expect(result.source.startsWith(".Mixed EOL table\r\n[cols=2*]\n|===\r\n")).toBe(true);
+    expect(result.source).toContain(blockSlice);
+    expect(result.source.endsWith("|===")).toBe(true);
+    expect(result.source.endsWith("\n")).toBe(false);
+    expect(result.source.endsWith("\r")).toBe(false);
+  });
+
+  it("reparses preserved block metadata and grid coordinates after cell-per-line formatting", () => {
+    const source =
+      "[cols=2*]\n" +
+      "|===\n" +
+      "a| * item  \n" +
+      "* detail\t\n" +
+      "| Plain\n" +
+      "| C | D\n" +
+      "|===\n";
+    const original = parseAsciiDocTable(source);
+    const originalBlock = original.rows[0].cells[0];
+    const result = formatAsciiDocTable(original, { mode: "cell-per-line" });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      throw new Error("expected formatter success");
+    }
+    const reparsed = parseAsciiDocTable(result.source);
+    const grid = projectGridModel(reparsed);
+    const reparsedBlock = reparsed.rows[0].cells[0];
+
+    expect(reparsed.attributes.columnCount).toBe(2);
+    expect(reparsed.errors).toEqual([]);
+    expect(reparsedBlock).toMatchObject({
+      raw: originalBlock.raw,
+      cellSpecRaw: "a",
+      delimiterRaw: "|",
+      contentRaw: originalBlock.contentRaw,
+      isBlockContent: true
+    });
+    expect(result.source.slice(reparsedBlock.range.start.offset, reparsedBlock.range.end.offset)).toBe(originalBlock.raw);
+    expect(grid).toMatchObject({ rowCount: 2, columnCount: 2, diagnostics: [] });
+    expect(grid.cells[0][0]).toMatchObject({ kind: "origin", row: 0, col: 0, blockContent: true });
+    expect(grid.cells[0][1]).toMatchObject({ kind: "origin", row: 0, col: 1, contentRaw: " Plain" });
+    expect(grid.cells[1][0]).toMatchObject({ kind: "origin", row: 1, col: 0, contentRaw: " C" });
+    expect(grid.cells[1][1]).toMatchObject({ kind: "origin", row: 1, col: 1, contentRaw: " D" });
+  });
+
+  it("blocks cell-per-line formatting atomically when a block cell canonical source is inconsistent", () => {
+    const source = "[cols=2*]\n|===\na| * item\n* detail\n| Plain\n|===\n";
+    const parsed = parseAsciiDocTable(source);
+    parsed.rows[0].cells[0].raw = `${parsed.rows[0].cells[0].raw}tampered`;
+    const result = formatAsciiDocTable(parsed, { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: false, source });
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain("format.unsafe-block-cell-source");
+  });
+
+  it.each([
+    ["comment", "// retained between rows\n", "// retained between rows\n"],
+    ["unknown", "// row boundary\nretained unknown source\n", "retained unknown source\n"]
+  ])("blocks cell-per-line formatting atomically for unsafe %s retained content", (kind, betweenRows, retained) => {
+    const source = `[cols=2*]\n|===\n| A | B\n${betweenRows}| C | D\n|===\n`;
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.retained.some((segment) => segment.kind === kind && segment.raw === retained)).toBe(true);
+    const result = formatAsciiDocTable(parsed, { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: false, source });
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain("format.unsafe-retained-content");
   });
 
   it("recommends cell-per-line for wide or long-content tables", () => {

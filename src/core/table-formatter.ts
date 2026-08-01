@@ -138,7 +138,6 @@ function formatTableLayout(table: LosslessTable): TableFormatResult {
 }
 
 function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
-  const lineEnding = detectLineEnding(table.raw);
   const replacements: Replacement[] = [];
   const columnCount = logicalColumnCount(table);
   const colsResult = ensureColumnCountAttribute(table.raw, columnCount, table.delimiter.startRaw);
@@ -152,24 +151,24 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
   }
   replacements.push(...colsResult.replacements);
 
-  let formattedRowCount = 0;
-  let preservedRowCount = 0;
-  if (table.rows.length > 0) {
-    const body = table.rows
-      .map((row) => {
-        formattedRowCount += 1;
-        return formatRowAsCellPerLine(row, lineEnding);
-      })
-      .join(`${lineEnding}${lineEnding}`);
-    const firstRow = table.rows[0];
-    const lastRow = table.rows[table.rows.length - 1];
-    replacements.push({
-      start: firstRow.range.start.offset,
-      end: lastRow.range.end.offset,
-      text: `${body}${detectLineEnding(lastRow.raw)}`,
-    });
-  } else {
-    preservedRowCount = 0;
+  const layoutResult = planCellPerLineLayout(table);
+  if (!layoutResult.ok) {
+    return {
+      ok: false,
+      mode: "cell-per-line",
+      source: table.raw,
+      diagnostics: layoutResult.diagnostics,
+    };
+  }
+  replacements.push(...layoutResult.replacements);
+
+  if (!isValidReplacementPlan(table.raw, replacements)) {
+    return {
+      ok: false,
+      mode: "cell-per-line",
+      source: table.raw,
+      diagnostics: [unsafeBlockCellSourceDiagnostic()],
+    };
   }
 
   const source = applyReplacements(table.raw, replacements);
@@ -181,10 +180,146 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
     summary: {
       mode: "cell-per-line",
       changedLineCount: countChangedLines(table.raw, source),
-      formattedRowCount,
-      preservedRowCount,
+      formattedRowCount: table.rows.length,
+      preservedRowCount: 0,
     },
     diagnostics: [],
+  };
+}
+
+function planCellPerLineLayout(
+  table: LosslessTable,
+):
+  | { readonly ok: true; readonly replacements: readonly Replacement[] }
+  | { readonly ok: false; readonly diagnostics: readonly TableDiagnostic[] } {
+  const rows = table.rows
+    .map((row) => ({ row, cells: sourceCells(row) }))
+    .filter((entry) => entry.cells.length > 0);
+  const firstCell = rows[0]?.cells[0];
+  const lastCells = rows[rows.length - 1]?.cells;
+  const lastCell = lastCells?.[lastCells.length - 1];
+
+  if (firstCell !== undefined && lastCell !== undefined) {
+    const unsafeRetained = [
+      ...table.retained.filter(
+        (segment) =>
+          isUnsafeMovableRetainedSegment(segment.kind) &&
+          segment.range.start.offset < lastCell.range.end.offset &&
+          segment.range.end.offset > firstCell.range.start.offset,
+      ),
+      ...rows.flatMap(({ row }) =>
+        row.retained.filter((segment) => isUnsafeMovableRetainedSegment(segment.kind)),
+      ),
+    ];
+    if (unsafeRetained.length > 0) {
+      return {
+        ok: false,
+        diagnostics: [
+          {
+            code: "format.unsafe-retained-content",
+            severity: "error",
+            message: "Formatter is blocked because retained comment or unknown content cannot be safely moved.",
+          },
+        ],
+      };
+    }
+  }
+
+  for (const { cells } of rows) {
+    for (const cell of cells) {
+      if (!shouldPreserveCellSource(cell)) {
+        continue;
+      }
+      const sourceSlice = table.raw.slice(cell.range.start.offset, cell.range.end.offset);
+      const canonicalRaw = `${cell.cellSpecRaw}${cell.delimiterRaw}${cell.contentRaw}`;
+      if (sourceSlice !== cell.raw || cell.raw !== canonicalRaw) {
+        return {
+          ok: false,
+          diagnostics: [unsafeBlockCellSourceDiagnostic()],
+        };
+      }
+    }
+  }
+
+  const replacements: Replacement[] = [];
+  for (const { cells } of rows) {
+    for (const cell of cells) {
+      if (shouldPreserveCellSource(cell)) {
+        continue;
+      }
+      const formatted = formatCellAsStandaloneLine(cell);
+      if (formatted !== cell.raw) {
+        replacements.push({
+          start: cell.range.start.offset,
+          end: cell.range.end.offset,
+          text: formatted,
+        });
+      }
+    }
+
+    for (let index = 1; index < cells.length; index += 1) {
+      replacements.push(planCellBoundary(table.raw, cells[index - 1], cells[index], 1));
+    }
+  }
+
+  for (let index = 1; index < rows.length; index += 1) {
+    const previousCells = rows[index - 1].cells;
+    const currentCells = rows[index].cells;
+    replacements.push(
+      planCellBoundary(
+        table.raw,
+        previousCells[previousCells.length - 1],
+        currentCells[0],
+        2,
+      ),
+    );
+  }
+
+  return { ok: true, replacements };
+}
+
+function planCellBoundary(
+  source: string,
+  previous: LosslessTableCell,
+  current: LosslessTableCell,
+  lineEndingCount: number,
+): Replacement {
+  const start = previous.range.end.offset;
+  const end = current.range.start.offset;
+  const lineEnding = resolveLineEndingAt(source, start);
+  const previousRaw = source.slice(previous.range.start.offset, previous.range.end.offset);
+  const trailingEndingCount = countTrailingLineEndings(previousRaw);
+  const text = lineEnding.repeat(Math.max(0, lineEndingCount - trailingEndingCount));
+  return { start, end, text };
+}
+
+function countTrailingLineEndings(source: string): number {
+  let count = 0;
+  let end = source.length;
+  while (end > 0) {
+    const match = source.slice(0, end).match(/(?:\r\n|\n|\r)$/u);
+    if (match === null) {
+      break;
+    }
+    count += 1;
+    end -= match[0].length;
+  }
+  return count;
+}
+
+function shouldPreserveCellSource(cell: LosslessTableCell): boolean {
+  return cell.isBlockContent || /\r\n|\n|\r/u.test(cell.contentRaw);
+}
+
+function isUnsafeMovableRetainedSegment(kind: string): boolean {
+  return kind === "comment" || kind === "unknown";
+}
+
+function unsafeBlockCellSourceDiagnostic(): TableDiagnostic {
+  return {
+    code: "format.unsafe-block-cell-source",
+    severity: "error",
+    message: "Formatter is blocked because a block or multiline cell does not match its canonical source slice.",
   };
 }
 
@@ -286,19 +421,9 @@ function formatRowAsTableLayout(
   return `${parts.join(" ")}${rowEnding}`;
 }
 
-function formatRowAsCellPerLine(row: LosslessTableRow, lineEnding: string): string {
-  return sourceCells(row)
-    .map((cell) => formatCellAsStandaloneLine(cell))
-    .join(lineEnding);
-}
-
 function formatCellAsStandaloneLine(cell: LosslessTableCell): string {
-  if (cell.isBlockContent || cell.contentRaw.includes("\n")) {
-    return `${cell.cellSpecRaw}|${cell.contentRaw.replace(/\s+$/u, "")}`;
-  }
-
   const content = cell.contentRaw.trim();
-  return `${cell.cellSpecRaw}|${content.length > 0 ? ` ${content}` : ""}`;
+  return `${cell.cellSpecRaw}${cell.delimiterRaw}${content.length > 0 ? ` ${content}` : ""}`;
 }
 
 function blankInterRowGapReplacements(rows: readonly LosslessTableRow[], source: string): readonly Replacement[] {
@@ -358,13 +483,14 @@ function ensureColumnCountAttribute(
 
   const attributeLine = findTableAttributeLine(lines, delimiterLineIndex);
   if (attributeLine === undefined) {
+    const insertionOffset = lines[delimiterLineIndex].offset;
     return {
       ok: true,
       replacements: [
         {
-          start: lines[delimiterLineIndex].offset,
-          end: lines[delimiterLineIndex].offset,
-          text: `[cols=${columnCount}*]${detectLineEnding(source)}`,
+          start: insertionOffset,
+          end: insertionOffset,
+          text: `[cols=${columnCount}*]${resolveLineEndingAt(source, insertionOffset)}`,
         },
       ],
     };
@@ -433,6 +559,25 @@ function applyReplacements(source: string, replacements: readonly Replacement[])
     }, source);
 }
 
+function isValidReplacementPlan(source: string, replacements: readonly Replacement[]): boolean {
+  const sorted = [...replacements].sort((left, right) => left.start - right.start || left.end - right.end);
+  let previousEnd = 0;
+  for (const replacement of sorted) {
+    if (
+      !Number.isInteger(replacement.start) ||
+      !Number.isInteger(replacement.end) ||
+      replacement.start < 0 ||
+      replacement.end < replacement.start ||
+      replacement.end > source.length ||
+      replacement.start < previousEnd
+    ) {
+      return false;
+    }
+    previousEnd = replacement.end;
+  }
+  return true;
+}
+
 function countChangedLines(before: string, after: string): number {
   if (before === after) {
     return 0;
@@ -452,6 +597,16 @@ function countChangedLines(before: string, after: string): number {
 function detectLineEnding(source: string): string {
   const match = source.match(/\r\n|\n|\r/u);
   return match?.[0] ?? "\n";
+}
+
+function resolveLineEndingAt(source: string, offset: number): string {
+  const boundedOffset = Math.max(0, Math.min(source.length, offset));
+  const before = source.slice(0, boundedOffset);
+  const previous = [...before.matchAll(/\r\n|\n|\r/gu)].at(-1)?.[0];
+  if (previous !== undefined) {
+    return previous;
+  }
+  return source.slice(boundedOffset).match(/\r\n|\n|\r/u)?.[0] ?? "\n";
 }
 
 function dedupeDiagnostics(diagnostics: readonly TableDiagnostic[]): readonly TableDiagnostic[] {
