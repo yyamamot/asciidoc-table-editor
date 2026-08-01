@@ -3,6 +3,10 @@
 ## Unreleased
 
 - Fix Column spec and Table appearance panels so existing source values are loaded into the controls.
+- Require Node.js 24 for development and CI, and validate the Extension Host against fixed minimum and current VS Code versions.
+- Honor explicit `cols` column counts when diagnosing ragged rows without synthesizing missing cells.
+- Preserve variable-length and nested delimited blocks, and ignore table-like source inside opaque blocks during table detection.
+- Reject unsafe plain and block cell replacements atomically when content would change separators, boundaries, or the parsed grid structure.
 
 ## 0.0.3
 
