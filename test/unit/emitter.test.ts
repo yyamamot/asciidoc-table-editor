@@ -684,6 +684,176 @@ describe("write-back emitter", () => {
     });
   });
 
+  it("uses the Grid column of an origin after a horizontal span for column edits", () => {
+    const source = "|===\n2+| A | B\n| C | D | E\n|===\n";
+
+    expect(insertPlainColumnBefore(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" })).toEqual({
+      ok: true,
+      source: "|===\n2+| A |  | B\n| C | D |  | E\n|===\n",
+      diagnostics: []
+    });
+    expect(insertPlainColumnAfter(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" })).toEqual({
+      ok: true,
+      source: "|===\n2+| A | B | \n| C | D | E | \n|===\n",
+      diagnostics: []
+    });
+    expect(deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" })).toEqual({
+      ok: true,
+      source: "|===\n2+| A\n| C | D\n|===\n",
+      diagnostics: []
+    });
+  });
+
+  it("keeps implicit column edits reparsable without adding cols metadata", () => {
+    const source = "|===\n2+| A | B\n| C | D | E\n|===\n";
+    const results = [
+      insertPlainColumnBefore(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" }),
+      insertPlainColumnAfter(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" }),
+      deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" })
+    ];
+
+    for (const result of results) {
+      expect(result.ok).toBe(true);
+      const reparsed = parseAsciiDocTable(result.source);
+      expect(reparsed.attributes.named.cols).toBeUndefined();
+      expect(reparsed.errors).toEqual([]);
+      const logicalColumnCounts = reparsed.rows.map((row) =>
+        row.cells.reduce((count, cell) => count + cell.colSpan, 0)
+      );
+      expect(new Set(logicalColumnCounts).size).toBe(1);
+    }
+  });
+
+  it("synchronizes multiplier cols metadata with Grid-aware insert and delete", () => {
+    const source = "[cols=3*]\n|===\n2+| A | B\n| C | D | E\n|===\n";
+
+    const inserted = insertPlainColumnBefore(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(inserted).toEqual({
+      ok: true,
+      source: "[cols=4*]\n|===\n2+| A |  | B\n| C | D |  | E\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(inserted.source).attributes).toMatchObject({ columnCount: 4 });
+
+    const deleted = deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(deleted).toEqual({
+      ok: true,
+      source: "[cols=2*]\n|===\n2+| A\n| C | D\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(deleted.source).attributes).toMatchObject({ columnCount: 2 });
+  });
+
+  it("preserves styled multiplier cols metadata while changing its count", () => {
+    const source = "[cols=\"3*>m\"]\n|===\n2+| A | B\n| C | D | E\n|===\n";
+
+    const inserted = insertPlainColumnAfter(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(inserted).toEqual({
+      ok: true,
+      source: "[cols=\"4*>m\"]\n|===\n2+| A | B | \n| C | D | E | \n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(inserted.source).attributes.columns).toHaveLength(4);
+    expect(parseAsciiDocTable(inserted.source).attributes.columns.every((column) => column.raw === ">m")).toBe(true);
+
+    const deleted = deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(deleted).toEqual({
+      ok: true,
+      source: "[cols=\"2*>m\"]\n|===\n2+| A\n| C | D\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(deleted.source).attributes.columns).toHaveLength(2);
+    expect(parseAsciiDocTable(deleted.source).attributes.columns.every((column) => column.raw === ">m")).toBe(true);
+  });
+
+  it("preserves explicit width metadata and clones the anchor column width", () => {
+    const source = "[cols=\"1,2,3\"]\n|===\n2+| A | B\n| C | D | E\n|===\n";
+
+    const inserted = insertPlainColumnBefore(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(inserted).toEqual({
+      ok: true,
+      source: "[cols=\"1,2,3,3\"]\n|===\n2+| A |  | B\n| C | D |  | E\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(inserted.source).attributes.columns.map((column) => column.widthRaw)).toEqual(["1", "2", "3", "3"]);
+
+    const deleted = deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(deleted).toEqual({
+      ok: true,
+      source: "[cols=\"1,2\"]\n|===\n2+| A\n| C | D\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(deleted.source).attributes.columns.map((column) => column.widthRaw)).toEqual(["1", "2"]);
+  });
+
+  it("preserves styled explicit cols entries around Grid-aware insert and delete", () => {
+    const source = "[cols=\"1<,2>m,3s\"]\n|===\n2+| A | B\n| C | D | E\n|===\n";
+
+    const inserted = insertPlainColumnBefore(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(inserted).toEqual({
+      ok: true,
+      source: "[cols=\"1<,2>m,3s,3s\"]\n|===\n2+| A |  | B\n| C | D |  | E\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(inserted.source).attributes.columns.map((column) => column.raw)).toEqual(["1<", "2>m", "3s", "3s"]);
+
+    const deleted = deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" });
+    expect(deleted).toEqual({
+      ok: true,
+      source: "[cols=\"1<,2>m\"]\n|===\n2+| A\n| C | D\n|===\n",
+      diagnostics: []
+    });
+    expect(parseAsciiDocTable(deleted.source).attributes.columns.map((column) => column.raw)).toEqual(["1<", "2>m"]);
+  });
+
+  it.each([
+    ["mixed multiplier", "[cols=\"2*,1\"]\n|===\n| A | B | C\n|===\n"],
+    ["empty segment", "[cols=\"1,,2\"]\n|===\n| A | B | C\n|===\n"],
+    ["unknown shape", "[cols=\"1,$,2\"]\n|===\n| A | B | C\n|===\n"],
+    ["count mismatch", "[cols=\"1,2\"]\n|===\n| A | B | C\n|===\n"],
+    ["duplicate attributes", "[cols=\"1,2,3\"]\n[cols=\"1,2,3\"]\n|===\n| A | B | C\n|===\n"]
+  ])("blocks column changes for unsafe %s cols metadata", (_label, source) => {
+    for (const result of [
+      insertPlainColumnAfter(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" }),
+      deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:1" })
+    ]) {
+      expect(result.ok).toBe(false);
+      expect(result.source).toBe(source);
+      expect(result.diagnostics).toContainEqual(expect.objectContaining({
+        code: "writeback.unsafe-column-metadata",
+        severity: "error"
+      }));
+    }
+  });
+
+  it("keeps duplicate shorthand source unchanged when cols metadata blocks the edit", () => {
+    const source = "[cols=\"2*,1\"]\n|===\n2*| A | B\n|===\n";
+
+    for (const result of [
+      insertPlainColumnAfter(parseAsciiDocTable(source), { sourceCellId: "cell:0:0" }),
+      deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:0" })
+    ]) {
+      expect(result.ok).toBe(false);
+      expect(result.source).toBe(source);
+      expect(result.diagnostics).toContainEqual(expect.objectContaining({
+        code: "writeback.unsafe-column-metadata",
+        severity: "error"
+      }));
+    }
+  });
+
+  it("keeps the last-column diagnostic ahead of cols metadata planning", () => {
+    const source = "[cols=1*]\n|===\n| A\n|===\n";
+    const result = deletePlainColumn(parseAsciiDocTable(source), { sourceCellId: "cell:0:0" });
+
+    expect(result.ok).toBe(false);
+    expect(result.source).toBe(source);
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({
+      code: "writeback.delete-last-column",
+      severity: "error"
+    }));
+  });
+
   it("expands vertical spans when inserting a row inside the span", () => {
     const table = parseAsciiDocTable("|===\n| A | B\n.2+| V | C\n| D\n|===\n");
     const result = insertPlainRowAfter(table, {

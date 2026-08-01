@@ -1,5 +1,6 @@
 import { projectGridModel } from "./grid-model";
 import { parseAsciiDocTable } from "./parser";
+import { planColumnMetadataEdit } from "./column-structure";
 import type { GridCell, LosslessTable, LosslessTableCell, WriteBackResult } from "./types";
 import type { RowColumnEditRequest } from "./emitter-types";
 import {
@@ -119,12 +120,29 @@ export function insertPlainColumnBefore(table: LosslessTable, request: RowColumn
 
 function insertPlainColumn(table: LosslessTable, request: RowColumnEditRequest, position: "before" | "after"): WriteBackResult {
   if (hasDuplicateShorthand(table)) {
-    return insertPlainColumn(parseAsciiDocTable(expandDuplicateShorthand(table)), request, position);
+    const result = insertPlainColumn(parseAsciiDocTable(expandDuplicateShorthand(table)), request, position);
+    return result.ok ? result : { ...result, source: table.raw };
   }
 
-  const located = findCellWithRow(table, request.sourceCellId);
-  if (located === undefined) {
+  if (findCell(table, request.sourceCellId) === undefined) {
     return blocked(table, cellNotFoundDiagnostic(request.sourceCellId));
+  }
+
+  const grid = projectGridModel(table);
+  const origins = uniqueOrigins(grid.cells.flat());
+  const selectedOrigin = origins.find((origin) => origin.sourceCellId === request.sourceCellId);
+  if (selectedOrigin === undefined) {
+    return blocked(table, unresolvedGridOriginDiagnostic(request.sourceCellId));
+  }
+  const currentColumnCount = logicalColumnCount(origins);
+  const insertCol = selectedOrigin.col + (position === "after" ? 1 : 0);
+  const metadataPlan = planColumnMetadataEdit(table, currentColumnCount, {
+    kind: "insert",
+    anchorColumn: selectedOrigin.col,
+    insertColumn: insertCol
+  });
+  if (!metadataPlan.ok) {
+    return blocked(table, metadataPlan.diagnostic);
   }
 
   const safeDiagnostic = getUnsafeSpanAwareTableStructureDiagnostic(table);
@@ -132,12 +150,11 @@ function insertPlainColumn(table: LosslessTable, request: RowColumnEditRequest, 
     return blocked(table, safeDiagnostic);
   }
 
-  const grid = projectGridModel(table);
-  const insertCol = located.col + (position === "after" ? 1 : 0);
   const crossing = colSpansCrossing(grid.cells, insertCol);
   const replacements = [
     ...spanUpdateReplacements(crossing.map((origin) => ({ origin, rowSpan: origin.rowSpan, colSpan: origin.colSpan + 1 })), table),
-    ...columnInsertReplacements(table, grid.cells, insertCol)
+    ...columnInsertReplacements(table, grid.cells, insertCol),
+    ...(metadataPlan.replacement === undefined ? [] : [metadataPlan.replacement])
   ];
 
   return {
@@ -149,20 +166,22 @@ function insertPlainColumn(table: LosslessTable, request: RowColumnEditRequest, 
 
 export function deletePlainColumn(table: LosslessTable, request: RowColumnEditRequest): WriteBackResult {
   if (hasDuplicateShorthand(table)) {
-    return deletePlainColumn(parseAsciiDocTable(expandDuplicateShorthand(table)), request);
+    const result = deletePlainColumn(parseAsciiDocTable(expandDuplicateShorthand(table)), request);
+    return result.ok ? result : { ...result, source: table.raw };
   }
 
-  const located = findCellWithRow(table, request.sourceCellId);
-  if (located === undefined) {
+  if (findCell(table, request.sourceCellId) === undefined) {
     return blocked(table, cellNotFoundDiagnostic(request.sourceCellId));
   }
 
-  const safeDiagnostic = getUnsafeSpanAwareTableStructureDiagnostic(table);
-  if (safeDiagnostic !== undefined) {
-    return blocked(table, safeDiagnostic);
-  }
   const grid = projectGridModel(table);
-  if (grid.columnCount <= 1) {
+  const origins = uniqueOrigins(grid.cells.flat());
+  const selectedOrigin = origins.find((origin) => origin.sourceCellId === request.sourceCellId);
+  if (selectedOrigin === undefined) {
+    return blocked(table, unresolvedGridOriginDiagnostic(request.sourceCellId));
+  }
+  const currentColumnCount = logicalColumnCount(origins);
+  if (currentColumnCount <= 1) {
     return blocked(table, {
       code: "writeback.delete-last-column",
       severity: "error",
@@ -170,8 +189,23 @@ export function deletePlainColumn(table: LosslessTable, request: RowColumnEditRe
       nodeId: request.sourceCellId
     });
   }
+  const metadataPlan = planColumnMetadataEdit(table, currentColumnCount, {
+    kind: "delete",
+    deleteColumn: selectedOrigin.col
+  });
+  if (!metadataPlan.ok) {
+    return blocked(table, metadataPlan.diagnostic);
+  }
 
-  const replacements = columnDeleteReplacements(table, grid.cells, located.col);
+  const safeDiagnostic = getUnsafeSpanAwareTableStructureDiagnostic(table);
+  if (safeDiagnostic !== undefined) {
+    return blocked(table, safeDiagnostic);
+  }
+
+  const replacements = [
+    ...columnDeleteReplacements(table, grid.cells, selectedOrigin.col),
+    ...(metadataPlan.replacement === undefined ? [] : [metadataPlan.replacement])
+  ];
   return {
     ok: true,
     source: applyReplacements(table.raw, replacements),
@@ -199,6 +233,19 @@ function uniqueOrigins(cells: readonly GridCell[]): Array<Extract<GridCell, { ki
     }
   }
   return [...origins.values()];
+}
+
+function logicalColumnCount(origins: Array<Extract<GridCell, { kind: "origin" }>>): number {
+  return origins.reduce((count, origin) => Math.max(count, origin.col + origin.colSpan), 0);
+}
+
+function unresolvedGridOriginDiagnostic(sourceCellId: string) {
+  return {
+    code: "writeback.unsafe-grid-structure",
+    severity: "error" as const,
+    message: `Cell ${sourceCellId} cannot be resolved to a logical grid origin`,
+    nodeId: sourceCellId
+  };
 }
 
 function coveredColumnsFor(origins: Array<Extract<GridCell, { kind: "origin" }>>): Set<number> {
