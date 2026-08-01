@@ -1059,6 +1059,25 @@
       ]
     },
     {
+      "id": "malformed-unknown-cell-spec",
+      "category": "unsupported",
+      "source": "fixtures/lossless/malformed-unknown-cell-spec/source.adoc",
+      "status": "unsupported",
+      "structuredEdit": false,
+      "compareOracle": true,
+      "expectGridDiagnosticCodes": [
+        "cell.spec.unsupported"
+      ],
+      "expectParserCellCount": 3,
+      "expectGridColumnCount": 2,
+      "checks": [
+        "unknown-cell-style",
+        "raw-retention",
+        "span",
+        "alignment"
+      ]
+    },
+    {
       "id": "ambiguous-block-cell",
       "category": "unsupported",
       "source": "fixtures/compat/asciidoctor-table-syntax/sources/ambiguous-block-cell.adoc",

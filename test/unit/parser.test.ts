@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { emitNoopTable, parseAsciiDocTable, projectGridModel } from "../../src/core";
+import { emitNoopTable, parseAsciiDocTable, projectGridModel, replacePlainCellStyles } from "../../src/core";
 import { blockDelimiter, openDelimitedBlockDelimiter, updateDelimitedBlockStack } from "../../src/core/parser-blocks";
 
 describe("delimited block state", () => {
@@ -345,6 +345,86 @@ describe("parseAsciiDocTable", () => {
       horizontalAlign: "center",
       verticalAlign: "middle"
     });
+  });
+
+  it.each(["a", "d", "e", "h", "l", "m", "s"])("recognizes known cell style %s without diagnostics", (style) => {
+    const source = `|===\n${style}| Styled\n|===\n`;
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.rows[0].cells[0]).toMatchObject({
+      cellSpecRaw: style,
+      style,
+      errors: []
+    });
+    expect(emitNoopTable(parsed)).toBe(source);
+  });
+
+  it("retains an unknown cell style and blocks structured style edits", () => {
+    const source = "|===\nz| Unknown\n|===\n";
+    const parsed = parseAsciiDocTable(source);
+    const cell = parsed.rows[0].cells[0];
+    const result = replacePlainCellStyles(parsed, {
+      sourceCellIds: [cell.nodeId],
+      style: "m"
+    });
+
+    expect(cell).toMatchObject({
+      cellSpecRaw: "z",
+      style: undefined,
+      errors: [expect.objectContaining({ code: "cell.spec.unsupported", severity: "warning" })]
+    });
+    expect(emitNoopTable(parsed)).toBe(source);
+    expect(result).toMatchObject({
+      ok: false,
+      source,
+      diagnostics: [expect.objectContaining({ code: "writeback.unsafe-cell-diagnostics" })]
+    });
+  });
+
+  it("retains unknown style raw while interpreting span and alignment", () => {
+    const source = fixture("malformed-unknown-cell-spec", "source.adoc");
+    const expected = fixture("malformed-unknown-cell-spec", "expect.noop.adoc");
+    const expectedDiagnostics = JSON.parse(fixture("malformed-unknown-cell-spec", "expect.diagnostics.json")) as Array<{
+      code: string;
+      severity: string;
+    }>;
+    const parsed = parseAsciiDocTable(source);
+    const grid = projectGridModel(parsed);
+    const unknownCell = parsed.rows[0].cells[0];
+    const knownCell = parsed.rows[0].cells[1];
+    const cell = parsed.rows[1].cells[0];
+
+    expect(unknownCell).toMatchObject({
+      cellSpecRaw: "z",
+      style: undefined,
+      errors: [expect.objectContaining({ code: "cell.spec.unsupported", severity: "warning" })]
+    });
+    expect(knownCell).toMatchObject({ cellSpecRaw: "m", style: "m", errors: [] });
+
+    expect(cell).toMatchObject({
+      cellSpecRaw: "2+^.^z",
+      colSpan: 2,
+      rowSpan: 1,
+      style: undefined,
+      horizontalAlign: "center",
+      verticalAlign: "middle"
+    });
+    expect(cell.errors).toMatchObject(expectedDiagnostics);
+    expect(grid.cells[1][0]).toMatchObject({
+      kind: "origin",
+      colSpan: 2,
+      style: undefined,
+      horizontalAlign: "center",
+      verticalAlign: "middle",
+      diagnostics: expectedDiagnostics.map((diagnostic) => expect.objectContaining(diagnostic))
+    });
+    expect(grid.diagnostics).toHaveLength(2);
+    expect(grid.diagnostics).toEqual(
+      expect.arrayContaining(expectedDiagnostics.map((diagnostic) => expect.objectContaining(diagnostic)))
+    );
+    expect(grid.diagnostics.map((diagnostic) => diagnostic.code)).not.toContain("grid.ragged-row");
+    expect(grid.diagnostics.map((diagnostic) => diagnostic.code)).not.toContain("grid.span-overflow");
+    expect(emitNoopTable(parsed)).toBe(expected);
   });
 
   it("projects duplicate cell shorthand as separate plain origin cells", () => {

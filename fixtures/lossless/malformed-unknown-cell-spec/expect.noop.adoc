@@ -1,0 +1,5 @@
+[cols=2*]
+|===
+z| Unknown m| Known
+2+^.^z| Unknown span
+|===

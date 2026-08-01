@@ -1,5 +1,6 @@
 import type { LosslessTableCell, TableColumnSpec, TableDiagnostic } from "./types";
 import { range } from "./parser-source";
+import { isKnownCellStyle } from "./cell-style";
 
 export function parseRowCells(
   source: string,
@@ -175,7 +176,7 @@ function parseCellSpec(
   }
 
   const styleMatch = remaining.match(/([a-z])$/);
-  if (styleMatch) {
+  if (styleMatch && isKnownCellStyle(styleMatch[1])) {
     style = styleMatch[1];
     remaining = remaining.slice(0, -1);
   }

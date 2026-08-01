@@ -1,10 +1,10 @@
 import { parseAsciiDocTable } from "./parser";
 import { projectGridModel } from "./grid-model";
+import { isKnownCellStyle } from "./cell-style";
 import type { ColumnSpecUpdate, PlainCellStyleRangeReplacement, TableAppearanceUpdate, TableHeaderFooterUpdate } from "./emitter-types";
 import type { LosslessTable, LosslessTableCell, TableAttributeEntry, TableDiagnostic, WriteBackResult } from "./types";
 import { applyReplacements, blocked, findCell, hasDuplicateShorthand } from "./emitter-utils";
 
-const STYLE_VALUES = new Set(["m", "s", "e", "h", "l", "d", "a"]);
 const FRAME_VALUES = new Set(["topbot", "all", "none", "sides", "ends"]);
 const GRID_VALUES = new Set(["all", "cols", "rows", "none"]);
 const STRIPES_VALUES = new Set(["all", "even", "odd", "hover", "none"]);
@@ -20,7 +20,7 @@ export function replacePlainCellStyles(table: LosslessTable, request: PlainCellS
   }
 
   const replacements: Array<{ start: number; end: number; text: string }> = [];
-  if (request.style !== undefined && request.style.length > 0 && !STYLE_VALUES.has(request.style)) {
+  if (request.style !== undefined && request.style.length > 0 && !isKnownCellStyle(request.style)) {
     return blocked(table, diagnostic("writeback.cell-style-value", `Unsupported cell style value: ${request.style}`));
   }
   for (const sourceCellId of sourceCellIds) {
@@ -85,7 +85,7 @@ export function updateColumnSpec(table: LosslessTable, request: ColumnSpecUpdate
   if (!Number.isInteger(request.columnIndex) || request.columnIndex < 0) {
     return blocked(table, diagnostic("writeback.column-spec-index", "Column spec update requires a valid column index"));
   }
-  if (request.style !== undefined && request.style.length > 0 && !STYLE_VALUES.has(request.style)) {
+  if (request.style !== undefined && request.style.length > 0 && !isKnownCellStyle(request.style)) {
     return blocked(table, diagnostic("writeback.column-style-value", `Unsupported column style value: ${request.style}`));
   }
 
