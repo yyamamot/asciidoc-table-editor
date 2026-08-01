@@ -1,14 +1,39 @@
 {
   "nodeId": "table:0",
   "kind": "table",
+  "raw": "|===\n| A | B\n| C | D\n|===\n",
+  "range": { "start": 0, "end": 26 },
   "rowCount": 2,
-  "cellOrder": ["cell:0:0", "cell:0:1", "cell:1:0", "cell:1:1"],
+  "rowOrder": ["row:0", "row:1"],
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "cellOrder": ["cell:0:0", "cell:0:1"],
+      "retained": [
+        { "nodeId": "retained:row:0:0", "kind": "raw", "raw": " ", "range": { "start": 8, "end": 9 } },
+        { "nodeId": "retained:row:0:1", "kind": "raw", "raw": "\n", "range": { "start": 12, "end": 13 } }
+      ]
+    },
+    {
+      "nodeId": "row:1",
+      "cellOrder": ["cell:1:0", "cell:1:1"],
+      "retained": [
+        { "nodeId": "retained:row:1:0", "kind": "raw", "raw": " ", "range": { "start": 16, "end": 17 } },
+        { "nodeId": "retained:row:1:1", "kind": "raw", "raw": "\n", "range": { "start": 20, "end": 21 } }
+      ]
+    }
+  ],
   "cells": [
-    { "nodeId": "cell:0:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " A" },
-    { "nodeId": "cell:0:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " B" },
-    { "nodeId": "cell:1:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " C" },
-    { "nodeId": "cell:1:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " D" }
+    { "nodeId": "cell:0:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " A", "errors": [] },
+    { "nodeId": "cell:0:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " B", "errors": [] },
+    { "nodeId": "cell:1:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " C", "errors": [] },
+    { "nodeId": "cell:1:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " D", "errors": [] }
+  ],
+  "retained": [
+    { "nodeId": "retained:table:0", "kind": "separator", "raw": "|===\n", "range": { "start": 0, "end": 5 } },
+    { "nodeId": "retained:table:1", "kind": "separator", "raw": "|===\n", "range": { "start": 21, "end": 26 } }
   ],
   "documentErrors": [],
+  "tokenKindsSeen": ["table", "separator", "row", "raw", "cell"],
   "projectable": true
 }

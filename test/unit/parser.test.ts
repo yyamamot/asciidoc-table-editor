@@ -1,7 +1,8 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { emitNoopTable, parseAsciiDocTable, projectGridModel, replacePlainCellStyles } from "../../src/core";
+import type { LosslessTable, RetainedSegment, SourceRange } from "../../src/core";
 import { blockDelimiter, openDelimitedBlockDelimiter, updateDelimitedBlockStack } from "../../src/core/parser-blocks";
 
 describe("delimited block state", () => {
@@ -51,6 +52,95 @@ describe("parseAsciiDocTable", () => {
     expect(parsed.rows).toHaveLength(2);
     expect(parsed.rows[0].cells.map((cell) => cell.contentRaw)).toEqual([" A", " B"]);
     expect(source.slice(parsed.rows[0].cells[0].range.start.offset, parsed.rows[0].cells[0].range.end.offset)).toBe("| A");
+  });
+
+  it.each(losslessSummaryFixtureIds())("matches the executable compact lossless summary for %s", (fixtureId) => {
+    const source = fixture(fixtureId, "source.adoc");
+    const expected = JSON.parse(fixture(fixtureId, "expect.lossless.summary.json")) as unknown;
+    const parsed = parseAsciiDocTable(source);
+
+    expect(compactLosslessSummary(parsed)).toEqual(expected);
+  });
+
+  it("materializes table and row retained segments in source order without overlapping canonical owners", () => {
+    const source =
+      "unclaimed preface\n" +
+      "// table comment\n" +
+      "[cols=2*]\n" +
+      "|===\n" +
+      "| A | B\n" +
+      "\n" +
+      "// between rows\n" +
+      "////\n" +
+      "comment block interior\n" +
+      "////\n" +
+      "| C\n" +
+      "// row comment\n" +
+      "| D\n" +
+      "|===\n";
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.retained.map(({ nodeId, kind, raw }) => ({ nodeId, kind, raw }))).toEqual([
+      { nodeId: "retained:table:0", kind: "unknown", raw: "unclaimed preface\n" },
+      { nodeId: "retained:table:1", kind: "comment", raw: "// table comment\n" },
+      { nodeId: "retained:table:2", kind: "raw", raw: "\n" },
+      { nodeId: "retained:table:3", kind: "separator", raw: "|===\n" },
+      { nodeId: "retained:table:4", kind: "blank", raw: "\n" },
+      { nodeId: "retained:table:5", kind: "comment", raw: "// between rows\n" },
+      { nodeId: "retained:table:6", kind: "comment", raw: "////\n" },
+      { nodeId: "retained:table:7", kind: "comment", raw: "comment block interior\n" },
+      { nodeId: "retained:table:8", kind: "comment", raw: "////\n" },
+      { nodeId: "retained:table:9", kind: "separator", raw: "|===\n" }
+    ]);
+    expect(parsed.rows).toHaveLength(2);
+    expect(parsed.rows[0].retained.map(({ nodeId, kind, raw }) => ({ nodeId, kind, raw }))).toEqual([
+      { nodeId: "retained:row:0:0", kind: "raw", raw: " " },
+      { nodeId: "retained:row:0:1", kind: "raw", raw: "\n" }
+    ]);
+    expect(parsed.rows[1].retained.map(({ nodeId, kind, raw }) => ({ nodeId, kind, raw }))).toEqual([
+      { nodeId: "retained:row:1:0", kind: "raw", raw: "\n" },
+      { nodeId: "retained:row:1:1", kind: "comment", raw: "// row comment\n" },
+      { nodeId: "retained:row:1:2", kind: "raw", raw: "\n" }
+    ]);
+    assertRetainedIntegrity(source, parsed);
+    expect(emitNoopTable(parsed)).toBe(source);
+  });
+
+  it.each([
+    ["LF", "\n", true],
+    ["CRLF", "\r\n", true],
+    ["CRLF without final newline", "\r\n", false]
+  ])("preserves %s retained line endings and final newline", (_label, eol, finalNewline) => {
+    const source = `[cols=2*]${eol}|===${eol}| A | B${eol}${eol}| C | D${eol}|===${finalNewline ? eol : ""}`;
+    const parsed = parseAsciiDocTable(source);
+    const retained = [
+      ...parsed.retained,
+      ...parsed.rows.flatMap((row) => row.retained)
+    ];
+
+    assertRetainedIntegrity(source, parsed);
+    expect(retained.some((segment) => segment.kind === "blank" && segment.raw === eol)).toBe(true);
+    expect(parsed.retained.filter((segment) => segment.kind === "separator").map((segment) => segment.raw)).toEqual([
+      `|===${eol}`,
+      `|===${finalNewline ? eol : ""}`
+    ]);
+    expect(emitNoopTable(parsed)).toBe(source);
+  });
+
+  it("retains a body without source cells at table scope without creating empty rows", () => {
+    const source = "[cols=2*]\n|===\n// body comment\norphan body source\n|===\n";
+    const parsed = parseAsciiDocTable(source);
+
+    expect(parsed.rows).toEqual([]);
+    expect(parsed.retained.map(({ kind, raw }) => ({ kind, raw }))).toEqual([
+      { kind: "raw", raw: "\n" },
+      { kind: "separator", raw: "|===\n" },
+      { kind: "comment", raw: "// body comment\n" },
+      { kind: "unknown", raw: "orphan body source\n" },
+      { kind: "separator", raw: "|===\n" }
+    ]);
+    assertRetainedIntegrity(source, parsed);
+    expect(emitNoopTable(parsed)).toBe(source);
   });
 
   it("keeps table appearance attributes as structured metadata", () => {
@@ -106,6 +196,7 @@ describe("parseAsciiDocTable", () => {
       kind: "origin",
       contentRaw: "B +\n next"
     });
+    expect(retainedRaw(parsed)).not.toContain(" next");
     expect(grid.diagnostics).toEqual([]);
   });
 
@@ -129,6 +220,7 @@ describe("parseAsciiDocTable", () => {
       kind: "origin",
       contentRaw: "https://example.invalid/item-1 +\ncontinued note\n{set:cellbgcolor:#ffffff}"
     });
+    expect(retainedRaw(parsed)).not.toContain("{set:cellbgcolor:#ffffff}");
     expect(grid.diagnostics).toEqual([]);
   });
 
@@ -203,6 +295,8 @@ describe("parseAsciiDocTable", () => {
     expect(parsed.rows[1].cells[1].contentRaw).toBe(
       "Summary line.\n\n* First point\n* Second point\n\nNOTE: Additional note. +\nMore note text."
     );
+    expect(retainedRaw(parsed)).not.toContain("* First point");
+    expect(retainedRaw(parsed)).not.toContain("NOTE: Additional note");
     expect(grid.diagnostics).toEqual([]);
   });
 
@@ -438,6 +532,7 @@ describe("parseAsciiDocTable", () => {
     expect(parsed.rows[0].cells[1]).toMatchObject({ duplicateCount: 2, duplicateIndex: 1, cellSpecRaw: "2*" });
     expect(grid.cells[0][0]).toMatchObject({ kind: "origin", sourceCellId: "cell:0:0", contentRaw: " A" });
     expect(grid.cells[0][1]).toMatchObject({ kind: "origin", sourceCellId: "cell:0:1", contentRaw: " A" });
+    assertRetainedIntegrity(source, parsed);
   });
 
   it("projects duplicate cell shorthand with style and alignment", () => {
@@ -609,6 +704,7 @@ describe("parseAsciiDocTable", () => {
       isBlockContent: true,
       contentRaw: " * item\n* detail"
     });
+    expect(retainedRaw(parsed)).not.toContain("* detail");
     expect(grid.cells[0][0]).toMatchObject({
       kind: "origin",
       blockContent: true,
@@ -746,4 +842,124 @@ function fixture(fixtureId: string, fileName: string): string {
 
 function fixtureCompat(fileName: string): string {
   return readFileSync(join(process.cwd(), "fixtures", "compat", "asciidoctor-table-syntax", "sources", fileName), "utf8");
+}
+
+function losslessSummaryFixtureIds(): string[] {
+  const root = join(process.cwd(), "fixtures", "lossless");
+  return readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && existsSync(join(root, entry.name, "expect.lossless.summary.json")))
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function compactLosslessSummary(table: LosslessTable): unknown {
+  const grid = projectGridModel(table);
+  const rows = table.rows.map((row) => ({
+    nodeId: row.nodeId,
+    cellOrder: row.cells.map((cell) => cell.nodeId),
+    retained: row.retained.map(compactRetained)
+  }));
+  const cells = table.rows.flatMap((row) =>
+    row.cells.map((cell) => ({
+      nodeId: cell.nodeId,
+      cellSpecRaw: cell.cellSpecRaw,
+      rowSpan: cell.rowSpan,
+      colSpan: cell.colSpan,
+      contentRaw: cell.contentRaw,
+      errors: cell.errors.map(({ code, severity }) => ({ code, severity }))
+    }))
+  );
+  const tokenKindsSeen = Array.from(
+    new Set([
+      table.kind,
+      ...table.retained.map((segment) => segment.kind),
+      ...table.rows.flatMap((row) => [row.kind, ...row.retained.map((segment) => segment.kind), ...row.cells.map((cell) => cell.kind)])
+    ])
+  );
+
+  return {
+    nodeId: table.nodeId,
+    kind: table.kind,
+    raw: table.raw,
+    range: compactRange(table.range),
+    rowCount: table.rows.length,
+    rowOrder: table.rows.map((row) => row.nodeId),
+    rows,
+    cells,
+    retained: table.retained.map(compactRetained),
+    documentErrors: table.errors.map(({ code, severity }) => ({ code, severity })),
+    tokenKindsSeen,
+    projectable: !grid.diagnostics.some((diagnostic) => diagnostic.severity === "error")
+  };
+}
+
+function compactRetained(segment: RetainedSegment): unknown {
+  return {
+    nodeId: segment.nodeId,
+    kind: segment.kind,
+    raw: segment.raw,
+    range: compactRange(segment.range)
+  };
+}
+
+function compactRange(range: SourceRange): { start: number; end: number } {
+  return { start: range.start.offset, end: range.end.offset };
+}
+
+function assertRetainedIntegrity(source: string, table: LosslessTable): void {
+  const allRetained = [
+    ...table.retained,
+    ...table.rows.flatMap((row) => row.retained)
+  ];
+  expect(new Set(allRetained.map((segment) => segment.nodeId)).size).toBe(allRetained.length);
+  for (const segment of allRetained) {
+    expect(source.slice(segment.range.start.offset, segment.range.end.offset)).toBe(segment.raw);
+    expect(segment.range.start).toEqual(positionAtForTest(source, segment.range.start.offset));
+    expect(segment.range.end).toEqual(positionAtForTest(source, segment.range.end.offset));
+  }
+  expect(table.retained.map((segment) => segment.range.start.offset)).toEqual(
+    [...table.retained].map((segment) => segment.range.start.offset).sort((left, right) => left - right)
+  );
+  assertNonOverlapping([
+    ...table.retained.map((segment) => segment.range),
+    ...(table.attributes.title === undefined ? [] : [table.attributes.title.range]),
+    ...table.attributes.lines.map((line) => line.range),
+    ...table.rows.map((row) => row.range)
+  ]);
+  for (const row of table.rows) {
+    expect(row.retained.map((segment) => segment.range.start.offset)).toEqual(
+      [...row.retained].map((segment) => segment.range.start.offset).sort((left, right) => left - right)
+    );
+    assertNonOverlapping([
+      ...row.retained.map((segment) => segment.range),
+      ...row.cells
+        .filter((cell) => cell.duplicateIndex === undefined || cell.duplicateIndex === 0)
+        .map((cell) => cell.range)
+    ]);
+  }
+}
+
+function retainedRaw(table: LosslessTable): string {
+  return [...table.retained, ...table.rows.flatMap((row) => row.retained)].map((segment) => segment.raw).join("");
+}
+
+function positionAtForTest(source: string, offset: number): { offset: number; line: number; column: number } {
+  let line = 0;
+  let column = 0;
+  for (let index = 0; index < offset; index += 1) {
+    if (source[index] === "\n") {
+      line += 1;
+      column = 0;
+    } else {
+      column += 1;
+    }
+  }
+  return { offset, line, column };
+}
+
+function assertNonOverlapping(ranges: SourceRange[]): void {
+  const ordered = [...ranges].sort((left, right) => left.start.offset - right.start.offset || left.end.offset - right.end.offset);
+  for (let index = 1; index < ordered.length; index += 1) {
+    expect(ordered[index].start.offset).toBeGreaterThanOrEqual(ordered[index - 1].end.offset);
+  }
 }

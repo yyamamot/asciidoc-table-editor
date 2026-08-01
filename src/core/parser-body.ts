@@ -1,6 +1,7 @@
 import type { LosslessTableCell, TableColumnSpec, TableDocument } from "./types";
 import { openDelimitedBlockDelimiter } from "./parser-blocks";
 import { parseRowCells, spanWidth } from "./parser-cell-spec";
+import { commentLineIndexes, materializeRetainedSegments } from "./parser-retained";
 import { positionAt, type SourceLine } from "./parser-source";
 
 export function parseBodyRows(
@@ -8,15 +9,21 @@ export function parseBodyRows(
   bodyLines: SourceLine[],
   options: { columns: readonly TableColumnSpec[]; expectedColumnCount?: number; separator: string }
 ): TableDocument["rows"] {
-  const firstNonEmptyLine = bodyLines.find((line) => line.text.trim().length > 0);
-  if (firstNonEmptyLine === undefined) {
+  const commentLines = commentLineIndexes(bodyLines);
+  const firstCellLine = bodyLines.find(
+    (line) =>
+      line.text.trim().length > 0 &&
+      !commentLines.has(line.index) &&
+      parseRowCells(source, line.text, line.offset, 0, 0, 0, options.separator, options.columns).length > 0
+  );
+  if (firstCellLine === undefined) {
     return [];
   }
 
   const expectedColumnCount = Math.max(
     1,
     options.expectedColumnCount ??
-      spanWidth(parseRowCells(source, firstNonEmptyLine.text, firstNonEmptyLine.offset, 0, 0, 0, options.separator, options.columns))
+      spanWidth(parseRowCells(source, firstCellLine.text, firstCellLine.offset, 0, 0, 0, options.separator, options.columns))
   );
   const rows: TableDocument["rows"] = [];
   let activeRowSpans: number[] = [];
@@ -30,6 +37,7 @@ export function parseBodyRows(
       }
     | undefined;
   let pendingPlainContinuationBlankLines: SourceLine[] = [];
+  const tableCommentDelimiterStack: string[] = [];
 
   const startRow = (line: { offset: number }): NonNullable<typeof current> => ({
     rowIndex: rows.length,
@@ -38,15 +46,6 @@ export function parseBodyRows(
     cells: [],
     occupied: activeRowSpans.map((span) => span > 0)
   });
-
-  const isInsideTrailingBlockCellDelimitedBlock = (line: { text: string }): boolean => {
-    const trailingCell = current?.cells.at(-1);
-    if (trailingCell === undefined || !trailingCell.isBlockContent) {
-      return false;
-    }
-    const delimiter = openDelimitedBlockDelimiter(trailingCell.contentRaw);
-    return delimiter !== undefined && line.text.trim() !== delimiter;
-  };
 
   const placeCell = (occupied: boolean[], cell: LosslessTableCell): void => {
     let col = 0;
@@ -85,7 +84,14 @@ export function parseBodyRows(
         end: positionAt(source, current.endOffset)
       },
       cells: current.cells,
-      retained: [],
+      retained: materializeRetainedSegments(
+        source,
+        { start: current.startOffset, end: current.endOffset },
+        current.cells
+          .filter((cell) => cell.duplicateIndex === undefined || cell.duplicateIndex === 0)
+          .map((cell) => ({ start: cell.range.start.offset, end: cell.range.end.offset })),
+        `retained:row:${current.rowIndex}`
+      ),
       errors: []
     });
 
@@ -167,6 +173,24 @@ export function parseBodyRows(
   };
 
   for (const line of bodyLines) {
+    const trailingBlockCell = current?.cells.at(-1);
+    if (trailingBlockCell?.isBlockContent) {
+      const openDelimiter = openDelimitedBlockDelimiter(trailingBlockCell.contentRaw);
+      if (
+        (openDelimiter !== undefined || isCommentStartLine(line)) &&
+        appendContinuationToTrailingBlockCell(line)
+      ) {
+        continue;
+      }
+    }
+    if (updateCommentDelimiterStack(line, tableCommentDelimiterStack)) {
+      if (rowComplete()) {
+        flush();
+      } else if (current !== undefined) {
+        current.endOffset = line.offset + line.raw.length;
+      }
+      continue;
+    }
     if (line.text.trim().length === 0) {
       if (appendContinuationToTrailingBlockCell(line)) {
         continue;
@@ -177,13 +201,26 @@ export function parseBodyRows(
       }
       if (rowComplete()) {
         flush();
+      } else if (current !== undefined) {
+        current.endOffset = line.offset + line.raw.length;
       }
       continue;
     }
-    current ??= startRow(line);
-    if (isInsideTrailingBlockCellDelimitedBlock(line) && appendContinuationToTrailingBlockCell(line)) {
+    if (current === undefined) {
+      const candidate = startRow(line);
+      const cells = parseRowCells(source, line.text, line.offset, candidate.rowIndex, 0, firstOpenColumn(candidate.occupied), options.separator, options.columns);
+      if (cells.length === 0) {
+        continue;
+      }
+      current = candidate;
+      current.cells.push(...cells);
+      current.endOffset = line.offset + line.raw.length;
+      for (const cell of cells) {
+        placeCell(current.occupied, cell);
+      }
       continue;
     }
+
     let cells = parseRowCells(source, line.text, line.offset, current.rowIndex, current.cells.length, nextOpenColumn(), options.separator, options.columns);
     if (cells.length > 0 && rowComplete()) {
       pendingPlainContinuationBlankLines = [];
@@ -212,4 +249,37 @@ export function parseBodyRows(
 
   flush();
   return rows;
+}
+
+function firstOpenColumn(occupied: readonly boolean[]): number {
+  let column = 0;
+  while (occupied[column]) {
+    column += 1;
+  }
+  return column;
+}
+
+function isCommentStartLine(line: Pick<SourceLine, "text">): boolean {
+  const trimmed = line.text.trim();
+  return trimmed.startsWith("//") || /^\/{4,}$/u.test(trimmed);
+}
+
+function updateCommentDelimiterStack(line: Pick<SourceLine, "text">, stack: string[]): boolean {
+  const trimmed = line.text.trim();
+  const delimiter = /^\/{4,}$/u.test(trimmed) ? trimmed : undefined;
+  if (stack.length > 0) {
+    if (delimiter !== undefined) {
+      if (delimiter === stack.at(-1)) {
+        stack.pop();
+      } else {
+        stack.push(delimiter);
+      }
+    }
+    return true;
+  }
+  if (delimiter !== undefined) {
+    stack.push(delimiter);
+    return true;
+  }
+  return trimmed.startsWith("//");
 }

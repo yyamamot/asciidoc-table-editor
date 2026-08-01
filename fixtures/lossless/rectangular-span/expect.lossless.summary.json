@@ -1,7 +1,37 @@
 {
+  "nodeId": "table:0",
+  "kind": "table",
+  "raw": "|===\n2.2+| A | B\n| C\n|===\n",
+  "range": { "start": 0, "end": 26 },
   "rowCount": 2,
-  "cells": [
-    { "nodeId": "cell:0:0", "cellSpecRaw": "2.2+", "rowSpan": 2, "colSpan": 2, "contentRaw": " A" }
+  "rowOrder": ["row:0", "row:1"],
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "cellOrder": ["cell:0:0", "cell:0:1"],
+      "retained": [
+        { "nodeId": "retained:row:0:0", "kind": "raw", "raw": " ", "range": { "start": 12, "end": 13 } },
+        { "nodeId": "retained:row:0:1", "kind": "raw", "raw": "\n", "range": { "start": 16, "end": 17 } }
+      ]
+    },
+    {
+      "nodeId": "row:1",
+      "cellOrder": ["cell:1:0"],
+      "retained": [
+        { "nodeId": "retained:row:1:0", "kind": "raw", "raw": "\n", "range": { "start": 20, "end": 21 } }
+      ]
+    }
   ],
+  "cells": [
+    { "nodeId": "cell:0:0", "cellSpecRaw": "2.2+", "rowSpan": 2, "colSpan": 2, "contentRaw": " A", "errors": [] },
+    { "nodeId": "cell:0:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " B", "errors": [] },
+    { "nodeId": "cell:1:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " C", "errors": [] }
+  ],
+  "retained": [
+    { "nodeId": "retained:table:0", "kind": "separator", "raw": "|===\n", "range": { "start": 0, "end": 5 } },
+    { "nodeId": "retained:table:1", "kind": "separator", "raw": "|===\n", "range": { "start": 21, "end": 26 } }
+  ],
+  "documentErrors": [],
+  "tokenKindsSeen": ["table", "separator", "row", "raw", "cell"],
   "projectable": true
 }

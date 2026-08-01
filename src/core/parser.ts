@@ -2,6 +2,7 @@ import type { TableDiagnostic, TableDocument } from "./types";
 import { tableDelimiterRaw } from "./table-delimiter";
 import { parseTableAttributes } from "./parser-attributes";
 import { parseBodyRows } from "./parser-body";
+import { materializeRetainedSegments } from "./parser-retained";
 import { applyRowRoles } from "./parser-row-roles";
 import { positionAt, splitLines } from "./parser-source";
 
@@ -68,6 +69,21 @@ export function parseAsciiDocTable(source: string): TableDocument {
         separator,
         source
       );
+  const retained = materializeRetainedSegments(
+    source,
+    { start: 0, end: source.length },
+    [
+      ...(attributes.title === undefined
+        ? []
+        : [{ start: attributes.title.range.start.offset, end: attributes.title.range.end.offset }]),
+      ...attributes.lines.map((line) => ({ start: line.range.start.offset, end: line.range.end.offset })),
+      ...rows.map((row) => ({ start: row.range.start.offset, end: row.range.end.offset }))
+    ],
+    "retained:table",
+    [startLine, endLine]
+      .filter((line): line is NonNullable<typeof line> => line !== undefined)
+      .map((line) => ({ start: line.offset, end: line.offset + line.raw.length, kind: "separator" as const }))
+  );
 
   return {
     nodeId: "table:0",
@@ -84,7 +100,7 @@ export function parseAsciiDocTable(source: string): TableDocument {
     },
     attributes,
     rows,
-    retained: [],
+    retained,
     errors
   };
 }

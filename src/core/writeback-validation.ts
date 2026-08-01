@@ -98,9 +98,13 @@ function sameTableStructure(
   for (let rowOrdinal = 0; rowOrdinal < baseline.rows.length; rowOrdinal += 1) {
     const baselineRow = baseline.rows[rowOrdinal];
     const candidateRow = candidate.rows[rowOrdinal];
+    const allowsRetainedReshape = targets.some(
+      (target) => target.rowOrdinal === rowOrdinal && target.transition === "plain-to-block"
+    );
     if (candidateRow === undefined || baselineRow.role !== candidateRow.role ||
         baselineRow.cells.length !== candidateRow.cells.length ||
-        retainedSignature(baselineRow.retained) !== retainedSignature(candidateRow.retained)) {
+        rowRetainedSignature(baselineRow.retained, allowsRetainedReshape) !==
+          rowRetainedSignature(candidateRow.retained, allowsRetainedReshape)) {
       return false;
     }
     for (let cellOrdinal = 0; cellOrdinal < baselineRow.cells.length; cellOrdinal += 1) {
@@ -246,6 +250,10 @@ function attributeSignature(table: LosslessTable): string {
 
 function retainedSignature(retained: LosslessTable["retained"]): string {
   return JSON.stringify(retained.map(({ kind, raw }) => ({ kind, raw })));
+}
+
+function rowRetainedSignature(retained: LosslessTable["retained"], ignoreRawGaps: boolean): string {
+  return retainedSignature(ignoreRawGaps ? retained.filter((segment) => segment.kind !== "raw") : retained);
 }
 
 function flattenCells(table: LosslessTable): LosslessTableCell[] {
