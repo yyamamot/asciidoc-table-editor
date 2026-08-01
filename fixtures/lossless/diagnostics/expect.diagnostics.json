@@ -2,9 +2,5 @@
   {
     "code": "grid.ragged-row",
     "severity": "warning"
-  },
-  {
-    "code": "grid.span-overflow",
-    "severity": "error"
   }
 ]

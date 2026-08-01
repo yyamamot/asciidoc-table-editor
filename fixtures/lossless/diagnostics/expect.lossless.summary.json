@@ -3,10 +3,10 @@
   "table": {
     "nodeId": "table:0",
     "kind": "table",
-    "raw": "|===\n.2+| A | B\n| C\n|===\n",
+    "raw": "|===\n| A | B\n| C\n|===\n",
     "range": {
       "start": 0,
-      "end": 25
+      "end": 22
     },
     "delimiter": {
       "startRaw": "|===",
@@ -25,10 +25,10 @@
       "nodeId": "row:0",
       "kind": "row",
       "role": "body",
-      "raw": ".2+| A | B\n",
+      "raw": "| A | B\n",
       "range": {
         "start": 5,
-        "end": 16
+        "end": 13
       },
       "cellOrder": [
         "cell:0:0",
@@ -40,8 +40,8 @@
           "kind": "raw",
           "raw": " ",
           "range": {
-            "start": 11,
-            "end": 12
+            "start": 8,
+            "end": 9
           }
         },
         {
@@ -49,8 +49,8 @@
           "kind": "raw",
           "raw": "\n",
           "range": {
-            "start": 15,
-            "end": 16
+            "start": 12,
+            "end": 13
           }
         }
       ],
@@ -62,8 +62,8 @@
       "role": "body",
       "raw": "| C\n",
       "range": {
-        "start": 16,
-        "end": 20
+        "start": 13,
+        "end": 17
       },
       "cellOrder": [
         "cell:1:0"
@@ -74,8 +74,8 @@
           "kind": "raw",
           "raw": "\n",
           "range": {
-            "start": 19,
-            "end": 20
+            "start": 16,
+            "end": 17
           }
         }
       ],
@@ -86,15 +86,15 @@
     {
       "nodeId": "cell:0:0",
       "kind": "cell",
-      "raw": ".2+| A",
+      "raw": "| A",
       "range": {
         "start": 5,
-        "end": 11
+        "end": 8
       },
-      "cellSpecRaw": ".2+",
+      "cellSpecRaw": "",
       "delimiterRaw": "|",
       "contentRaw": " A",
-      "rowSpan": 2,
+      "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
       "errors": []
@@ -104,8 +104,8 @@
       "kind": "cell",
       "raw": "| B",
       "range": {
-        "start": 12,
-        "end": 15
+        "start": 9,
+        "end": 12
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
@@ -120,8 +120,8 @@
       "kind": "cell",
       "raw": "| C",
       "range": {
-        "start": 16,
-        "end": 19
+        "start": 13,
+        "end": 16
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
@@ -147,8 +147,8 @@
       "kind": "separator",
       "raw": "|===\n",
       "range": {
-        "start": 20,
-        "end": 25
+        "start": 17,
+        "end": 22
       }
     }
   ],

@@ -1,37 +1,168 @@
 {
-  "nodeId": "table:0",
-  "kind": "table",
-  "raw": "|===\n2+| A\n| B | C\n|===\n",
-  "range": { "start": 0, "end": 24 },
-  "rowCount": 2,
-  "rowOrder": ["row:0", "row:1"],
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "|===\n2+| A\n| B | C\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 24
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "options": [],
+      "columns": [],
+      "lines": [],
+      "named": {}
+    }
+  },
   "rows": [
     {
       "nodeId": "row:0",
-      "cellOrder": ["cell:0:0"],
+      "kind": "row",
+      "role": "body",
+      "raw": "2+| A\n",
+      "range": {
+        "start": 5,
+        "end": 11
+      },
+      "cellOrder": [
+        "cell:0:0"
+      ],
       "retained": [
-        { "nodeId": "retained:row:0:0", "kind": "raw", "raw": "\n", "range": { "start": 10, "end": 11 } }
-      ]
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 10,
+            "end": 11
+          }
+        }
+      ],
+      "errors": []
     },
     {
       "nodeId": "row:1",
-      "cellOrder": ["cell:1:0", "cell:1:1"],
+      "kind": "row",
+      "role": "body",
+      "raw": "| B | C\n",
+      "range": {
+        "start": 11,
+        "end": 19
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1"
+      ],
       "retained": [
-        { "nodeId": "retained:row:1:0", "kind": "raw", "raw": " ", "range": { "start": 14, "end": 15 } },
-        { "nodeId": "retained:row:1:1", "kind": "raw", "raw": "\n", "range": { "start": 18, "end": 19 } }
-      ]
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 14,
+            "end": 15
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 18,
+            "end": 19
+          }
+        }
+      ],
+      "errors": []
     }
   ],
   "cells": [
-    { "nodeId": "cell:0:0", "cellSpecRaw": "2+", "rowSpan": 1, "colSpan": 2, "contentRaw": " A", "errors": [] },
-    { "nodeId": "cell:1:0", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " B", "errors": [] },
-    { "nodeId": "cell:1:1", "cellSpecRaw": "", "rowSpan": 1, "colSpan": 1, "contentRaw": " C", "errors": [] }
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "2+| A",
+      "range": {
+        "start": 5,
+        "end": 10
+      },
+      "cellSpecRaw": "2+",
+      "delimiterRaw": "|",
+      "contentRaw": " A",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| B",
+      "range": {
+        "start": 11,
+        "end": 14
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " B",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| C",
+      "range": {
+        "start": 15,
+        "end": 18
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " C",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
   ],
   "retained": [
-    { "nodeId": "retained:table:0", "kind": "separator", "raw": "|===\n", "range": { "start": 0, "end": 5 } },
-    { "nodeId": "retained:table:1", "kind": "separator", "raw": "|===\n", "range": { "start": 19, "end": 24 } }
+    {
+      "nodeId": "retained:table:0",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 0,
+        "end": 5
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 19,
+        "end": 24
+      }
+    }
   ],
-  "documentErrors": [],
-  "tokenKindsSeen": ["table", "separator", "row", "raw", "cell"],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table"
+  ],
+  "grid": {
+    "rowCount": 2,
+    "columnCount": 2
+  },
   "projectable": true
 }

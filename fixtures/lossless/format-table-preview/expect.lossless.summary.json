@@ -3,10 +3,10 @@
   "table": {
     "nodeId": "table:0",
     "kind": "table",
-    "raw": "|===\n.2+| A | B\n| C\n|===\n",
+    "raw": "|===\n| A | Long\n| Alpha | B\n|===\n",
     "range": {
       "start": 0,
-      "end": 25
+      "end": 33
     },
     "delimiter": {
       "startRaw": "|===",
@@ -25,7 +25,7 @@
       "nodeId": "row:0",
       "kind": "row",
       "role": "body",
-      "raw": ".2+| A | B\n",
+      "raw": "| A | Long\n",
       "range": {
         "start": 5,
         "end": 16
@@ -40,8 +40,8 @@
           "kind": "raw",
           "raw": " ",
           "range": {
-            "start": 11,
-            "end": 12
+            "start": 8,
+            "end": 9
           }
         },
         {
@@ -60,22 +60,32 @@
       "nodeId": "row:1",
       "kind": "row",
       "role": "body",
-      "raw": "| C\n",
+      "raw": "| Alpha | B\n",
       "range": {
         "start": 16,
-        "end": 20
+        "end": 28
       },
       "cellOrder": [
-        "cell:1:0"
+        "cell:1:0",
+        "cell:1:1"
       ],
       "retained": [
         {
           "nodeId": "retained:row:1:0",
           "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 23,
+            "end": 24
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
           "raw": "\n",
           "range": {
-            "start": 19,
-            "end": 20
+            "start": 27,
+            "end": 28
           }
         }
       ],
@@ -86,15 +96,15 @@
     {
       "nodeId": "cell:0:0",
       "kind": "cell",
-      "raw": ".2+| A",
+      "raw": "| A",
       "range": {
         "start": 5,
-        "end": 11
+        "end": 8
       },
-      "cellSpecRaw": ".2+",
+      "cellSpecRaw": "",
       "delimiterRaw": "|",
       "contentRaw": " A",
-      "rowSpan": 2,
+      "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
       "errors": []
@@ -102,14 +112,14 @@
     {
       "nodeId": "cell:0:1",
       "kind": "cell",
-      "raw": "| B",
+      "raw": "| Long",
       "range": {
-        "start": 12,
+        "start": 9,
         "end": 15
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
-      "contentRaw": " B",
+      "contentRaw": " Long",
       "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
@@ -118,14 +128,30 @@
     {
       "nodeId": "cell:1:0",
       "kind": "cell",
-      "raw": "| C",
+      "raw": "| Alpha",
       "range": {
         "start": 16,
-        "end": 19
+        "end": 23
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
-      "contentRaw": " C",
+      "contentRaw": " Alpha",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| B",
+      "range": {
+        "start": 24,
+        "end": 27
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " B",
       "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
@@ -147,8 +173,8 @@
       "kind": "separator",
       "raw": "|===\n",
       "range": {
-        "start": 20,
-        "end": 25
+        "start": 28,
+        "end": 33
       }
     }
   ],

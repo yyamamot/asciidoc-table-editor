@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Duplicate cell shorthand\n\n|===\n| Name | Value | Status\n\n2*| Same\n| Ready\n\n| Left\n2*| Duplicate\n\n2*>m| Styled duplicate\n| Tail\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 133
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "options": [],
+      "columns": [],
+      "lines": [],
+      "named": {}
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "| Name | Value | Status\n",
+      "range": {
+        "start": 33,
+        "end": 57
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 39,
+            "end": 40
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 47,
+            "end": 48
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 56,
+            "end": 57
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "2*| Same\n| Ready\n",
+      "range": {
+        "start": 58,
+        "end": 75
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 66,
+            "end": 67
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 74,
+            "end": 75
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Left\n2*| Duplicate\n",
+      "range": {
+        "start": 76,
+        "end": 97
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 82,
+            "end": 83
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 96,
+            "end": 97
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:3",
+      "kind": "row",
+      "role": "body",
+      "raw": "2*>m| Styled duplicate\n| Tail\n",
+      "range": {
+        "start": 98,
+        "end": 128
+      },
+      "cellOrder": [
+        "cell:3:0",
+        "cell:3:1",
+        "cell:3:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:3:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 120,
+            "end": 121
+          }
+        },
+        {
+          "nodeId": "retained:row:3:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 127,
+            "end": 128
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Name",
+      "range": {
+        "start": 33,
+        "end": 39
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| Value",
+      "range": {
+        "start": 40,
+        "end": 47
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Value",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "| Status",
+      "range": {
+        "start": 48,
+        "end": 56
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Status",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "2*| Same",
+      "range": {
+        "start": 58,
+        "end": 66
+      },
+      "cellSpecRaw": "2*",
+      "delimiterRaw": "|",
+      "contentRaw": " Same",
+      "duplicateCount": 2,
+      "duplicateIndex": 0,
+      "duplicateGroupId": "duplicate:1:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "2*| Same",
+      "range": {
+        "start": 58,
+        "end": 66
+      },
+      "cellSpecRaw": "2*",
+      "delimiterRaw": "|",
+      "contentRaw": " Same",
+      "duplicateCount": 2,
+      "duplicateIndex": 1,
+      "duplicateGroupId": "duplicate:1:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": "| Ready",
+      "range": {
+        "start": 67,
+        "end": 74
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Ready",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "| Left",
+      "range": {
+        "start": 76,
+        "end": 82
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Left",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "2*| Duplicate",
+      "range": {
+        "start": 83,
+        "end": 96
+      },
+      "cellSpecRaw": "2*",
+      "delimiterRaw": "|",
+      "contentRaw": " Duplicate",
+      "duplicateCount": 2,
+      "duplicateIndex": 0,
+      "duplicateGroupId": "duplicate:2:1",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "2*| Duplicate",
+      "range": {
+        "start": 83,
+        "end": 96
+      },
+      "cellSpecRaw": "2*",
+      "delimiterRaw": "|",
+      "contentRaw": " Duplicate",
+      "duplicateCount": 2,
+      "duplicateIndex": 1,
+      "duplicateGroupId": "duplicate:2:1",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:0",
+      "kind": "cell",
+      "raw": "2*>m| Styled duplicate",
+      "range": {
+        "start": 98,
+        "end": 120
+      },
+      "cellSpecRaw": "2*>m",
+      "delimiterRaw": "|",
+      "contentRaw": " Styled duplicate",
+      "duplicateCount": 2,
+      "duplicateIndex": 0,
+      "duplicateGroupId": "duplicate:3:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "m",
+      "horizontalAlign": "right",
+      "effectiveStyle": "m",
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:1",
+      "kind": "cell",
+      "raw": "2*>m| Styled duplicate",
+      "range": {
+        "start": 98,
+        "end": 120
+      },
+      "cellSpecRaw": "2*>m",
+      "delimiterRaw": "|",
+      "contentRaw": " Styled duplicate",
+      "duplicateCount": 2,
+      "duplicateIndex": 1,
+      "duplicateGroupId": "duplicate:3:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "m",
+      "horizontalAlign": "right",
+      "effectiveStyle": "m",
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:2",
+      "kind": "cell",
+      "raw": "| Tail",
+      "range": {
+        "start": 121,
+        "end": 127
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Tail",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Duplicate cell shorthand\n",
+      "range": {
+        "start": 0,
+        "end": 27
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 27,
+        "end": 28
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 28,
+        "end": 33
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 57,
+        "end": 58
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 75,
+        "end": 76
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 97,
+        "end": 98
+      }
+    },
+    {
+      "nodeId": "retained:table:6",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 128,
+        "end": 133
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 4,
+    "columnCount": 3
+  },
+  "projectable": true
+}

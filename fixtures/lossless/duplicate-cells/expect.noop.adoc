@@ -1,0 +1,14 @@
+= Duplicate cell shorthand
+
+|===
+| Name | Value | Status
+
+2*| Same
+| Ready
+
+| Left
+2*| Duplicate
+
+2*>m| Styled duplicate
+| Tail
+|===

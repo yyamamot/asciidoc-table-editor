@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "[cols=2*]\n|===\nz| Unknown m| Known\n2+^.^z| Unknown span\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 61
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 2,
+      "options": [],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[cols=2*]",
+          "range": {
+            "start": 0,
+            "end": 9
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "cols=2*",
+              "range": {
+                "start": 1,
+                "end": 8
+              },
+              "name": "cols",
+              "value": "2*",
+              "valueRange": {
+                "start": 6,
+                "end": 8
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "2*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "body",
+      "raw": "z| Unknown m| Known\n",
+      "range": {
+        "start": 15,
+        "end": 35
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 25,
+            "end": 26
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 34,
+            "end": 35
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "2+^.^z| Unknown span\n",
+      "range": {
+        "start": 35,
+        "end": 56
+      },
+      "cellOrder": [
+        "cell:1:0"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 55,
+            "end": 56
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "z| Unknown",
+      "range": {
+        "start": 15,
+        "end": 25
+      },
+      "cellSpecRaw": "z",
+      "delimiterRaw": "|",
+      "contentRaw": " Unknown",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": [
+        {
+          "code": "cell.spec.unsupported",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "m| Known",
+      "range": {
+        "start": 26,
+        "end": 34
+      },
+      "cellSpecRaw": "m",
+      "delimiterRaw": "|",
+      "contentRaw": " Known",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "m",
+      "effectiveStyle": "m",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "2+^.^z| Unknown span",
+      "range": {
+        "start": 35,
+        "end": 55
+      },
+      "cellSpecRaw": "2+^.^z",
+      "delimiterRaw": "|",
+      "contentRaw": " Unknown span",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "horizontalAlign": "center",
+      "verticalAlign": "middle",
+      "effectiveHorizontalAlign": "center",
+      "effectiveVerticalAlign": "middle",
+      "isBlockContent": false,
+      "errors": [
+        {
+          "code": "cell.spec.unsupported",
+          "severity": "warning"
+        }
+      ]
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 9,
+        "end": 10
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 10,
+        "end": 15
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 56,
+        "end": 61
+      }
+    }
+  ],
+  "ownerDiagnostics": [
+    {
+      "owner": "cell",
+      "nodeId": "cell:0:0",
+      "code": "cell.spec.unsupported",
+      "severity": "warning"
+    },
+    {
+      "owner": "cell",
+      "nodeId": "cell:1:0",
+      "code": "cell.spec.unsupported",
+      "severity": "warning"
+    }
+  ],
+  "tokenKindsSeen": [
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table"
+  ],
+  "grid": {
+    "rowCount": 2,
+    "columnCount": 2
+  },
+  "projectable": true
+}

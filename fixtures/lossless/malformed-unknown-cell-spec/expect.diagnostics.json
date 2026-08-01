@@ -2,5 +2,9 @@
   {
     "code": "cell.spec.unsupported",
     "severity": "warning"
+  },
+  {
+    "code": "cell.spec.unsupported",
+    "severity": "warning"
   }
 ]

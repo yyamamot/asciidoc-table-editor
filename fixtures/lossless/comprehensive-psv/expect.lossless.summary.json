@@ -1,0 +1,1007 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "[cols=4*]\n|===\n| Name | Value | Status | Notes\n\n| Plain\n| Cell\n| Ready\n| The default separator is \\|.\n\n2+| Horizontal merge\n| H3\n| H4\n\n.2+| Vertical merge\n| V row1 col2\n| V row1 col3\n| V row1 col4\n\n| V row2 col2\n| V row2 col3\n| V row2 col4\n\n2.2+| Rectangular merge\n| R1C3\n| R1C4\n\n| R2C3\n| R2C4\n\nm| Mono\ns| Strong\ne| Emphasis\na| * readonly block style\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 356
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 4,
+      "options": [],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        },
+        {
+          "index": 2,
+          "raw": ""
+        },
+        {
+          "index": 3,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[cols=4*]",
+          "range": {
+            "start": 0,
+            "end": 9
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "cols=4*",
+              "range": {
+                "start": 1,
+                "end": 8
+              },
+              "name": "cols",
+              "value": "4*",
+              "valueRange": {
+                "start": 6,
+                "end": 8
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "4*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "| Name | Value | Status | Notes\n",
+      "range": {
+        "start": 15,
+        "end": 47
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2",
+        "cell:0:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 21,
+            "end": 22
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 29,
+            "end": 30
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 38,
+            "end": 39
+          }
+        },
+        {
+          "nodeId": "retained:row:0:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 46,
+            "end": 47
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Plain\n| Cell\n| Ready\n| The default separator is \\|.\n",
+      "range": {
+        "start": 48,
+        "end": 102
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2",
+        "cell:1:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 55,
+            "end": 56
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 62,
+            "end": 63
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 70,
+            "end": 71
+          }
+        },
+        {
+          "nodeId": "retained:row:1:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 101,
+            "end": 102
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "2+| Horizontal merge\n| H3\n| H4\n",
+      "range": {
+        "start": 103,
+        "end": 134
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 123,
+            "end": 124
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 128,
+            "end": 129
+          }
+        },
+        {
+          "nodeId": "retained:row:2:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 133,
+            "end": 134
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:3",
+      "kind": "row",
+      "role": "body",
+      "raw": ".2+| Vertical merge\n| V row1 col2\n| V row1 col3\n| V row1 col4\n",
+      "range": {
+        "start": 135,
+        "end": 197
+      },
+      "cellOrder": [
+        "cell:3:0",
+        "cell:3:1",
+        "cell:3:2",
+        "cell:3:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:3:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 154,
+            "end": 155
+          }
+        },
+        {
+          "nodeId": "retained:row:3:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 168,
+            "end": 169
+          }
+        },
+        {
+          "nodeId": "retained:row:3:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 182,
+            "end": 183
+          }
+        },
+        {
+          "nodeId": "retained:row:3:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 196,
+            "end": 197
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:4",
+      "kind": "row",
+      "role": "body",
+      "raw": "| V row2 col2\n| V row2 col3\n| V row2 col4\n",
+      "range": {
+        "start": 198,
+        "end": 240
+      },
+      "cellOrder": [
+        "cell:4:0",
+        "cell:4:1",
+        "cell:4:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:4:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 211,
+            "end": 212
+          }
+        },
+        {
+          "nodeId": "retained:row:4:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 225,
+            "end": 226
+          }
+        },
+        {
+          "nodeId": "retained:row:4:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 239,
+            "end": 240
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:5",
+      "kind": "row",
+      "role": "body",
+      "raw": "2.2+| Rectangular merge\n| R1C3\n| R1C4\n",
+      "range": {
+        "start": 241,
+        "end": 279
+      },
+      "cellOrder": [
+        "cell:5:0",
+        "cell:5:1",
+        "cell:5:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:5:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 264,
+            "end": 265
+          }
+        },
+        {
+          "nodeId": "retained:row:5:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 271,
+            "end": 272
+          }
+        },
+        {
+          "nodeId": "retained:row:5:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 278,
+            "end": 279
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:6",
+      "kind": "row",
+      "role": "body",
+      "raw": "| R2C3\n| R2C4\n",
+      "range": {
+        "start": 280,
+        "end": 294
+      },
+      "cellOrder": [
+        "cell:6:0",
+        "cell:6:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:6:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 286,
+            "end": 287
+          }
+        },
+        {
+          "nodeId": "retained:row:6:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 293,
+            "end": 294
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:7",
+      "kind": "row",
+      "role": "body",
+      "raw": "m| Mono\ns| Strong\ne| Emphasis\na| * readonly block style\n",
+      "range": {
+        "start": 295,
+        "end": 351
+      },
+      "cellOrder": [
+        "cell:7:0",
+        "cell:7:1",
+        "cell:7:2",
+        "cell:7:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:7:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 302,
+            "end": 303
+          }
+        },
+        {
+          "nodeId": "retained:row:7:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 312,
+            "end": 313
+          }
+        },
+        {
+          "nodeId": "retained:row:7:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 324,
+            "end": 325
+          }
+        },
+        {
+          "nodeId": "retained:row:7:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 350,
+            "end": 351
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Name",
+      "range": {
+        "start": 15,
+        "end": 21
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| Value",
+      "range": {
+        "start": 22,
+        "end": 29
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Value",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "| Status",
+      "range": {
+        "start": 30,
+        "end": 38
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Status",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:3",
+      "kind": "cell",
+      "raw": "| Notes",
+      "range": {
+        "start": 39,
+        "end": 46
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Notes",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Plain",
+      "range": {
+        "start": 48,
+        "end": 55
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Plain",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| Cell",
+      "range": {
+        "start": 56,
+        "end": 62
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Cell",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": "| Ready",
+      "range": {
+        "start": 63,
+        "end": 70
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Ready",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:3",
+      "kind": "cell",
+      "raw": "| The default separator is \\|.",
+      "range": {
+        "start": 71,
+        "end": 101
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " The default separator is \\|.",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "2+| Horizontal merge",
+      "range": {
+        "start": 103,
+        "end": 123
+      },
+      "cellSpecRaw": "2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Horizontal merge",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "| H3",
+      "range": {
+        "start": 124,
+        "end": 128
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " H3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "| H4",
+      "range": {
+        "start": 129,
+        "end": 133
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " H4",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:0",
+      "kind": "cell",
+      "raw": ".2+| Vertical merge",
+      "range": {
+        "start": 135,
+        "end": 154
+      },
+      "cellSpecRaw": ".2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Vertical merge",
+      "rowSpan": 2,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:1",
+      "kind": "cell",
+      "raw": "| V row1 col2",
+      "range": {
+        "start": 155,
+        "end": 168
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 col2",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:2",
+      "kind": "cell",
+      "raw": "| V row1 col3",
+      "range": {
+        "start": 169,
+        "end": 182
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 col3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:3",
+      "kind": "cell",
+      "raw": "| V row1 col4",
+      "range": {
+        "start": 183,
+        "end": 196
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 col4",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:0",
+      "kind": "cell",
+      "raw": "| V row2 col2",
+      "range": {
+        "start": 198,
+        "end": 211
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 col2",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:1",
+      "kind": "cell",
+      "raw": "| V row2 col3",
+      "range": {
+        "start": 212,
+        "end": 225
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 col3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:2",
+      "kind": "cell",
+      "raw": "| V row2 col4",
+      "range": {
+        "start": 226,
+        "end": 239
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 col4",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:0",
+      "kind": "cell",
+      "raw": "2.2+| Rectangular merge",
+      "range": {
+        "start": 241,
+        "end": 264
+      },
+      "cellSpecRaw": "2.2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Rectangular merge",
+      "rowSpan": 2,
+      "colSpan": 2,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:1",
+      "kind": "cell",
+      "raw": "| R1C3",
+      "range": {
+        "start": 265,
+        "end": 271
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " R1C3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:2",
+      "kind": "cell",
+      "raw": "| R1C4",
+      "range": {
+        "start": 272,
+        "end": 278
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " R1C4",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:6:0",
+      "kind": "cell",
+      "raw": "| R2C3",
+      "range": {
+        "start": 280,
+        "end": 286
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " R2C3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:6:1",
+      "kind": "cell",
+      "raw": "| R2C4",
+      "range": {
+        "start": 287,
+        "end": 293
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " R2C4",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:7:0",
+      "kind": "cell",
+      "raw": "m| Mono",
+      "range": {
+        "start": 295,
+        "end": 302
+      },
+      "cellSpecRaw": "m",
+      "delimiterRaw": "|",
+      "contentRaw": " Mono",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "m",
+      "effectiveStyle": "m",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:7:1",
+      "kind": "cell",
+      "raw": "s| Strong",
+      "range": {
+        "start": 303,
+        "end": 312
+      },
+      "cellSpecRaw": "s",
+      "delimiterRaw": "|",
+      "contentRaw": " Strong",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "s",
+      "effectiveStyle": "s",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:7:2",
+      "kind": "cell",
+      "raw": "e| Emphasis",
+      "range": {
+        "start": 313,
+        "end": 324
+      },
+      "cellSpecRaw": "e",
+      "delimiterRaw": "|",
+      "contentRaw": " Emphasis",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "e",
+      "effectiveStyle": "e",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:7:3",
+      "kind": "cell",
+      "raw": "a| * readonly block style",
+      "range": {
+        "start": 325,
+        "end": 350
+      },
+      "cellSpecRaw": "a",
+      "delimiterRaw": "|",
+      "contentRaw": " * readonly block style",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "a",
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 9,
+        "end": 10
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 10,
+        "end": 15
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 47,
+        "end": 48
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 102,
+        "end": 103
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 134,
+        "end": 135
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 197,
+        "end": 198
+      }
+    },
+    {
+      "nodeId": "retained:table:6",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 240,
+        "end": 241
+      }
+    },
+    {
+      "nodeId": "retained:table:7",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 279,
+        "end": 280
+      }
+    },
+    {
+      "nodeId": "retained:table:8",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 294,
+        "end": 295
+      }
+    },
+    {
+      "nodeId": "retained:table:9",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 351,
+        "end": 356
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table"
+  ],
+  "grid": {
+    "rowCount": 8,
+    "columnCount": 4
+  },
+  "projectable": true
+}

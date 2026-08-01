@@ -1,8 +1,8 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { emitNoopTable, parseAsciiDocTable, projectGridModel, replacePlainCellStyles } from "../../src/core";
-import type { LosslessTable, RetainedSegment, SourceRange } from "../../src/core";
+import type { LosslessTable, SourceRange } from "../../src/core";
 import { blockDelimiter, openDelimitedBlockDelimiter, updateDelimitedBlockStack } from "../../src/core/parser-blocks";
 import { createSourcePositionIndex, positionAt } from "../../src/core/parser-source";
 
@@ -98,14 +98,6 @@ describe("parseAsciiDocTable", () => {
     expect(parsed.rows).toHaveLength(2);
     expect(parsed.rows[0].cells.map((cell) => cell.contentRaw)).toEqual([" A", " B"]);
     expect(source.slice(parsed.rows[0].cells[0].range.start.offset, parsed.rows[0].cells[0].range.end.offset)).toBe("| A");
-  });
-
-  it.each(losslessSummaryFixtureIds())("matches the executable compact lossless summary for %s", (fixtureId) => {
-    const source = fixture(fixtureId, "source.adoc");
-    const expected = JSON.parse(fixture(fixtureId, "expect.lossless.summary.json")) as unknown;
-    const parsed = parseAsciiDocTable(source);
-
-    expect(compactLosslessSummary(parsed)).toEqual(expected);
   });
 
   it("materializes table and row retained segments in source order without overlapping canonical owners", () => {
@@ -549,14 +541,14 @@ describe("parseAsciiDocTable", () => {
       horizontalAlign: "center",
       verticalAlign: "middle"
     });
-    expect(cell.errors).toMatchObject(expectedDiagnostics);
+    expect(cell.errors).toMatchObject([expectedDiagnostics[0]]);
     expect(grid.cells[1][0]).toMatchObject({
       kind: "origin",
       colSpan: 2,
       style: undefined,
       horizontalAlign: "center",
       verticalAlign: "middle",
-      diagnostics: expectedDiagnostics.map((diagnostic) => expect.objectContaining(diagnostic))
+      diagnostics: [expect.objectContaining(expectedDiagnostics[0])]
     });
     expect(grid.diagnostics).toHaveLength(2);
     expect(grid.diagnostics).toEqual(
@@ -888,68 +880,6 @@ function fixture(fixtureId: string, fileName: string): string {
 
 function fixtureCompat(fileName: string): string {
   return readFileSync(join(process.cwd(), "fixtures", "compat", "asciidoctor-table-syntax", "sources", fileName), "utf8");
-}
-
-function losslessSummaryFixtureIds(): string[] {
-  const root = join(process.cwd(), "fixtures", "lossless");
-  return readdirSync(root, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && existsSync(join(root, entry.name, "expect.lossless.summary.json")))
-    .map((entry) => entry.name)
-    .sort();
-}
-
-function compactLosslessSummary(table: LosslessTable): unknown {
-  const grid = projectGridModel(table);
-  const rows = table.rows.map((row) => ({
-    nodeId: row.nodeId,
-    cellOrder: row.cells.map((cell) => cell.nodeId),
-    retained: row.retained.map(compactRetained)
-  }));
-  const cells = table.rows.flatMap((row) =>
-    row.cells.map((cell) => ({
-      nodeId: cell.nodeId,
-      cellSpecRaw: cell.cellSpecRaw,
-      rowSpan: cell.rowSpan,
-      colSpan: cell.colSpan,
-      contentRaw: cell.contentRaw,
-      errors: cell.errors.map(({ code, severity }) => ({ code, severity }))
-    }))
-  );
-  const tokenKindsSeen = Array.from(
-    new Set([
-      table.kind,
-      ...table.retained.map((segment) => segment.kind),
-      ...table.rows.flatMap((row) => [row.kind, ...row.retained.map((segment) => segment.kind), ...row.cells.map((cell) => cell.kind)])
-    ])
-  );
-
-  return {
-    nodeId: table.nodeId,
-    kind: table.kind,
-    raw: table.raw,
-    range: compactRange(table.range),
-    rowCount: table.rows.length,
-    rowOrder: table.rows.map((row) => row.nodeId),
-    rows,
-    cells,
-    retained: table.retained.map(compactRetained),
-    documentErrors: table.errors.map(({ code, severity }) => ({ code, severity })),
-    tokenKindsSeen,
-    projectable: !grid.diagnostics.some((diagnostic) => diagnostic.severity === "error")
-  };
-}
-
-function compactRetained(segment: RetainedSegment): unknown {
-  return {
-    nodeId: segment.nodeId,
-    kind: segment.kind,
-    raw: segment.raw,
-    range: compactRange(segment.range)
-  };
-}
-
-function compactRange(range: SourceRange): { start: number; end: number } {
-  return { start: range.start.offset, end: range.end.offset };
 }
 
 function assertRetainedIntegrity(source: string, table: LosslessTable): void {

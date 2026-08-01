@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Table spec header/footer fixture\n\n[options=\"header,footer\",cols=3*]\n|===\n| Name | Value | Status\n\n| Alpha | 1 | Ready\n| Beta | 2 | Draft\n\n| Total | 3 | Complete\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 168
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 3,
+      "options": [
+        "header",
+        "footer"
+      ],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        },
+        {
+          "index": 2,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[options=\"header,footer\",cols=3*]",
+          "range": {
+            "start": 36,
+            "end": 69
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "options=\"header,footer\"",
+              "range": {
+                "start": 37,
+                "end": 60
+              },
+              "name": "options",
+              "value": "header,footer",
+              "valueRange": {
+                "start": 46,
+                "end": 59
+              },
+              "quote": "\""
+            },
+            {
+              "kind": "named",
+              "raw": "cols=3*",
+              "range": {
+                "start": 61,
+                "end": 68
+              },
+              "name": "cols",
+              "value": "3*",
+              "valueRange": {
+                "start": 66,
+                "end": 68
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "3*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "| Name | Value | Status\n",
+      "range": {
+        "start": 75,
+        "end": 99
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 81,
+            "end": 82
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 89,
+            "end": 90
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 98,
+            "end": 99
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Alpha | 1 | Ready\n",
+      "range": {
+        "start": 100,
+        "end": 120
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 107,
+            "end": 108
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 111,
+            "end": 112
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 119,
+            "end": 120
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Beta | 2 | Draft\n",
+      "range": {
+        "start": 120,
+        "end": 139
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 126,
+            "end": 127
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 130,
+            "end": 131
+          }
+        },
+        {
+          "nodeId": "retained:row:2:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 138,
+            "end": 139
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:3",
+      "kind": "row",
+      "role": "footer",
+      "raw": "| Total | 3 | Complete\n",
+      "range": {
+        "start": 140,
+        "end": 163
+      },
+      "cellOrder": [
+        "cell:3:0",
+        "cell:3:1",
+        "cell:3:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:3:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 147,
+            "end": 148
+          }
+        },
+        {
+          "nodeId": "retained:row:3:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 151,
+            "end": 152
+          }
+        },
+        {
+          "nodeId": "retained:row:3:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 162,
+            "end": 163
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Name",
+      "range": {
+        "start": 75,
+        "end": 81
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| Value",
+      "range": {
+        "start": 82,
+        "end": 89
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Value",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "| Status",
+      "range": {
+        "start": 90,
+        "end": 98
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Status",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Alpha",
+      "range": {
+        "start": 100,
+        "end": 107
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Alpha",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| 1",
+      "range": {
+        "start": 108,
+        "end": 111
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " 1",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": "| Ready",
+      "range": {
+        "start": 112,
+        "end": 119
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Ready",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "| Beta",
+      "range": {
+        "start": 120,
+        "end": 126
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Beta",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "| 2",
+      "range": {
+        "start": 127,
+        "end": 130
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " 2",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "| Draft",
+      "range": {
+        "start": 131,
+        "end": 138
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Draft",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:0",
+      "kind": "cell",
+      "raw": "| Total",
+      "range": {
+        "start": 140,
+        "end": 147
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Total",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:1",
+      "kind": "cell",
+      "raw": "| 3",
+      "range": {
+        "start": 148,
+        "end": 151
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " 3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:2",
+      "kind": "cell",
+      "raw": "| Complete",
+      "range": {
+        "start": 152,
+        "end": 162
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Complete",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Table spec header/footer fixture\n",
+      "range": {
+        "start": 0,
+        "end": 35
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 35,
+        "end": 36
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 69,
+        "end": 70
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 70,
+        "end": 75
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 99,
+        "end": 100
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 139,
+        "end": 140
+      }
+    },
+    {
+      "nodeId": "retained:table:6",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 163,
+        "end": 168
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 4,
+    "columnCount": 3
+  },
+  "projectable": true
+}

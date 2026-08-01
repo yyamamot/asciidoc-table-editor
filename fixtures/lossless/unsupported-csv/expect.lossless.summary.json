@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "[format=csv]\n|===\nName,Value\nA,1\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 38
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "format": "csv",
+      "options": [],
+      "columns": [],
+      "lines": [
+        {
+          "raw": "[format=csv]",
+          "range": {
+            "start": 0,
+            "end": 12
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "format=csv",
+              "range": {
+                "start": 1,
+                "end": 11
+              },
+              "name": "format",
+              "value": "csv",
+              "valueRange": {
+                "start": 8,
+                "end": 11
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "format": "csv"
+      }
+    }
+  },
+  "rows": [],
+  "cells": [],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 12,
+        "end": 13
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 13,
+        "end": 18
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "unknown",
+      "raw": "Name,Value\n",
+      "range": {
+        "start": 18,
+        "end": 29
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "unknown",
+      "raw": "A,1\n",
+      "range": {
+        "start": 29,
+        "end": 33
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 33,
+        "end": 38
+      }
+    }
+  ],
+  "ownerDiagnostics": [
+    {
+      "owner": "table",
+      "code": "table.format.unsupported",
+      "severity": "error"
+    }
+  ],
+  "tokenKindsSeen": [
+    "raw",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 0,
+    "columnCount": 0
+  },
+  "projectable": false
+}

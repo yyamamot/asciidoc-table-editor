@@ -3,7 +3,7 @@
   "table": {
     "nodeId": "table:0",
     "kind": "table",
-    "raw": "|===\n.2+| A | B\n| C\n|===\n",
+    "raw": "|===\n.3+| A | B\n| C\n|===\n",
     "range": {
       "start": 0,
       "end": 25
@@ -25,7 +25,7 @@
       "nodeId": "row:0",
       "kind": "row",
       "role": "body",
-      "raw": ".2+| A | B\n",
+      "raw": ".3+| A | B\n",
       "range": {
         "start": 5,
         "end": 16
@@ -86,15 +86,15 @@
     {
       "nodeId": "cell:0:0",
       "kind": "cell",
-      "raw": ".2+| A",
+      "raw": ".3+| A",
       "range": {
         "start": 5,
         "end": 11
       },
-      "cellSpecRaw": ".2+",
+      "cellSpecRaw": ".3+",
       "delimiterRaw": "|",
       "contentRaw": " A",
-      "rowSpan": 2,
+      "rowSpan": 3,
       "colSpan": 1,
       "isBlockContent": false,
       "errors": []
@@ -161,8 +161,8 @@
     "table"
   ],
   "grid": {
-    "rowCount": 2,
+    "rowCount": 3,
     "columnCount": 2
   },
-  "projectable": true
+  "projectable": false
 }

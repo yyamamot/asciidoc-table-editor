@@ -1,0 +1,33 @@
+= Preview comprehensive fixture
+
+[options="header,footer",cols="<,^,>,2a"]
+|===
+| Left
+| Center
+| Right
+| Block
+
+<| Alpha
+^| Beta
+>| Gamma
+a| * list item
+* second item
+
+2+| Horizontal span
+| H3
+| H4
+
+.2+| Vertical span
+| V row1 center
+| V row1 right
+| V row1 block
+
+| V row2 center
+| V row2 right
+| V row2 block
+
+| Footer left
+| Footer center
+| Footer right
+| Footer block
+|===

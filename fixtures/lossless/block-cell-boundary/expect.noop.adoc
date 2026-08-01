@@ -1,0 +1,18 @@
+= Block cell boundary fixture
+
+[cols=2*]
+|===
+a| [source]
+------
+.....
+| not a table cell
+2+| not a span
+.....
+------
+--
+| still not a table cell
+--
+| After block
+
+| Plain left | Plain right
+|===

@@ -1,0 +1,800 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Preview comprehensive fixture\n\n[options=\"header,footer\",cols=\"<,^,>,2a\"]\n|===\n| Left\n| Center\n| Right\n| Block\n\n<| Alpha\n^| Beta\n>| Gamma\na| * list item\n* second item\n\n2+| Horizontal span\n| H3\n| H4\n\n.2+| Vertical span\n| V row1 center\n| V row1 right\n| V row1 block\n\n| V row2 center\n| V row2 right\n| V row2 block\n\n| Footer left\n| Footer center\n| Footer right\n| Footer block\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 378
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 4,
+      "options": [
+        "header",
+        "footer"
+      ],
+      "columns": [
+        {
+          "index": 0,
+          "raw": "<",
+          "horizontalAlign": "left"
+        },
+        {
+          "index": 1,
+          "raw": "^",
+          "horizontalAlign": "center"
+        },
+        {
+          "index": 2,
+          "raw": ">",
+          "horizontalAlign": "right"
+        },
+        {
+          "index": 3,
+          "raw": "2a",
+          "widthRaw": "2",
+          "style": "a"
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[options=\"header,footer\",cols=\"<,^,>,2a\"]",
+          "range": {
+            "start": 33,
+            "end": 74
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "options=\"header,footer\"",
+              "range": {
+                "start": 34,
+                "end": 57
+              },
+              "name": "options",
+              "value": "header,footer",
+              "valueRange": {
+                "start": 43,
+                "end": 56
+              },
+              "quote": "\""
+            },
+            {
+              "kind": "named",
+              "raw": "cols=\"<,^,>,2a\"",
+              "range": {
+                "start": 58,
+                "end": 73
+              },
+              "name": "cols",
+              "value": "<,^,>,2a",
+              "valueRange": {
+                "start": 64,
+                "end": 72
+              },
+              "quote": "\""
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "<,^,>,2a"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "| Left\n| Center\n| Right\n| Block\n\n",
+      "range": {
+        "start": 80,
+        "end": 113
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2",
+        "cell:0:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 86,
+            "end": 87
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 95,
+            "end": 96
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 103,
+            "end": 104
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "<| Alpha\n^| Beta\n>| Gamma\na| * list item\n* second item\n\n",
+      "range": {
+        "start": 113,
+        "end": 169
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2",
+        "cell:1:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 121,
+            "end": 122
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 129,
+            "end": 130
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 138,
+            "end": 139
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "2+| Horizontal span\n| H3\n| H4\n\n",
+      "range": {
+        "start": 169,
+        "end": 200
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 188,
+            "end": 189
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 193,
+            "end": 194
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:3",
+      "kind": "row",
+      "role": "body",
+      "raw": ".2+| Vertical span\n| V row1 center\n| V row1 right\n| V row1 block\n\n",
+      "range": {
+        "start": 200,
+        "end": 266
+      },
+      "cellOrder": [
+        "cell:3:0",
+        "cell:3:1",
+        "cell:3:2",
+        "cell:3:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:3:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 218,
+            "end": 219
+          }
+        },
+        {
+          "nodeId": "retained:row:3:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 234,
+            "end": 235
+          }
+        },
+        {
+          "nodeId": "retained:row:3:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 249,
+            "end": 250
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:4",
+      "kind": "row",
+      "role": "body",
+      "raw": "| V row2 center\n| V row2 right\n| V row2 block\n\n",
+      "range": {
+        "start": 266,
+        "end": 313
+      },
+      "cellOrder": [
+        "cell:4:0",
+        "cell:4:1",
+        "cell:4:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:4:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 281,
+            "end": 282
+          }
+        },
+        {
+          "nodeId": "retained:row:4:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 296,
+            "end": 297
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:5",
+      "kind": "row",
+      "role": "footer",
+      "raw": "| Footer left\n| Footer center\n| Footer right\n| Footer block\n",
+      "range": {
+        "start": 313,
+        "end": 373
+      },
+      "cellOrder": [
+        "cell:5:0",
+        "cell:5:1",
+        "cell:5:2",
+        "cell:5:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:5:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 326,
+            "end": 327
+          }
+        },
+        {
+          "nodeId": "retained:row:5:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 342,
+            "end": 343
+          }
+        },
+        {
+          "nodeId": "retained:row:5:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 357,
+            "end": 358
+          }
+        },
+        {
+          "nodeId": "retained:row:5:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 372,
+            "end": 373
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Left",
+      "range": {
+        "start": 80,
+        "end": 86
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Left",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "left",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| Center",
+      "range": {
+        "start": 87,
+        "end": 95
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Center",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "center",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "| Right",
+      "range": {
+        "start": 96,
+        "end": 103
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Right",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:3",
+      "kind": "cell",
+      "raw": "| Block\n\n",
+      "range": {
+        "start": 104,
+        "end": 113
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Block\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "<| Alpha",
+      "range": {
+        "start": 113,
+        "end": 121
+      },
+      "cellSpecRaw": "<",
+      "delimiterRaw": "|",
+      "contentRaw": " Alpha",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "horizontalAlign": "left",
+      "effectiveHorizontalAlign": "left",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "^| Beta",
+      "range": {
+        "start": 122,
+        "end": 129
+      },
+      "cellSpecRaw": "^",
+      "delimiterRaw": "|",
+      "contentRaw": " Beta",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "horizontalAlign": "center",
+      "effectiveHorizontalAlign": "center",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": ">| Gamma",
+      "range": {
+        "start": 130,
+        "end": 138
+      },
+      "cellSpecRaw": ">",
+      "delimiterRaw": "|",
+      "contentRaw": " Gamma",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "horizontalAlign": "right",
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:3",
+      "kind": "cell",
+      "raw": "a| * list item\n* second item\n\n",
+      "range": {
+        "start": 139,
+        "end": 169
+      },
+      "cellSpecRaw": "a",
+      "delimiterRaw": "|",
+      "contentRaw": " * list item\n* second item\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "a",
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "2+| Horizontal span",
+      "range": {
+        "start": 169,
+        "end": 188
+      },
+      "cellSpecRaw": "2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Horizontal span",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "effectiveHorizontalAlign": "left",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "| H3",
+      "range": {
+        "start": 189,
+        "end": 193
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " H3",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "| H4\n\n",
+      "range": {
+        "start": 194,
+        "end": 200
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " H4\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:0",
+      "kind": "cell",
+      "raw": ".2+| Vertical span",
+      "range": {
+        "start": 200,
+        "end": 218
+      },
+      "cellSpecRaw": ".2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Vertical span",
+      "rowSpan": 2,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "left",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:1",
+      "kind": "cell",
+      "raw": "| V row1 center",
+      "range": {
+        "start": 219,
+        "end": 234
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 center",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "center",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:2",
+      "kind": "cell",
+      "raw": "| V row1 right",
+      "range": {
+        "start": 235,
+        "end": 249
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 right",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:3",
+      "kind": "cell",
+      "raw": "| V row1 block\n\n",
+      "range": {
+        "start": 250,
+        "end": 266
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row1 block\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:0",
+      "kind": "cell",
+      "raw": "| V row2 center",
+      "range": {
+        "start": 266,
+        "end": 281
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 center",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "center",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:1",
+      "kind": "cell",
+      "raw": "| V row2 right",
+      "range": {
+        "start": 282,
+        "end": 296
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 right",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:2",
+      "kind": "cell",
+      "raw": "| V row2 block\n\n",
+      "range": {
+        "start": 297,
+        "end": 313
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " V row2 block\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:0",
+      "kind": "cell",
+      "raw": "| Footer left",
+      "range": {
+        "start": 313,
+        "end": 326
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Footer left",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "left",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:1",
+      "kind": "cell",
+      "raw": "| Footer center",
+      "range": {
+        "start": 327,
+        "end": 342
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Footer center",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "center",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:2",
+      "kind": "cell",
+      "raw": "| Footer right",
+      "range": {
+        "start": 343,
+        "end": 357
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Footer right",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveHorizontalAlign": "right",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:5:3",
+      "kind": "cell",
+      "raw": "| Footer block",
+      "range": {
+        "start": 358,
+        "end": 372
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Footer block",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Preview comprehensive fixture\n",
+      "range": {
+        "start": 0,
+        "end": 32
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 32,
+        "end": 33
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 74,
+        "end": 75
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 75,
+        "end": 80
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 373,
+        "end": 378
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 6,
+    "columnCount": 4
+  },
+  "projectable": true
+}

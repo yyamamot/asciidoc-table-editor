@@ -3,10 +3,10 @@
   "table": {
     "nodeId": "table:0",
     "kind": "table",
-    "raw": "|===\n.2+| A | B\n| C\n|===\n",
+    "raw": "|===\n| 名前 | 値\n| 長い日本語テキスト | セル\n|===\n",
     "range": {
       "start": 0,
-      "end": 25
+      "end": 36
     },
     "delimiter": {
       "startRaw": "|===",
@@ -25,10 +25,10 @@
       "nodeId": "row:0",
       "kind": "row",
       "role": "body",
-      "raw": ".2+| A | B\n",
+      "raw": "| 名前 | 値\n",
       "range": {
         "start": 5,
-        "end": 16
+        "end": 14
       },
       "cellOrder": [
         "cell:0:0",
@@ -40,8 +40,8 @@
           "kind": "raw",
           "raw": " ",
           "range": {
-            "start": 11,
-            "end": 12
+            "start": 9,
+            "end": 10
           }
         },
         {
@@ -49,8 +49,8 @@
           "kind": "raw",
           "raw": "\n",
           "range": {
-            "start": 15,
-            "end": 16
+            "start": 13,
+            "end": 14
           }
         }
       ],
@@ -60,22 +60,32 @@
       "nodeId": "row:1",
       "kind": "row",
       "role": "body",
-      "raw": "| C\n",
+      "raw": "| 長い日本語テキスト | セル\n",
       "range": {
-        "start": 16,
-        "end": 20
+        "start": 14,
+        "end": 31
       },
       "cellOrder": [
-        "cell:1:0"
+        "cell:1:0",
+        "cell:1:1"
       ],
       "retained": [
         {
           "nodeId": "retained:row:1:0",
           "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 25,
+            "end": 26
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
           "raw": "\n",
           "range": {
-            "start": 19,
-            "end": 20
+            "start": 30,
+            "end": 31
           }
         }
       ],
@@ -86,15 +96,15 @@
     {
       "nodeId": "cell:0:0",
       "kind": "cell",
-      "raw": ".2+| A",
+      "raw": "| 名前",
       "range": {
         "start": 5,
-        "end": 11
+        "end": 9
       },
-      "cellSpecRaw": ".2+",
+      "cellSpecRaw": "",
       "delimiterRaw": "|",
-      "contentRaw": " A",
-      "rowSpan": 2,
+      "contentRaw": " 名前",
+      "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
       "errors": []
@@ -102,14 +112,14 @@
     {
       "nodeId": "cell:0:1",
       "kind": "cell",
-      "raw": "| B",
+      "raw": "| 値",
       "range": {
-        "start": 12,
-        "end": 15
+        "start": 10,
+        "end": 13
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
-      "contentRaw": " B",
+      "contentRaw": " 値",
       "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
@@ -118,14 +128,30 @@
     {
       "nodeId": "cell:1:0",
       "kind": "cell",
-      "raw": "| C",
+      "raw": "| 長い日本語テキスト",
       "range": {
-        "start": 16,
-        "end": 19
+        "start": 14,
+        "end": 25
       },
       "cellSpecRaw": "",
       "delimiterRaw": "|",
-      "contentRaw": " C",
+      "contentRaw": " 長い日本語テキスト",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| セル",
+      "range": {
+        "start": 26,
+        "end": 30
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " セル",
       "rowSpan": 1,
       "colSpan": 1,
       "isBlockContent": false,
@@ -147,8 +173,8 @@
       "kind": "separator",
       "raw": "|===\n",
       "range": {
-        "start": 20,
-        "end": 25
+        "start": 31,
+        "end": 36
       }
     }
   ],

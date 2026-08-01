@@ -1,0 +1,368 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Rich clipboard diagnostics target\n\n|===\n| Name | Value | Notes\n\n| Alpha | Beta | Gamma\n| Delta | Epsilon | Zeta\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 119
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "options": [],
+      "columns": [],
+      "lines": [],
+      "named": {}
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "| Name | Value | Notes\n",
+      "range": {
+        "start": 42,
+        "end": 65
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 48,
+            "end": 49
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 56,
+            "end": 57
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 64,
+            "end": 65
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Alpha | Beta | Gamma\n",
+      "range": {
+        "start": 66,
+        "end": 89
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 73,
+            "end": 74
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 80,
+            "end": 81
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 88,
+            "end": 89
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Delta | Epsilon | Zeta\n",
+      "range": {
+        "start": 89,
+        "end": 114
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 96,
+            "end": 97
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 106,
+            "end": 107
+          }
+        },
+        {
+          "nodeId": "retained:row:2:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 113,
+            "end": 114
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Name",
+      "range": {
+        "start": 42,
+        "end": 48
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| Value",
+      "range": {
+        "start": 49,
+        "end": 56
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Value",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "| Notes",
+      "range": {
+        "start": 57,
+        "end": 64
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Notes",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Alpha",
+      "range": {
+        "start": 66,
+        "end": 73
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Alpha",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| Beta",
+      "range": {
+        "start": 74,
+        "end": 80
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Beta",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": "| Gamma",
+      "range": {
+        "start": 81,
+        "end": 88
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Gamma",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "| Delta",
+      "range": {
+        "start": 89,
+        "end": 96
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Delta",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "| Epsilon",
+      "range": {
+        "start": 97,
+        "end": 106
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Epsilon",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "| Zeta",
+      "range": {
+        "start": 107,
+        "end": 113
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Zeta",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Rich clipboard diagnostics target\n",
+      "range": {
+        "start": 0,
+        "end": 36
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 36,
+        "end": 37
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 37,
+        "end": 42
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 65,
+        "end": 66
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 114,
+        "end": 119
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 3,
+    "columnCount": 3
+  },
+  "projectable": true
+}

@@ -1,0 +1,634 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Delimited block document boundary fixture\n\n[cols=2*]\n|===\n| LIVE-TABLE | visible\n|===\n\n-----\n......\n|===\n| FAKE-NESTED | hidden\n|===\n......\n-----\n\n=====\n|===\n| FAKE-EXAMPLE | hidden\n|===\n=====\n\n______\n|===\n| FAKE-QUOTE | hidden\n|===\n______\n\n*****\n|===\n| FAKE-SIDEBAR | hidden\n|===\n*****\n\n+++++\n|===\n| FAKE-PASSTHROUGH | hidden\n|===\n+++++\n\n/////\n|===\n| FAKE-COMMENT | hidden\n|===\n/////\n\n--\n|===\n| FAKE-OPEN | hidden\n|===\n--\n\n//////\n|===\n| FAKE-UNCLOSED | hidden\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 468
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 2,
+      "options": [],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[cols=2*]",
+          "range": {
+            "start": 45,
+            "end": 54
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "cols=2*",
+              "range": {
+                "start": 46,
+                "end": 53
+              },
+              "name": "cols",
+              "value": "2*",
+              "valueRange": {
+                "start": 51,
+                "end": 53
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "2*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "body",
+      "raw": "| LIVE-TABLE | visible\n",
+      "range": {
+        "start": 60,
+        "end": 83
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 72,
+            "end": 73
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 82,
+            "end": 83
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| LIVE-TABLE",
+      "range": {
+        "start": 60,
+        "end": 72
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " LIVE-TABLE",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| visible",
+      "range": {
+        "start": 73,
+        "end": 82
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " visible",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Delimited block document boundary fixture\n",
+      "range": {
+        "start": 0,
+        "end": 44
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 44,
+        "end": 45
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 54,
+        "end": 55
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 55,
+        "end": 60
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 83,
+        "end": 88
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 88,
+        "end": 89
+      }
+    },
+    {
+      "nodeId": "retained:table:6",
+      "kind": "unknown",
+      "raw": "-----\n",
+      "range": {
+        "start": 89,
+        "end": 95
+      }
+    },
+    {
+      "nodeId": "retained:table:7",
+      "kind": "unknown",
+      "raw": "......\n",
+      "range": {
+        "start": 95,
+        "end": 102
+      }
+    },
+    {
+      "nodeId": "retained:table:8",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 102,
+        "end": 107
+      }
+    },
+    {
+      "nodeId": "retained:table:9",
+      "kind": "unknown",
+      "raw": "| FAKE-NESTED | hidden\n",
+      "range": {
+        "start": 107,
+        "end": 130
+      }
+    },
+    {
+      "nodeId": "retained:table:10",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 130,
+        "end": 135
+      }
+    },
+    {
+      "nodeId": "retained:table:11",
+      "kind": "unknown",
+      "raw": "......\n",
+      "range": {
+        "start": 135,
+        "end": 142
+      }
+    },
+    {
+      "nodeId": "retained:table:12",
+      "kind": "unknown",
+      "raw": "-----\n",
+      "range": {
+        "start": 142,
+        "end": 148
+      }
+    },
+    {
+      "nodeId": "retained:table:13",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 148,
+        "end": 149
+      }
+    },
+    {
+      "nodeId": "retained:table:14",
+      "kind": "unknown",
+      "raw": "=====\n",
+      "range": {
+        "start": 149,
+        "end": 155
+      }
+    },
+    {
+      "nodeId": "retained:table:15",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 155,
+        "end": 160
+      }
+    },
+    {
+      "nodeId": "retained:table:16",
+      "kind": "unknown",
+      "raw": "| FAKE-EXAMPLE | hidden\n",
+      "range": {
+        "start": 160,
+        "end": 184
+      }
+    },
+    {
+      "nodeId": "retained:table:17",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 184,
+        "end": 189
+      }
+    },
+    {
+      "nodeId": "retained:table:18",
+      "kind": "unknown",
+      "raw": "=====\n",
+      "range": {
+        "start": 189,
+        "end": 195
+      }
+    },
+    {
+      "nodeId": "retained:table:19",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 195,
+        "end": 196
+      }
+    },
+    {
+      "nodeId": "retained:table:20",
+      "kind": "unknown",
+      "raw": "______\n",
+      "range": {
+        "start": 196,
+        "end": 203
+      }
+    },
+    {
+      "nodeId": "retained:table:21",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 203,
+        "end": 208
+      }
+    },
+    {
+      "nodeId": "retained:table:22",
+      "kind": "unknown",
+      "raw": "| FAKE-QUOTE | hidden\n",
+      "range": {
+        "start": 208,
+        "end": 230
+      }
+    },
+    {
+      "nodeId": "retained:table:23",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 230,
+        "end": 235
+      }
+    },
+    {
+      "nodeId": "retained:table:24",
+      "kind": "unknown",
+      "raw": "______\n",
+      "range": {
+        "start": 235,
+        "end": 242
+      }
+    },
+    {
+      "nodeId": "retained:table:25",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 242,
+        "end": 243
+      }
+    },
+    {
+      "nodeId": "retained:table:26",
+      "kind": "unknown",
+      "raw": "*****\n",
+      "range": {
+        "start": 243,
+        "end": 249
+      }
+    },
+    {
+      "nodeId": "retained:table:27",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 249,
+        "end": 254
+      }
+    },
+    {
+      "nodeId": "retained:table:28",
+      "kind": "unknown",
+      "raw": "| FAKE-SIDEBAR | hidden\n",
+      "range": {
+        "start": 254,
+        "end": 278
+      }
+    },
+    {
+      "nodeId": "retained:table:29",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 278,
+        "end": 283
+      }
+    },
+    {
+      "nodeId": "retained:table:30",
+      "kind": "unknown",
+      "raw": "*****\n",
+      "range": {
+        "start": 283,
+        "end": 289
+      }
+    },
+    {
+      "nodeId": "retained:table:31",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 289,
+        "end": 290
+      }
+    },
+    {
+      "nodeId": "retained:table:32",
+      "kind": "unknown",
+      "raw": "+++++\n",
+      "range": {
+        "start": 290,
+        "end": 296
+      }
+    },
+    {
+      "nodeId": "retained:table:33",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 296,
+        "end": 301
+      }
+    },
+    {
+      "nodeId": "retained:table:34",
+      "kind": "unknown",
+      "raw": "| FAKE-PASSTHROUGH | hidden\n",
+      "range": {
+        "start": 301,
+        "end": 329
+      }
+    },
+    {
+      "nodeId": "retained:table:35",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 329,
+        "end": 334
+      }
+    },
+    {
+      "nodeId": "retained:table:36",
+      "kind": "unknown",
+      "raw": "+++++\n",
+      "range": {
+        "start": 334,
+        "end": 340
+      }
+    },
+    {
+      "nodeId": "retained:table:37",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 340,
+        "end": 341
+      }
+    },
+    {
+      "nodeId": "retained:table:38",
+      "kind": "comment",
+      "raw": "/////\n",
+      "range": {
+        "start": 341,
+        "end": 347
+      }
+    },
+    {
+      "nodeId": "retained:table:39",
+      "kind": "comment",
+      "raw": "|===\n",
+      "range": {
+        "start": 347,
+        "end": 352
+      }
+    },
+    {
+      "nodeId": "retained:table:40",
+      "kind": "comment",
+      "raw": "| FAKE-COMMENT | hidden\n",
+      "range": {
+        "start": 352,
+        "end": 376
+      }
+    },
+    {
+      "nodeId": "retained:table:41",
+      "kind": "comment",
+      "raw": "|===\n",
+      "range": {
+        "start": 376,
+        "end": 381
+      }
+    },
+    {
+      "nodeId": "retained:table:42",
+      "kind": "comment",
+      "raw": "/////\n",
+      "range": {
+        "start": 381,
+        "end": 387
+      }
+    },
+    {
+      "nodeId": "retained:table:43",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 387,
+        "end": 388
+      }
+    },
+    {
+      "nodeId": "retained:table:44",
+      "kind": "unknown",
+      "raw": "--\n",
+      "range": {
+        "start": 388,
+        "end": 391
+      }
+    },
+    {
+      "nodeId": "retained:table:45",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 391,
+        "end": 396
+      }
+    },
+    {
+      "nodeId": "retained:table:46",
+      "kind": "unknown",
+      "raw": "| FAKE-OPEN | hidden\n",
+      "range": {
+        "start": 396,
+        "end": 417
+      }
+    },
+    {
+      "nodeId": "retained:table:47",
+      "kind": "unknown",
+      "raw": "|===\n",
+      "range": {
+        "start": 417,
+        "end": 422
+      }
+    },
+    {
+      "nodeId": "retained:table:48",
+      "kind": "unknown",
+      "raw": "--\n",
+      "range": {
+        "start": 422,
+        "end": 425
+      }
+    },
+    {
+      "nodeId": "retained:table:49",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 425,
+        "end": 426
+      }
+    },
+    {
+      "nodeId": "retained:table:50",
+      "kind": "comment",
+      "raw": "//////\n",
+      "range": {
+        "start": 426,
+        "end": 433
+      }
+    },
+    {
+      "nodeId": "retained:table:51",
+      "kind": "comment",
+      "raw": "|===\n",
+      "range": {
+        "start": 433,
+        "end": 438
+      }
+    },
+    {
+      "nodeId": "retained:table:52",
+      "kind": "comment",
+      "raw": "| FAKE-UNCLOSED | hidden\n",
+      "range": {
+        "start": 438,
+        "end": 463
+      }
+    },
+    {
+      "nodeId": "retained:table:53",
+      "kind": "comment",
+      "raw": "|===\n",
+      "range": {
+        "start": 463,
+        "end": 468
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "comment",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 1,
+    "columnCount": 2
+  },
+  "projectable": true
+}

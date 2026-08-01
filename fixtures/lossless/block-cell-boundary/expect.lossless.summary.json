@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Block cell boundary fixture\n\n[cols=2*]\n|===\na| [source]\n------\n.....\n| not a table cell\n2+| not a span\n.....\n------\n--\n| still not a table cell\n--\n| After block\n\n| Plain left | Plain right\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 196
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 2,
+      "options": [],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[cols=2*]",
+          "range": {
+            "start": 31,
+            "end": 40
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "cols=2*",
+              "range": {
+                "start": 32,
+                "end": 39
+              },
+              "name": "cols",
+              "value": "2*",
+              "valueRange": {
+                "start": 37,
+                "end": 39
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "2*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "body",
+      "raw": "a| [source]\n------\n.....\n| not a table cell\n2+| not a span\n.....\n------\n--\n| still not a table cell\n--\n| After block\n",
+      "range": {
+        "start": 46,
+        "end": 163
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 148,
+            "end": 149
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 162,
+            "end": 163
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Plain left | Plain right\n",
+      "range": {
+        "start": 164,
+        "end": 191
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 176,
+            "end": 177
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 190,
+            "end": 191
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "a| [source]\n------\n.....\n| not a table cell\n2+| not a span\n.....\n------\n--\n| still not a table cell\n--",
+      "range": {
+        "start": 46,
+        "end": 148
+      },
+      "cellSpecRaw": "a",
+      "delimiterRaw": "|",
+      "contentRaw": " [source]\n------\n.....\n| not a table cell\n2+| not a span\n.....\n------\n--\n| still not a table cell\n--",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "a",
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "| After block",
+      "range": {
+        "start": 149,
+        "end": 162
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " After block",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Plain left",
+      "range": {
+        "start": 164,
+        "end": 176
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Plain left",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| Plain right",
+      "range": {
+        "start": 177,
+        "end": 190
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Plain right",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Block cell boundary fixture\n",
+      "range": {
+        "start": 0,
+        "end": 30
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 30,
+        "end": 31
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 40,
+        "end": 41
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 41,
+        "end": 46
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 163,
+        "end": 164
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 191,
+        "end": 196
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 2,
+    "columnCount": 2
+  },
+  "projectable": true
+}

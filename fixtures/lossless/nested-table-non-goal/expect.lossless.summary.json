@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Nested table non-goal fixture\n\n[cols=2*]\n|===\n| Name\na| Nested table source stays inside the block cell.\n\n[cols=2*]\n!===\n! Inner A ! Inner B\n!===\n\n| Plain | Tail\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 169
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 2,
+      "options": [],
+      "columns": [
+        {
+          "index": 0,
+          "raw": ""
+        },
+        {
+          "index": 1,
+          "raw": ""
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[cols=2*]",
+          "range": {
+            "start": 33,
+            "end": 42
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "cols=2*",
+              "range": {
+                "start": 34,
+                "end": 41
+              },
+              "name": "cols",
+              "value": "2*",
+              "valueRange": {
+                "start": 39,
+                "end": 41
+              }
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "2*"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Name\na| Nested table source stays inside the block cell.\n\n[cols=2*]\n!===\n! Inner A ! Inner B\n!===\n\n",
+      "range": {
+        "start": 48,
+        "end": 149
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 54,
+            "end": 55
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Plain | Tail\n",
+      "range": {
+        "start": 149,
+        "end": 164
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 156,
+            "end": 157
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 163,
+            "end": 164
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "| Name",
+      "range": {
+        "start": 48,
+        "end": 54
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "a| Nested table source stays inside the block cell.\n\n[cols=2*]\n!===\n! Inner A ! Inner B\n!===\n\n",
+      "range": {
+        "start": 55,
+        "end": 149
+      },
+      "cellSpecRaw": "a",
+      "delimiterRaw": "|",
+      "contentRaw": " Nested table source stays inside the block cell.\n\n[cols=2*]\n!===\n! Inner A ! Inner B\n!===\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "a",
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Plain",
+      "range": {
+        "start": 149,
+        "end": 156
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Plain",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| Tail",
+      "range": {
+        "start": 157,
+        "end": 163
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Tail",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Nested table non-goal fixture\n",
+      "range": {
+        "start": 0,
+        "end": 32
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 32,
+        "end": 33
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 42,
+        "end": 43
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 43,
+        "end": 48
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 164,
+        "end": 169
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 2,
+    "columnCount": 2
+  },
+  "projectable": true
+}

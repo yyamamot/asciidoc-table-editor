@@ -1,0 +1,55 @@
+= Delimited block document boundary fixture
+
+[cols=2*]
+|===
+| LIVE-TABLE | visible
+|===
+
+-----
+......
+|===
+| FAKE-NESTED | hidden
+|===
+......
+-----
+
+=====
+|===
+| FAKE-EXAMPLE | hidden
+|===
+=====
+
+______
+|===
+| FAKE-QUOTE | hidden
+|===
+______
+
+*****
+|===
+| FAKE-SIDEBAR | hidden
+|===
+*****
+
++++++
+|===
+| FAKE-PASSTHROUGH | hidden
+|===
++++++
+
+/////
+|===
+| FAKE-COMMENT | hidden
+|===
+/////
+
+--
+|===
+| FAKE-OPEN | hidden
+|===
+--
+
+//////
+|===
+| FAKE-UNCLOSED | hidden
+|===

@@ -1,0 +1,8 @@
+= Rich clipboard diagnostics target
+
+|===
+| Name | Value | Notes
+
+| Alpha | Beta | Gamma
+| Delta | Epsilon | Zeta
+|===

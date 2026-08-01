@@ -1,0 +1,32 @@
+= Official table syntax compatibility
+
+== Supported PSV syntax overview
+
+[options="header,footer",cols="h,2,2,5a"]
+|===
+|Name |Kind |Status |Notes
+
+|Alpha
+|Plain
+|Ready
+|AsciiDoc block cell content.
+
+* First item
+* Second item
+
+https://example.com[Example link]
+
+The \| character remains content.
+
+2+^.^m|Centered span
+|Open
+|Span with style and alignment
+
+3*e|Repeated emphasis
+|Duplicate cells with style
+
+|Total
+|Rows
+|5
+|Footer row
+|===

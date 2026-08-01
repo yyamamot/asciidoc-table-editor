@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Clipboard merged cell paste fixture\n\n|===\n2+| Imported horizontal\n| Tail\n\n| Next\n| Value\n| Done\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 103
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "options": [],
+      "columns": [],
+      "lines": [],
+      "named": {}
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "body",
+      "raw": "2+| Imported horizontal\n",
+      "range": {
+        "start": 44,
+        "end": 68
+      },
+      "cellOrder": [
+        "cell:0:0"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 67,
+            "end": 68
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Tail\n\n| Next\n",
+      "range": {
+        "start": 68,
+        "end": 83
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 74,
+            "end": 75
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "blank",
+          "raw": "\n",
+          "range": {
+            "start": 75,
+            "end": 76
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 82,
+            "end": 83
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "| Value\n| Done\n",
+      "range": {
+        "start": 83,
+        "end": 98
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 90,
+            "end": 91
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 97,
+            "end": 98
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "2+| Imported horizontal",
+      "range": {
+        "start": 44,
+        "end": 67
+      },
+      "cellSpecRaw": "2+",
+      "delimiterRaw": "|",
+      "contentRaw": " Imported horizontal",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "| Tail",
+      "range": {
+        "start": 68,
+        "end": 74
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Tail",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "| Next",
+      "range": {
+        "start": 76,
+        "end": 82
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Next",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "| Value",
+      "range": {
+        "start": 83,
+        "end": 90
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Value",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "| Done",
+      "range": {
+        "start": 91,
+        "end": 97
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": " Done",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Clipboard merged cell paste fixture\n",
+      "range": {
+        "start": 0,
+        "end": 38
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 38,
+        "end": 39
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 39,
+        "end": 44
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 98,
+        "end": 103
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 3,
+    "columnCount": 2
+  },
+  "projectable": true
+}

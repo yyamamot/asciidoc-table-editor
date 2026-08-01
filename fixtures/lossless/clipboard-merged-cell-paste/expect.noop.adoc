@@ -1,0 +1,10 @@
+= Clipboard merged cell paste fixture
+
+|===
+2+| Imported horizontal
+| Tail
+
+| Next
+| Value
+| Done
+|===

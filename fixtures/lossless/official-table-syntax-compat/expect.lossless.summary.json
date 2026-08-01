@@ -1,0 +1,719 @@
+{
+  "schemaVersion": 1,
+  "table": {
+    "nodeId": "table:0",
+    "kind": "table",
+    "raw": "= Official table syntax compatibility\n\n== Supported PSV syntax overview\n\n[options=\"header,footer\",cols=\"h,2,2,5a\"]\n|===\n|Name |Kind |Status |Notes\n\n|Alpha\n|Plain\n|Ready\n|AsciiDoc block cell content.\n\n* First item\n* Second item\n\nhttps://example.com[Example link]\n\nThe \\| character remains content.\n\n2+^.^m|Centered span\n|Open\n|Span with style and alignment\n\n3*e|Repeated emphasis\n|Duplicate cells with style\n\n|Total\n|Rows\n|5\n|Footer row\n|===\n",
+    "range": {
+      "start": 0,
+      "end": 441
+    },
+    "delimiter": {
+      "startRaw": "|===",
+      "endRaw": "|===",
+      "separator": "|"
+    },
+    "attributes": {
+      "columnCount": 4,
+      "options": [
+        "header",
+        "footer"
+      ],
+      "columns": [
+        {
+          "index": 0,
+          "raw": "h",
+          "style": "h"
+        },
+        {
+          "index": 1,
+          "raw": "2",
+          "widthRaw": "2"
+        },
+        {
+          "index": 2,
+          "raw": "2",
+          "widthRaw": "2"
+        },
+        {
+          "index": 3,
+          "raw": "5a",
+          "widthRaw": "5",
+          "style": "a"
+        }
+      ],
+      "lines": [
+        {
+          "raw": "[options=\"header,footer\",cols=\"h,2,2,5a\"]",
+          "range": {
+            "start": 73,
+            "end": 114
+          },
+          "entries": [
+            {
+              "kind": "named",
+              "raw": "options=\"header,footer\"",
+              "range": {
+                "start": 74,
+                "end": 97
+              },
+              "name": "options",
+              "value": "header,footer",
+              "valueRange": {
+                "start": 83,
+                "end": 96
+              },
+              "quote": "\""
+            },
+            {
+              "kind": "named",
+              "raw": "cols=\"h,2,2,5a\"",
+              "range": {
+                "start": 98,
+                "end": 113
+              },
+              "name": "cols",
+              "value": "h,2,2,5a",
+              "valueRange": {
+                "start": 104,
+                "end": 112
+              },
+              "quote": "\""
+            }
+          ]
+        }
+      ],
+      "named": {
+        "cols": "h,2,2,5a"
+      }
+    }
+  },
+  "rows": [
+    {
+      "nodeId": "row:0",
+      "kind": "row",
+      "role": "header",
+      "raw": "|Name |Kind |Status |Notes\n\n",
+      "range": {
+        "start": 120,
+        "end": 148
+      },
+      "cellOrder": [
+        "cell:0:0",
+        "cell:0:1",
+        "cell:0:2",
+        "cell:0:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:0:0",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 125,
+            "end": 126
+          }
+        },
+        {
+          "nodeId": "retained:row:0:1",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 131,
+            "end": 132
+          }
+        },
+        {
+          "nodeId": "retained:row:0:2",
+          "kind": "raw",
+          "raw": " ",
+          "range": {
+            "start": 139,
+            "end": 140
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:1",
+      "kind": "row",
+      "role": "body",
+      "raw": "|Alpha\n|Plain\n|Ready\n|AsciiDoc block cell content.\n\n* First item\n* Second item\n\nhttps://example.com[Example link]\n\nThe \\| character remains content.\n\n",
+      "range": {
+        "start": 148,
+        "end": 298
+      },
+      "cellOrder": [
+        "cell:1:0",
+        "cell:1:1",
+        "cell:1:2",
+        "cell:1:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:1:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 154,
+            "end": 155
+          }
+        },
+        {
+          "nodeId": "retained:row:1:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 161,
+            "end": 162
+          }
+        },
+        {
+          "nodeId": "retained:row:1:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 168,
+            "end": 169
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:2",
+      "kind": "row",
+      "role": "body",
+      "raw": "2+^.^m|Centered span\n|Open\n|Span with style and alignment\n\n",
+      "range": {
+        "start": 298,
+        "end": 357
+      },
+      "cellOrder": [
+        "cell:2:0",
+        "cell:2:1",
+        "cell:2:2"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:2:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 318,
+            "end": 319
+          }
+        },
+        {
+          "nodeId": "retained:row:2:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 324,
+            "end": 325
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:3",
+      "kind": "row",
+      "role": "body",
+      "raw": "3*e|Repeated emphasis\n|Duplicate cells with style\n\n",
+      "range": {
+        "start": 357,
+        "end": 408
+      },
+      "cellOrder": [
+        "cell:3:0",
+        "cell:3:1",
+        "cell:3:2",
+        "cell:3:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:3:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 378,
+            "end": 379
+          }
+        }
+      ],
+      "errors": []
+    },
+    {
+      "nodeId": "row:4",
+      "kind": "row",
+      "role": "footer",
+      "raw": "|Total\n|Rows\n|5\n|Footer row\n",
+      "range": {
+        "start": 408,
+        "end": 436
+      },
+      "cellOrder": [
+        "cell:4:0",
+        "cell:4:1",
+        "cell:4:2",
+        "cell:4:3"
+      ],
+      "retained": [
+        {
+          "nodeId": "retained:row:4:0",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 414,
+            "end": 415
+          }
+        },
+        {
+          "nodeId": "retained:row:4:1",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 420,
+            "end": 421
+          }
+        },
+        {
+          "nodeId": "retained:row:4:2",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 423,
+            "end": 424
+          }
+        },
+        {
+          "nodeId": "retained:row:4:3",
+          "kind": "raw",
+          "raw": "\n",
+          "range": {
+            "start": 435,
+            "end": 436
+          }
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "cells": [
+    {
+      "nodeId": "cell:0:0",
+      "kind": "cell",
+      "raw": "|Name",
+      "range": {
+        "start": 120,
+        "end": 125
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Name",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "h",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:1",
+      "kind": "cell",
+      "raw": "|Kind",
+      "range": {
+        "start": 126,
+        "end": 131
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Kind",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:2",
+      "kind": "cell",
+      "raw": "|Status",
+      "range": {
+        "start": 132,
+        "end": 139
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Status",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:0:3",
+      "kind": "cell",
+      "raw": "|Notes\n\n",
+      "range": {
+        "start": 140,
+        "end": 148
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Notes\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:0",
+      "kind": "cell",
+      "raw": "|Alpha",
+      "range": {
+        "start": 148,
+        "end": 154
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Alpha",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "h",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:1",
+      "kind": "cell",
+      "raw": "|Plain",
+      "range": {
+        "start": 155,
+        "end": 161
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Plain",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:2",
+      "kind": "cell",
+      "raw": "|Ready",
+      "range": {
+        "start": 162,
+        "end": 168
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Ready",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:1:3",
+      "kind": "cell",
+      "raw": "|AsciiDoc block cell content.\n\n* First item\n* Second item\n\nhttps://example.com[Example link]\n\nThe \\| character remains content.\n\n",
+      "range": {
+        "start": 169,
+        "end": 298
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "AsciiDoc block cell content.\n\n* First item\n* Second item\n\nhttps://example.com[Example link]\n\nThe \\| character remains content.\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:0",
+      "kind": "cell",
+      "raw": "2+^.^m|Centered span",
+      "range": {
+        "start": 298,
+        "end": 318
+      },
+      "cellSpecRaw": "2+^.^m",
+      "delimiterRaw": "|",
+      "contentRaw": "Centered span",
+      "rowSpan": 1,
+      "colSpan": 2,
+      "style": "m",
+      "horizontalAlign": "center",
+      "verticalAlign": "middle",
+      "effectiveStyle": "m",
+      "effectiveHorizontalAlign": "center",
+      "effectiveVerticalAlign": "middle",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:1",
+      "kind": "cell",
+      "raw": "|Open",
+      "range": {
+        "start": 319,
+        "end": 324
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Open",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:2:2",
+      "kind": "cell",
+      "raw": "|Span with style and alignment\n\n",
+      "range": {
+        "start": 325,
+        "end": 357
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Span with style and alignment\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:0",
+      "kind": "cell",
+      "raw": "3*e|Repeated emphasis",
+      "range": {
+        "start": 357,
+        "end": 378
+      },
+      "cellSpecRaw": "3*e",
+      "delimiterRaw": "|",
+      "contentRaw": "Repeated emphasis",
+      "duplicateCount": 3,
+      "duplicateIndex": 0,
+      "duplicateGroupId": "duplicate:3:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "e",
+      "effectiveStyle": "e",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:1",
+      "kind": "cell",
+      "raw": "3*e|Repeated emphasis",
+      "range": {
+        "start": 357,
+        "end": 378
+      },
+      "cellSpecRaw": "3*e",
+      "delimiterRaw": "|",
+      "contentRaw": "Repeated emphasis",
+      "duplicateCount": 3,
+      "duplicateIndex": 1,
+      "duplicateGroupId": "duplicate:3:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "e",
+      "effectiveStyle": "e",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:2",
+      "kind": "cell",
+      "raw": "3*e|Repeated emphasis",
+      "range": {
+        "start": 357,
+        "end": 378
+      },
+      "cellSpecRaw": "3*e",
+      "delimiterRaw": "|",
+      "contentRaw": "Repeated emphasis",
+      "duplicateCount": 3,
+      "duplicateIndex": 2,
+      "duplicateGroupId": "duplicate:3:0",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "style": "e",
+      "effectiveStyle": "e",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:3:3",
+      "kind": "cell",
+      "raw": "|Duplicate cells with style\n\n",
+      "range": {
+        "start": 379,
+        "end": 408
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Duplicate cells with style\n\n",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:0",
+      "kind": "cell",
+      "raw": "|Total",
+      "range": {
+        "start": 408,
+        "end": 414
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Total",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "h",
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:1",
+      "kind": "cell",
+      "raw": "|Rows",
+      "range": {
+        "start": 415,
+        "end": 420
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Rows",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:2",
+      "kind": "cell",
+      "raw": "|5",
+      "range": {
+        "start": 421,
+        "end": 423
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "5",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "isBlockContent": false,
+      "errors": []
+    },
+    {
+      "nodeId": "cell:4:3",
+      "kind": "cell",
+      "raw": "|Footer row",
+      "range": {
+        "start": 424,
+        "end": 435
+      },
+      "cellSpecRaw": "",
+      "delimiterRaw": "|",
+      "contentRaw": "Footer row",
+      "rowSpan": 1,
+      "colSpan": 1,
+      "effectiveStyle": "a",
+      "isBlockContent": true,
+      "errors": []
+    }
+  ],
+  "retained": [
+    {
+      "nodeId": "retained:table:0",
+      "kind": "unknown",
+      "raw": "= Official table syntax compatibility\n",
+      "range": {
+        "start": 0,
+        "end": 38
+      }
+    },
+    {
+      "nodeId": "retained:table:1",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 38,
+        "end": 39
+      }
+    },
+    {
+      "nodeId": "retained:table:2",
+      "kind": "unknown",
+      "raw": "== Supported PSV syntax overview\n",
+      "range": {
+        "start": 39,
+        "end": 72
+      }
+    },
+    {
+      "nodeId": "retained:table:3",
+      "kind": "blank",
+      "raw": "\n",
+      "range": {
+        "start": 72,
+        "end": 73
+      }
+    },
+    {
+      "nodeId": "retained:table:4",
+      "kind": "raw",
+      "raw": "\n",
+      "range": {
+        "start": 114,
+        "end": 115
+      }
+    },
+    {
+      "nodeId": "retained:table:5",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 115,
+        "end": 120
+      }
+    },
+    {
+      "nodeId": "retained:table:6",
+      "kind": "separator",
+      "raw": "|===\n",
+      "range": {
+        "start": 436,
+        "end": 441
+      }
+    }
+  ],
+  "ownerDiagnostics": [],
+  "tokenKindsSeen": [
+    "blank",
+    "cell",
+    "raw",
+    "row",
+    "separator",
+    "table",
+    "unknown"
+  ],
+  "grid": {
+    "rowCount": 5,
+    "columnCount": 4
+  },
+  "projectable": true
+}
