@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mapClipboardInlineAsciiDoc, parseClipboardTable } from "../../src/core";
 
 describe("parseClipboardTable", () => {
@@ -203,6 +203,189 @@ describe("parseClipboardTable", () => {
     expect(result.cells[4]).toMatchObject({ row: 1, col: 1, text: "world" });
   });
 
+  it("decodes valid decimal, hexadecimal, and supplementary numeric entities", () => {
+    const result = parseClipboardTable({
+      html: "<table><tr><td>&#65; &#x41; &#x1F600;</td></tr></table>"
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      source: "html",
+      rowCount: 1,
+      columnCount: 1,
+      cells: [{ text: "A A 😀" }]
+    });
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).not.toContain("import.invalid-html-entity");
+  });
+
+  it.each([
+    "&#0;",
+    "&#xD800;",
+    "&#x110000;",
+    "&#999999999999999999999999;",
+    "&#xFFFFFFFFFFFFFFFFFFFFFFFF;"
+  ])("retains invalid numeric entity %s as raw text with a warning", (entity) => {
+    const result = parseClipboardTable({ html: `<table><tr><td>${entity}</td></tr></table>` });
+
+    expect(result).toMatchObject({
+      ok: true,
+      source: "html",
+      rowCount: 1,
+      columnCount: 1,
+      cells: [{ text: entity }]
+    });
+    expect(result.diagnostics.filter((diagnostic) => diagnostic.code === "import.invalid-html-entity")).toEqual([
+      expect.objectContaining({ severity: "warning" })
+    ]);
+  });
+
+  it.each(["&#;", "&#x;", "&#xZZ;", "&#-1;", "&#65", "&#x41"])(
+    "retains malformed numeric-looking entity %s as raw text with a warning",
+    (entity) => {
+      const result = parseClipboardTable({ html: `<table><tr><td>${entity}</td></tr></table>` });
+
+      expect(result).toMatchObject({
+        ok: true,
+        source: "html",
+        rowCount: 1,
+        columnCount: 1,
+        cells: [{ text: entity }]
+      });
+      expect(result.diagnostics.filter((diagnostic) => diagnostic.code === "import.invalid-html-entity")).toEqual([
+        expect.objectContaining({ severity: "warning" })
+      ]);
+    }
+  );
+
+  it("retains repeated invalid entities and deduplicates their diagnostic", () => {
+    const result = parseClipboardTable({
+      html: "<table><tr><td>&#x110000; &#xD800; &#0;</td></tr></table>"
+    });
+
+    expect(result.cells[0]?.text).toBe("&#x110000; &#xD800; &#0;");
+    expect(result.diagnostics.filter((diagnostic) => diagnostic.code === "import.invalid-html-entity")).toHaveLength(1);
+  });
+
+  it("contains an invalid numeric entity in an attribute without throwing or importing an invalid span", () => {
+    const result = parseClipboardTable({
+      html: "<table><tr><td rowspan=\"&#x110000;\">A</td></tr></table>"
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: "html"
+    });
+    expect(result.cells).toEqual([]);
+    expect(result.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "import.invalid-html-entity", severity: "warning" }),
+        expect.objectContaining({ code: "import.invalid-span", severity: "error" })
+      ])
+    );
+  });
+
+  it.each([
+    "<table><tr><td>A</tr></table>",
+    "<table><tr><td rowspan=\"2>A</td></tr></table>",
+    "<table><tr></td><td>A</td></tr></table>",
+    "<table><tr><td>A</th></tr></table>",
+    "<table><tr><td/>A</td></tr></table>"
+  ])("returns an atomic failure for malformed HTML without TSV: %s", (html) => {
+    const result = parseClipboardTable({ html });
+
+    expect(result).toMatchObject({
+      ok: false,
+      source: "html",
+      rowCount: 0,
+      columnCount: 0,
+      cells: []
+    });
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "import.malformed-html", severity: "error" }));
+  });
+
+  it("falls back to TSV when recognized HTML is malformed", () => {
+    const result = parseClipboardTable({
+      html: "<table><tr><td>A</tr></table>",
+      text: "T\tS\nV\tW"
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      source: "tsv",
+      rowCount: 2,
+      columnCount: 2
+    });
+    expect(result.cells.map((cell) => cell.text)).toEqual(["T", "S", "V", "W"]);
+    expect(result.diagnostics).toContainEqual(
+      expect.objectContaining({ code: "import.html-parse-fallback", severity: "warning" })
+    );
+  });
+
+  it("falls back atomically to TSV when HTML parsing throws unexpectedly", () => {
+    const fromCodePoint = vi.spyOn(String, "fromCodePoint").mockImplementation(() => {
+      throw new Error("synthetic HTML parser failure");
+    });
+    try {
+      const result = parseClipboardTable({
+        html: "<table><tr><td>&#65;</td></tr></table>",
+        text: "A\tB\nC\tD"
+      });
+
+      expect(result).toMatchObject({
+        ok: true,
+        source: "tsv",
+        rowCount: 2,
+        columnCount: 2
+      });
+      expect(result.cells.map((cell) => cell.text)).toEqual(["A", "B", "C", "D"]);
+      expect(result.diagnostics).toContainEqual(expect.objectContaining({ code: "import.html-parse-failed", severity: "warning" }));
+    } finally {
+      fromCodePoint.mockRestore();
+    }
+  });
+
+  it("contains 2000 levels of iterative inline nesting without throwing", () => {
+    const depth = 2_000;
+    const result = parseClipboardTable({
+      html: `<table><tr><td>${"<b>".repeat(depth)}Deep${"</b>".repeat(depth)}</td></tr></table>`
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      source: "html",
+      rowCount: 1,
+      columnCount: 1,
+      cells: [{ text: "Deep" }]
+    });
+    expect(result.diagnostics.filter((diagnostic) => diagnostic.code === "import.bold-content-dropped")).toHaveLength(1);
+  });
+
+  it.each(boundedMalformedHtmlCorpus())("contains bounded malformed clipboard case %#", (html) => {
+    const result = parseClipboardTable({ html, text: "fallback\tvalue" });
+
+    expect(typeof result.ok).toBe("boolean");
+    expect(["html", "tsv", "none"]).toContain(result.source);
+    expect(Number.isInteger(result.rowCount)).toBe(true);
+    expect(Number.isInteger(result.columnCount)).toBe(true);
+    expect(result.rowCount).toBeGreaterThanOrEqual(0);
+    expect(result.columnCount).toBeGreaterThanOrEqual(0);
+    expect(Array.isArray(result.cells)).toBe(true);
+    expect(Array.isArray(result.diagnostics)).toBe(true);
+    for (const cell of result.cells) {
+      expect(Number.isInteger(cell.row)).toBe(true);
+      expect(Number.isInteger(cell.col)).toBe(true);
+      expect(Number.isInteger(cell.rowSpan)).toBe(true);
+      expect(Number.isInteger(cell.colSpan)).toBe(true);
+      expect(cell.row).toBeGreaterThanOrEqual(0);
+      expect(cell.col).toBeGreaterThanOrEqual(0);
+      expect(cell.rowSpan).toBeGreaterThan(0);
+      expect(cell.colSpan).toBeGreaterThan(0);
+    }
+    if (!result.ok) {
+      expect(result.diagnostics.some((diagnostic) => diagnostic.severity === "error")).toBe(true);
+    }
+  });
+
   it("blocks ragged HTML tables without producing a write-back candidate", () => {
     const result = parseClipboardTable({ html: fixture("ragged-table.html") });
 
@@ -226,4 +409,45 @@ describe("parseClipboardTable", () => {
 
 function fixture(name: string): string {
   return readFileSync(join(process.cwd(), "fixtures", "import", "clipboard", name), "utf8");
+}
+
+function boundedMalformedHtmlCorpus(): string[] {
+  const fragments = [
+    "<",
+    ">",
+    "</",
+    "<!--",
+    "<!-- unclosed",
+    "<table",
+    "</table",
+    "<tr",
+    "</tr",
+    "<td",
+    "</td",
+    "<td attr=\"",
+    "<td attr='",
+    "<td rowspan=0>",
+    "<td colspan=-1>",
+    "<td rowspan=999999999999999999999>",
+    "&#",
+    "&#;",
+    "&#x;",
+    "&#xZZ;",
+    "&#-1;",
+    "&#123",
+    "&#x110000;",
+    "&#xD800;",
+    "\u0000",
+    "\ud800",
+    "<a href=\"javascript:alert(1)\">",
+    "<b><i></b></i>",
+    "<table><table>",
+    "<tr><td>A</tr>",
+    "<td>A</table>",
+    "<unknown attr=\"value\">"
+  ];
+  return fragments.flatMap((fragment, index) => [
+    fragment,
+    `<table><tr><td>${fragment}</td></tr></table>${index % 2 === 0 ? "<" : ""}`
+  ]);
 }

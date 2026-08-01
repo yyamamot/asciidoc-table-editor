@@ -83,13 +83,25 @@ export function parseClipboardTable(input: ClipboardTableImportInput): Clipboard
   const html = input.html ?? "";
   const text = input.text ?? "";
   if (html.trim().length > 0) {
-    const htmlResult = parseHtmlClipboardTable(html, input.sourceLabel);
+    let htmlResult: ClipboardTableImportResult;
+    try {
+      htmlResult = parseHtmlClipboardTable(html, input.sourceLabel);
+    } catch {
+      return text.trim().length > 0
+        ? parseTsvWithBoundary(text, [htmlParseFailureDiagnostic("warning")])
+        : failure("html", [htmlParseFailureDiagnostic("error")]);
+    }
+    if (!htmlResult.ok && htmlResult.diagnostics.some((diagnostic) => diagnostic.code === "import.malformed-html")) {
+      return text.trim().length > 0
+        ? parseTsvWithBoundary(text, [htmlParseFallbackDiagnostic()])
+        : htmlResult;
+    }
     if (htmlResult.ok || htmlResult.source === "html") {
       return htmlResult;
     }
   }
   if (text.trim().length > 0) {
-    return parseTsvClipboardTable(text);
+    return parseTsvWithBoundary(text);
   }
   return blocked("none", "import.clipboard-empty", "Clipboard does not contain a table-like HTML or TSV payload.");
 }
@@ -100,27 +112,44 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
   let tableDepth = 0;
   let activeRow: HtmlRowDraft | undefined;
   let activeCell: HtmlCellDraft | undefined;
+  let activeCellTag: "td" | "th" | undefined;
   let activeMarks: ClipboardInlineMarks = {};
   let activeLinkHref: string | undefined;
   const markStack: Array<{ tagName: string; previous: ClipboardInlineMarks }> = [];
   const linkStack: Array<string | undefined> = [];
   let foundTable = false;
   let nestedTable = false;
+  let malformed = false;
+  let tokenEnd = 0;
+  let closedOuterTable = false;
 
   for (const token of html.matchAll(/<!--[\s\S]*?-->|<\/?[A-Za-z][^>]*>|[^<]+/gu)) {
+    if ((token.index ?? 0) > tokenEnd) {
+      malformed = true;
+      diagnostics.push(malformedHtmlDiagnostic());
+    }
     const raw = token[0];
+    tokenEnd = (token.index ?? 0) + raw.length;
     if (raw.startsWith("<!--")) {
       continue;
     }
-    const tag = raw.startsWith("<") ? parseTag(raw) : undefined;
+    const tag = raw.startsWith("<") ? parseTag(raw, diagnostics) : undefined;
     if (!tag) {
+      if (raw.startsWith("<")) {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
+      }
       if (activeCell && tableDepth === 1) {
-        appendCellText(activeCell, decodeHtml(raw), activeMarks, activeLinkHref);
+        appendCellText(activeCell, decodeHtml(raw, diagnostics), activeMarks, activeLinkHref);
       }
       continue;
     }
 
     if (tag.name === "table") {
+      if (tag.selfClosing) {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
+      }
       if (!tag.closing) {
         if (tableDepth === 0) {
           foundTable = true;
@@ -129,10 +158,18 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
         }
         tableDepth += 1;
       } else if (tableDepth > 0) {
+        if (tableDepth === 1 && (activeCell !== undefined || activeRow !== undefined)) {
+          malformed = true;
+          diagnostics.push(malformedHtmlDiagnostic());
+        }
         tableDepth -= 1;
         if (tableDepth === 0) {
+          closedOuterTable = true;
           break;
         }
+      } else {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
       }
       continue;
     }
@@ -178,17 +215,37 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
     }
 
     if (tag.name === "tr") {
+      if (tag.selfClosing) {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
+      }
       if (!tag.closing) {
+        if (activeRow !== undefined || activeCell !== undefined) {
+          malformed = true;
+          diagnostics.push(malformedHtmlDiagnostic());
+        }
         activeRow = { cells: [] };
         rows.push(activeRow);
       } else {
+        if (activeRow === undefined || activeCell !== undefined) {
+          malformed = true;
+          diagnostics.push(malformedHtmlDiagnostic());
+        }
         activeRow = undefined;
       }
       continue;
     }
 
     if (tag.name === "td" || tag.name === "th") {
+      if (tag.selfClosing) {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
+      }
       if (!tag.closing) {
+        if (activeRow === undefined || activeCell !== undefined) {
+          malformed = true;
+          diagnostics.push(malformedHtmlDiagnostic());
+        }
         activeCell = {
           rowSpan: positiveIntegerAttribute(tag.attrs.rowspan),
           colSpan: positiveIntegerAttribute(tag.attrs.colspan),
@@ -196,6 +253,7 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
           segments: [],
           richContent: undefined
         };
+        activeCellTag = tag.name;
         if (tag.attrs.style !== undefined) {
           activeCell.richContent = { ...richContentFromMarks(inlineMarksFromStyle(tag.attrs.style)), style: true };
           activeMarks = mergeMarks(activeMarks, inlineMarksFromStyle(tag.attrs.style));
@@ -205,7 +263,7 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
             message: "Clipboard HTML contains inline style; initial import keeps plain text only."
           });
         }
-      } else if (activeCell && activeRow) {
+      } else if (activeCell && activeRow && activeCellTag === tag.name) {
         const segments = normalizeSegments(activeCell.segments);
         activeRow.cells.push({
           ...activeCell,
@@ -214,12 +272,30 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
           richContent: activeCell.richContent === undefined || emptyRichContent(activeCell.richContent) ? undefined : activeCell.richContent
         });
         activeCell = undefined;
+        activeCellTag = undefined;
         activeMarks = {};
         activeLinkHref = undefined;
         markStack.length = 0;
         linkStack.length = 0;
+      } else {
+        malformed = true;
+        diagnostics.push(malformedHtmlDiagnostic());
       }
     }
+  }
+
+  if (
+    (!closedOuterTable && tokenEnd < html.length)
+    || tableDepth !== 0
+    || activeRow !== undefined
+    || activeCell !== undefined
+    || activeCellTag !== undefined
+  ) {
+    malformed = true;
+    diagnostics.push(malformedHtmlDiagnostic());
+  }
+  if (malformed || diagnostics.some((diagnostic) => diagnostic.code === "import.malformed-html")) {
+    return failure("html", withSourceLabel(dedupeDiagnostics(diagnostics), sourceLabel));
   }
 
   if (!foundTable) {
@@ -235,7 +311,7 @@ function parseHtmlClipboardTable(html: string, sourceLabel: string | undefined):
   return projectImportedRows("html", rows, diagnostics, sourceLabel);
 }
 
-function parseTsvClipboardTable(text: string): ClipboardTableImportResult {
+function parseTsvClipboardTable(text: string, diagnostics: TableDiagnostic[] = []): ClipboardTableImportResult {
   const lines = text.replace(/\r\n/gu, "\n").replace(/\r/gu, "\n").split("\n");
   if (lines.at(-1) === "") {
     lines.pop();
@@ -249,7 +325,7 @@ function parseTsvClipboardTable(text: string): ClipboardTableImportResult {
           richContent: undefined
         }))
   }));
-  return projectImportedRows("tsv", rows, []);
+  return projectImportedRows("tsv", rows, diagnostics);
 }
 
 export function mapClipboardInlineAsciiDoc(cell: Pick<ClipboardImportedCell, "segments" | "text">): string {
@@ -555,33 +631,55 @@ function projectImportedRows(
 }
 
 function blocked(source: ClipboardTableImportSource, code: string, message: string): ClipboardTableImportResult {
+  return failure(source, [{ code, severity: "error", message }]);
+}
+
+function failure(source: ClipboardTableImportSource, diagnostics: TableDiagnostic[]): ClipboardTableImportResult {
   return {
     ok: false,
     source,
     rowCount: 0,
     columnCount: 0,
     cells: [],
-    diagnostics: [{ code, severity: "error", message }]
+    diagnostics: dedupeDiagnostics(diagnostics)
   };
 }
 
-function parseTag(raw: string): ParsedTag | undefined {
+function parseTsvWithBoundary(text: string, diagnostics: TableDiagnostic[] = []): ClipboardTableImportResult {
+  try {
+    return parseTsvClipboardTable(text, diagnostics);
+  } catch {
+    return failure("tsv", [
+      ...diagnostics,
+      {
+        code: "import.tsv-parse-failed",
+        severity: "error",
+        message: "Clipboard TSV could not be parsed safely."
+      }
+    ]);
+  }
+}
+
+function parseTag(raw: string, diagnostics: TableDiagnostic[]): ParsedTag | undefined {
   const match = /^<\s*(\/)?\s*([A-Za-z][A-Za-z0-9:-]*)([\s\S]*?)(\/)?\s*>$/u.exec(raw);
   if (!match) {
     return undefined;
+  }
+  if (hasUnbalancedAttributeQuotes(match[3])) {
+    diagnostics.push(malformedHtmlDiagnostic());
   }
   return {
     name: match[2].toLowerCase(),
     closing: match[1] === "/",
     selfClosing: match[4] === "/",
-    attrs: parseAttributes(match[3])
+    attrs: parseAttributes(match[3], diagnostics)
   };
 }
 
-function parseAttributes(raw: string): Record<string, string> {
+function parseAttributes(raw: string, diagnostics: TableDiagnostic[]): Record<string, string> {
   const attrs: Record<string, string> = {};
   for (const match of raw.matchAll(/([A-Za-z_:][A-Za-z0-9_:.-]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>/]+))/gu)) {
-    attrs[match[1].toLowerCase()] = decodeHtml(match[2] ?? match[3] ?? match[4] ?? "");
+    attrs[match[1].toLowerCase()] = decodeHtml(match[2] ?? match[3] ?? match[4] ?? "", diagnostics);
   }
   return attrs;
 }
@@ -598,7 +696,12 @@ function normalizeCellText(value: string): string {
   return value.replace(/\u00a0/gu, " ").replace(/\s+/gu, " ").trim();
 }
 
-function decodeHtml(value: string): string {
+function decodeHtml(value: string, diagnostics: TableDiagnostic[]): string {
+  for (const match of value.matchAll(/&#(?:x[0-9a-z]*|[+-]?[0-9]*);?/giu)) {
+    if (!/^&#(?:x[0-9a-f]+|[0-9]+);$/iu.test(match[0])) {
+      diagnostics.push(invalidHtmlEntityDiagnostic());
+    }
+  }
   return value
     .replace(/&nbsp;/giu, "\u00a0")
     .replace(/&lt;/giu, "<")
@@ -606,8 +709,80 @@ function decodeHtml(value: string): string {
     .replace(/&quot;/giu, "\"")
     .replace(/&#39;/giu, "'")
     .replace(/&amp;/giu, "&")
-    .replace(/&#x([0-9a-f]+);/giu, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
-    .replace(/&#([0-9]+);/gu, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 10)));
+    .replace(/&#(?:x([0-9a-f]+)|([0-9]+));/giu, (raw, hexadecimal: string | undefined, decimal: string | undefined) => {
+      const codePoint = Number.parseInt(hexadecimal ?? decimal ?? "", hexadecimal === undefined ? 10 : 16);
+      if (!isValidUnicodeScalar(codePoint)) {
+        diagnostics.push(invalidHtmlEntityDiagnostic());
+        return raw;
+      }
+      return String.fromCodePoint(codePoint);
+    });
+}
+
+function invalidHtmlEntityDiagnostic(): TableDiagnostic {
+  return {
+    code: "import.invalid-html-entity",
+    severity: "warning",
+    message: "Clipboard HTML contains an invalid numeric entity; the raw entity was retained."
+  };
+}
+
+function isValidUnicodeScalar(value: number): boolean {
+  return Number.isSafeInteger(value) && value > 0 && value <= 0x10ffff && (value < 0xd800 || value > 0xdfff);
+}
+
+function hasUnbalancedAttributeQuotes(raw: string): boolean {
+  let quote: "\"" | "'" | undefined;
+  for (const character of raw) {
+    if (character !== "\"" && character !== "'") {
+      continue;
+    }
+    if (quote === undefined) {
+      quote = character;
+    } else if (quote === character) {
+      quote = undefined;
+    }
+  }
+  return quote !== undefined;
+}
+
+function malformedHtmlDiagnostic(): TableDiagnostic {
+  return {
+    code: "import.malformed-html",
+    severity: "error",
+    message: "Clipboard HTML is malformed and cannot be imported safely."
+  };
+}
+
+function htmlParseFallbackDiagnostic(): TableDiagnostic {
+  return {
+    code: "import.html-parse-fallback",
+    severity: "warning",
+    message: "Malformed clipboard HTML was ignored and plain TSV text was used instead."
+  };
+}
+
+function htmlParseFailureDiagnostic(severity: "warning" | "error"): TableDiagnostic {
+  return {
+    code: "import.html-parse-failed",
+    severity,
+    message: severity === "warning"
+      ? "Clipboard HTML parsing failed; plain TSV text was used instead."
+      : "Clipboard HTML could not be parsed safely."
+  };
+}
+
+function withSourceLabel(diagnostics: TableDiagnostic[], sourceLabel: string | undefined): TableDiagnostic[] {
+  return sourceLabel
+    ? [
+        {
+          code: "import.source-label",
+          severity: "info",
+          message: `Clipboard import source: ${sourceLabel}`
+        },
+        ...diagnostics
+      ]
+    : diagnostics;
 }
 
 function dedupeDiagnostics(diagnostics: TableDiagnostic[]): TableDiagnostic[] {
