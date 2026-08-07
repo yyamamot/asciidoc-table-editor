@@ -25,26 +25,50 @@ const scenarioAliases = new Map([
   ["table-grid", "fixtures/harness/table-grid-smoke/scenario.json"],
   ["grid-keyboard-accessibility", "fixtures/harness/grid-keyboard-accessibility/scenario.json"],
   ...[
-    "fallback", "merge-cells", "unmerge-cells", "block-cell-readonly", "diagnostics", "ja-responsive", "large-table",
-    "table-spec-header-footer", "table-spec-column-cell-spec", "official-table-syntax-compat", "table-attribute-preview",
-    "block-cell-boundary", "clipboard-auto-expand-paste", "clipboard-merged-cell-paste", "block-cell-paste", "duplicate-cells",
-    "clipboard-rich-content-diagnostics", "unsupported-data-table", "nested-table-non-goal", "preview-comprehensive", "preview-security",
-    "format-table-preview", "stale-session-conflict", "rapid-mutation-order"
+    "fallback",
+    "merge-cells",
+    "unmerge-cells",
+    "block-cell-readonly",
+    "diagnostics",
+    "ja-responsive",
+    "large-table",
+    "table-spec-header-footer",
+    "table-spec-column-cell-spec",
+    "official-table-syntax-compat",
+    "table-attribute-preview",
+    "block-cell-boundary",
+    "clipboard-auto-expand-paste",
+    "clipboard-merged-cell-paste",
+    "block-cell-paste",
+    "duplicate-cells",
+    "clipboard-rich-content-diagnostics",
+    "unsupported-data-table",
+    "nested-table-non-goal",
+    "preview-comprehensive",
+    "preview-security",
+    "format-table-preview",
+    "stale-session-conflict",
+    "rapid-mutation-order"
   ].map((id) => [id, `fixtures/harness/${id}/scenario.json`]),
   ["large-table-scroll", "fixtures/harness/large-table/scenario.json"]
 ]);
 
 const scenarioMatrix = singleScenario
-  ? [{
-      id: process.env.ASCIIDOC_TABLE_UI_REVIEW_ID || "single",
-      scenarioInput: process.env.ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH || "table-grid"
-    }]
+  ? [
+      {
+        id: process.env.ASCIIDOC_TABLE_UI_REVIEW_ID || "single",
+        scenarioInput: process.env.ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH || "table-grid"
+      }
+    ]
   : [
       { id: "table-grid", scenarioInput: "fixtures/harness/table-grid-smoke/scenario.json" },
+      { id: "grid-keyboard-accessibility", scenarioInput: "fixtures/harness/grid-keyboard-accessibility/scenario.json" },
       { id: "merge-cells", scenarioInput: "fixtures/harness/merge-cells/scenario.json" },
       { id: "unmerge-cells", scenarioInput: "fixtures/harness/unmerge-cells/scenario.json" },
       { id: "block-cell-readonly", scenarioInput: "fixtures/harness/block-cell-readonly/scenario.json" },
       { id: "diagnostics", scenarioInput: "fixtures/harness/diagnostics/scenario.json" },
+      { id: "stale-session-conflict", scenarioInput: "fixtures/harness/stale-session-conflict/scenario.json" },
+      { id: "rapid-mutation-order", scenarioInput: "fixtures/harness/rapid-mutation-order/scenario.json" },
       { id: "fallback", scenarioInput: "fixtures/harness/fallback/scenario.json" },
       { id: "ja-responsive", scenarioInput: "fixtures/harness/ja-responsive/scenario.json" },
       { id: "large-table", scenarioInput: "fixtures/harness/large-table/scenario.json" },
@@ -61,6 +85,7 @@ const scenarioMatrix = singleScenario
       { id: "unsupported-data-table", scenarioInput: "fixtures/harness/unsupported-data-table/scenario.json" },
       { id: "nested-table-non-goal", scenarioInput: "fixtures/harness/nested-table-non-goal/scenario.json" },
       { id: "preview-comprehensive", scenarioInput: "fixtures/harness/preview-comprehensive/scenario.json" },
+      { id: "preview-security", scenarioInput: "fixtures/harness/preview-security/scenario.json" },
       { id: "format-table-preview", scenarioInput: "fixtures/harness/format-table-preview/scenario.json" }
     ];
 
@@ -108,15 +133,9 @@ async function main() {
       continue;
     }
     const scenarioSpec = loaded.spec;
-    modelAssertionIds.push(...scenarioSpec.assertions
-      .filter((assertion) => assertion.type === "vlm-review")
-      .map((assertion) => assertion.id));
+    modelAssertionIds.push(...scenarioSpec.assertions.filter((assertion) => assertion.type === "vlm-review").map((assertion) => assertion.id));
     const state = createScenarioState(scenarioSpec, loaded.path, app);
-    const execution = await scenarioRunner.runUiReviewScenario(
-      scenarioSpec,
-      runId,
-      createScenarioAdapter(state, core, scenarioRunner, webviewHarness)
-    );
+    const execution = await scenarioRunner.runUiReviewScenario(scenarioSpec, runId, createScenarioAdapter(state, core, scenarioRunner, webviewHarness));
     harnessJsonl.push(...execution.events.map((entry) => JSON.stringify(entry)));
     commandTrace.push(...execution.commandTrace.map((entry) => ({ scenarioId: scenario.id, ...entry })));
     const snapshot = createWebviewSnapshot(state, uiReview, core, app);
@@ -147,16 +166,18 @@ async function main() {
       mode: snapshot.selfReview.mode,
       outcome: execution.outcome === "blocked" || assertionBlocked ? "failed" : "succeeded"
     });
-    const harnessEvent = JSON.stringify(scenarioRunner.createHarnessRunFinishedEvent({
-      ts: new Date().toISOString(),
-      runId,
-      scenarioId: scenario.id,
-      target: scenarioSpec.fixture,
-      artifactPath: scenarioRoot,
-      executionOutcome: execution.outcome,
-      assertionBlocked,
-      executionFailureClass: execution.failureClass
-    }));
+    const harnessEvent = JSON.stringify(
+      scenarioRunner.createHarnessRunFinishedEvent({
+        ts: new Date().toISOString(),
+        runId,
+        scenarioId: scenario.id,
+        target: scenarioSpec.fixture,
+        artifactPath: scenarioRoot,
+        executionOutcome: execution.outcome,
+        assertionBlocked,
+        executionFailureClass: execution.failureClass
+      })
+    );
     runtimeJsonl.push(runtimeEvent);
     harnessJsonl.push(harnessEvent);
     writeFileSync(join(scenarioRoot, "scenario.json"), JSON.stringify(redactScenarioArtifact(scenarioSpec), null, 2), "utf8");
@@ -166,7 +187,15 @@ async function main() {
     writeFileSync(join(scenarioRoot, "runtime.jsonl"), `${runtimeEvent}\n`, "utf8");
     writeFileSync(join(scenarioRoot, "harness.jsonl"), `${[...execution.events.map((entry) => JSON.stringify(entry)), harnessEvent].join("\n")}\n`, "utf8");
     writeFileSync(join(scenarioRoot, "command-trace.json"), JSON.stringify(execution.commandTrace, null, 2), "utf8");
-    writeFileSync(join(scenarioRoot, "assertion-results.json"), JSON.stringify(checks.filter((check) => check.assertionType), null, 2), "utf8");
+    writeFileSync(
+      join(scenarioRoot, "assertion-results.json"),
+      JSON.stringify(
+        checks.filter((check) => check.assertionType),
+        null,
+        2
+      ),
+      "utf8"
+    );
     aggregateSelfReview[scenario.id] = snapshot.selfReview;
     aggregateGeometry[scenario.id] = { ...snapshot.geometry, checks };
     scenarioResults.push({
@@ -238,9 +267,9 @@ function redactScenarioArtifact(scenarioSpec) {
   const contentFields = new Set(["html", "rows", "sourceLabel", "text", "value"]);
   return {
     ...scenarioSpec,
-    steps: scenarioSpec.steps.map((step) => Object.fromEntries(
-      Object.entries(step).map(([key, value]) => [key, contentFields.has(key) ? "[redacted]" : value])
-    ))
+    steps: scenarioSpec.steps.map((step) =>
+      Object.fromEntries(Object.entries(step).map(([key, value]) => [key, contentFields.has(key) ? "[redacted]" : value]))
+    )
   };
 }
 
@@ -316,16 +345,20 @@ function createScenarioState(scenario, scenarioPath, app) {
     locale: scenario.id === "ja-responsive" ? "ja-JP" : undefined,
     formatResult: undefined,
     diagnostics: [],
-    rapidMutation: scenario.id === "rapid-mutation-order" ? {
-      requestCountAfterDoubleApply: 0,
-      busyAfterDoubleApply: false,
-      draftRetainedAfterStale: false,
-      staleIgnored: false,
-      busyAfterStale: false,
-      activeApplied: false,
-      tokenAdvanced: false,
-      busyCleared: false
-    } : undefined
+    staleSessionConflict: scenario.id === "stale-session-conflict" ? {} : undefined,
+    rapidMutation:
+      scenario.id === "rapid-mutation-order"
+        ? {
+            requestCountAfterDoubleApply: 0,
+            busyAfterDoubleApply: false,
+            draftRetainedAfterStale: false,
+            staleIgnored: false,
+            busyAfterStale: false,
+            activeApplied: false,
+            tokenAdvanced: false,
+            busyCleared: false
+          }
+        : undefined
   };
 }
 
@@ -357,7 +390,15 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
           state.editorOpened = true;
           state.editorMode = "format-review";
           await refreshHarness(state, webviewHarness, posted?.selectedSourceCellId);
-          return { target: step.command, details: { adapter: harness ? "webview-integration-harness" : "simulated-host", ...(posted ? { postedMessage: posted.type } : {}), changed: result.changed, mode: result.mode } };
+          return {
+            target: step.command,
+            details: {
+              adapter: harness ? "webview-integration-harness" : "simulated-host",
+              ...(posted ? { postedMessage: posted.type } : {}),
+              changed: result.changed,
+              mode: result.mode
+            }
+          };
         }
         if (step.command === "asciidocTable.test.setEditorMode") {
           state.editorMode = editorMode(step.target, scenarioRunner);
@@ -368,17 +409,35 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
           return { target: step.command, details: { adapter: "webview-integration-harness", domEvent: "click", editorMode: actualEditorMode(state.harness) } };
         }
         if (step.command === "asciidocTable.test.showStaleSessionConflict") {
+          const harness = requireHarness(state, step, scenarioRunner);
+          const active = state.staleSessionConflict?.activeRequest;
+          if (!active) {
+            throw new scenarioRunner.ScenarioBlockedError("No active mutation request was captured.", "scenario-precondition-failed");
+          }
           const diagnostic = {
             code: "writeback.table-changed",
             severity: "error",
             message: "Target AsciiDoc table block changed outside the editor"
           };
-          requireHarness(state, step, scenarioRunner).dispatchExtensionMessage({
+          harness.dispatchExtensionMessage({
             type: "cell-content-update-result",
+            operationId: active.operationId,
+            revisionToken: active.revisionToken,
+            documentVersion: 2,
             result: { ok: false, diagnostics: [diagnostic] }
           });
           state.diagnostics = [diagnostic];
-          return { target: step.command, details: { adapter: "simulated-host", postedMessage: "cell-content-update-result", diagnosticCode: diagnostic.code } };
+          return {
+            target: step.command,
+            details: {
+              adapter: "simulated-host",
+              postedMessage: "cell-content-update-result",
+              operationId: active.operationId,
+              diagnosticCode: diagnostic.code,
+              draftRetained: harness.textarea("contentRaw").value === state.expectedDraft,
+              mutationBlocked: harness.grid().getAttribute("aria-readonly") === "true"
+            }
+          };
         }
         if (step.command === "asciidocTable.test.injectWrongOperationSuccess") {
           const harness = requireHarness(state, step, scenarioRunner);
@@ -438,7 +497,10 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
           if (probe) {
             const probeApplied = webviewHarness.applyWebviewMessage(state.source, probe);
             if (!probeApplied.ok) {
-              throw new scenarioRunner.ScenarioBlockedError(probeApplied.diagnostics.map((diagnostic) => diagnostic.message).join("; "), "host-writeback-blocked");
+              throw new scenarioRunner.ScenarioBlockedError(
+                probeApplied.diagnostics.map((diagnostic) => diagnostic.message).join("; "),
+                "host-writeback-blocked"
+              );
             }
             state.source = probeApplied.source;
             await refreshHarness(state, webviewHarness, probe.sourceCellId, "review-probe-revision");
@@ -476,7 +538,10 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
         if (step.rows) {
           const text = step.rows.map((row) => row.join("\t")).join("\n");
           if (step.format === "html-table") {
-            harness.pasteHtml(`<table>${step.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeScenarioHtml(cell)}</td>`).join("")}</tr>`).join("")}</table>`, text);
+            harness.pasteHtml(
+              `<table>${step.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeScenarioHtml(cell)}</td>`).join("")}</tr>`).join("")}</table>`,
+              text
+            );
           } else {
             harness.paste(text);
           }
@@ -525,6 +590,24 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
         const harness = requireHarness(state, step, scenarioRunner);
         const beforeMessageCount = harness.messages.length;
         harness.button(step.button).click();
+        if (state.staleSessionConflict && step.button === "update-cell-content") {
+          const posted = harness.messages.slice(beforeMessageCount).filter((message) => message.type !== "ui-review-snapshot");
+          const active = [...posted].reverse().find((message) => message.type === "update-cell-content");
+          if (!active) {
+            throw new scenarioRunner.ScenarioBlockedError("Cell draft submission did not post a mutation request.", "scenario-precondition-failed");
+          }
+          state.staleSessionConflict.activeRequest = active;
+          return {
+            target: step.button,
+            details: {
+              domEvent: "click",
+              postedMessage: active.type,
+              operationId: active.operationId,
+              revisionToken: active.revisionToken,
+              busy: mutationBusy(harness)
+            }
+          };
+        }
         if (state.rapidMutation && step.button === "update-cell-content") {
           const posted = harness.messages.slice(beforeMessageCount).filter((message) => message.type !== "ui-review-snapshot");
           const sourceMessages = harness.messages.filter((message) => message.type !== "ui-review-snapshot");
@@ -635,15 +718,17 @@ function formatReviewModel(source, result) {
   return {
     before: source,
     selectedMode: result.mode,
-    variants: [{
-      mode: result.mode,
-      label: result.mode,
-      after: result.source,
-      changedLineCount: result.summary.changedLineCount,
-      formattedRowCount: result.summary.formattedRowCount,
-      preservedRowCount: result.summary.preservedRowCount,
-      diagnostics: result.diagnostics.map((diagnostic) => diagnostic.message)
-    }]
+    variants: [
+      {
+        mode: result.mode,
+        label: result.mode,
+        after: result.source,
+        changedLineCount: result.summary.changedLineCount,
+        formattedRowCount: result.summary.formattedRowCount,
+        preservedRowCount: result.summary.preservedRowCount,
+        diagnostics: result.diagnostics.map((diagnostic) => diagnostic.message)
+      }
+    ]
   };
 }
 
@@ -690,7 +775,8 @@ function evaluateScenarioContract(scenario, snapshot) {
     });
   }
   if (scenario.expectedEditorMode === "edit" || scenario.expectedEditorMode === "preview" || scenario.expectedEditorMode === "format-review") {
-    const actualEditorMode = snapshot.selfReview.editorMode === "format-review" ? "format-review" : snapshot.selfReview.editorMode === "preview" ? "preview" : "edit";
+    const actualEditorMode =
+      snapshot.selfReview.editorMode === "format-review" ? "format-review" : snapshot.selfReview.editorMode === "preview" ? "preview" : "edit";
     checks.push({
       id: "scenario-expected-editor-mode",
       severity: "error",
@@ -759,24 +845,39 @@ function evaluateDomAssertion(id, state, core) {
     case "merged-imported-cell-visible":
       return result(spanned.length > 0, "A spanned origin cell is represented in the rendered grid.", `spannedOrigins=${spanned.length}`);
     case "covered-cell-not-editable":
-      return result(spanned.length > 0 && cells.length < parsedGrid.rowCount * parsedGrid.columnCount, "Covered grid slots are omitted from editable DOM cells.", `domOrigins=${cells.length}, gridSlots=${parsedGrid.rowCount * parsedGrid.columnCount}`);
+      return result(
+        spanned.length > 0 && cells.length < parsedGrid.rowCount * parsedGrid.columnCount,
+        "Covered grid slots are omitted from editable DOM cells.",
+        `domOrigins=${cells.length}, gridSlots=${parsedGrid.rowCount * parsedGrid.columnCount}`
+      );
     case "block-cell-readonly":
-      return result(blockCells.some((cell) => cell.getAttribute("aria-readonly") === "true"), "Block cells are rendered readonly.");
+      return result(
+        blockCells.some((cell) => cell.getAttribute("aria-readonly") === "true"),
+        "Block cells are rendered readonly."
+      );
     case "block-cell-raw-editor-visible":
       return result(Boolean(document.querySelector("textarea[data-inspector-control='contentRaw']")), "The block raw-source editor is present.");
     case "block-cell-preview-visible":
       return result(Boolean(document.querySelector("[data-inspector-block-preview]")), "The block-cell preview is present.");
     case "diagnostics-visible":
-      return result((document.querySelector("[data-review-target='diagnostics']")?.textContent?.trim().length ?? 0) > 0, "Diagnostics are visible in the rendered DOM.");
+      return result(
+        (document.querySelector("[data-review-target='diagnostics']")?.textContent?.trim().length ?? 0) > 0,
+        "Diagnostics are visible in the rendered DOM."
+      );
     case "fallback-hides-structured-actions":
     case "unsupported-data-table-hides-structured-actions":
       return result(sourceActions.length === 0, "Fallback DOM contains no structured source-changing actions.", `sourceActions=${sourceActions.length}`);
     case "preview-pane-visible":
       return result(Boolean(preview && !preview.closest("[hidden]")), "Preview pane is visible after the scenario action.");
     case "preview-hides-source-actions":
-      return result(sourceActions.every((element) => element.hasAttribute("hidden") || element.closest("[hidden]") !== null), "Preview mode hides every structured source-changing action.");
+      return result(
+        sourceActions.every((element) => element.hasAttribute("hidden") || element.closest("[hidden]") !== null),
+        "Preview mode hides every structured source-changing action."
+      );
     case "preview-security-active-content-removed": {
-      const activeContent = preview?.querySelector("script, style, form, iframe, object, embed, svg, math, base, meta, link, [src], [action], [formaction], [xlink\\:href], [onload], [onerror], [onclick]");
+      const activeContent = preview?.querySelector(
+        "script, style, form, iframe, object, embed, svg, math, base, meta, link, [src], [action], [formaction], [xlink\\:href], [onload], [onerror], [onclick]"
+      );
       const safeLink = preview?.querySelector('a[href="https://example.com/safe"]');
       return result(
         !activeContent && Boolean(safeLink),
@@ -791,7 +892,11 @@ function evaluateDomAssertion(id, state, core) {
         `lang=${document.documentElement.lang}`
       );
     case "large-grid-visible":
-      return result(Number(grid?.getAttribute("aria-rowcount") ?? 0) >= 20, "The large-table grid exposes its full row count.", `rowCount=${grid?.getAttribute("aria-rowcount")}`);
+      return result(
+        Number(grid?.getAttribute("aria-rowcount") ?? 0) >= 20,
+        "The large-table grid exposes its full row count.",
+        `rowCount=${grid?.getAttribute("aria-rowcount")}`
+      );
     case "grid-keyboard-accessibility": {
       const rows = Array.from(grid?.querySelectorAll(":scope > [role='row']") ?? []);
       const tabStops = cells.filter((cell) => cell.getAttribute("tabindex") === "0");
@@ -799,9 +904,12 @@ function evaluateDomAssertion(id, state, core) {
       const menuItems = Array.from(menu?.querySelectorAll("[role='menuitem']") ?? []);
       const rangeAnnouncement = document.querySelector("[data-grid-selection-status]")?.textContent ?? "";
       const namedCells = cells.every((cell) => (cell.getAttribute("aria-label") ?? "").trim().length > 0);
-      const passed = rows.length === Number(grid?.getAttribute("aria-rowcount") ?? -1) &&
-        tabStops.length === 1 && namedCells &&
-        menu?.getAttribute("aria-hidden") === "true" && menuItems.every((item) => item.getAttribute("tabindex") === "-1") &&
+      const passed =
+        rows.length === Number(grid?.getAttribute("aria-rowcount") ?? -1) &&
+        tabStops.length === 1 &&
+        namedCells &&
+        menu?.getAttribute("aria-hidden") === "true" &&
+        menuItems.every((item) => item.getAttribute("tabindex") === "-1") &&
         /row 1, column 1 - row 2, column 2, 2 rows x 2 columns/u.test(rangeAnnouncement);
       return result(
         passed,
@@ -810,19 +918,39 @@ function evaluateDomAssertion(id, state, core) {
       );
     }
     case "header-footer-roles-visible":
-      return result(Boolean(document.querySelector(".cell[data-row-role='header']") && document.querySelector(".cell[data-row-role='footer']")), "Header and footer row roles are represented in DOM metadata.");
+      return result(
+        Boolean(document.querySelector(".cell[data-row-role='header']") && document.querySelector(".cell[data-row-role='footer']")),
+        "Header and footer row roles are represented in DOM metadata."
+      );
     case "column-cell-spec-metadata-visible":
-      return result(cells.some((cell) => ["data-column-width", "data-column-style", "data-style", "data-horizontal-align", "data-vertical-align"].some((name) => Boolean(cell.getAttribute(name)))), "Column or cell spec metadata is represented in DOM data attributes.");
+      return result(
+        cells.some((cell) =>
+          ["data-column-width", "data-column-style", "data-style", "data-horizontal-align", "data-vertical-align"].some((name) =>
+            Boolean(cell.getAttribute(name))
+          )
+        ),
+        "Column or cell spec metadata is represented in DOM data attributes."
+      );
     case "column-a-block-cell-visible":
       return result(blockCells.length > 0, "Column-style block cells are represented in the grid.");
     case "duplicate-style-alignment-visible":
-      return result(cells.some((cell) => Boolean(cell.getAttribute("data-style")) && Boolean(cell.getAttribute("data-horizontal-align"))), "Duplicate style/alignment metadata is represented in the grid.");
+      return result(
+        cells.some((cell) => Boolean(cell.getAttribute("data-style")) && Boolean(cell.getAttribute("data-horizontal-align"))),
+        "Duplicate style/alignment metadata is represented in the grid."
+      );
     case "block-cell-boundary-preserved":
       return result(blockCells.length > 0 && state.source.includes("| not a table cell"), "Block-cell source-like lines remain inside a readonly block cell.");
     case "auto-expand-paste-regression":
-      return result(parsedGrid.rowCount >= 3 && parsedGrid.columnCount >= 4, "Paste expanded the actual table grid.", `rows=${parsedGrid.rowCount}, columns=${parsedGrid.columnCount}`);
+      return result(
+        parsedGrid.rowCount >= 3 && parsedGrid.columnCount >= 4,
+        "Paste expanded the actual table grid.",
+        `rows=${parsedGrid.rowCount}, columns=${parsedGrid.columnCount}`
+      );
     case "duplicate-cells-visible-as-plain-cells":
-      return result(cells.length >= 2 && cells.every((cell) => cell.getAttribute("aria-readonly") === "false"), "Duplicate shorthand is projected as editable origin cells.");
+      return result(
+        cells.length >= 2 && cells.every((cell) => cell.getAttribute("aria-readonly") === "false"),
+        "Duplicate shorthand is projected as editable origin cells."
+      );
     case "nested-table-raw-block-preserved":
       return result(blockCells.length > 0 && state.source.includes("!==="), "Nested table source remains in a readonly block cell.");
     case "table-attributes-rendered-preview":
@@ -830,22 +958,32 @@ function evaluateDomAssertion(id, state, core) {
     case "frame-grid-stripes-raw-retained":
       return result(/(?:frame|grid|stripes)=/u.test(state.source), "Frame, grid, or stripes attributes remain in source after preview interaction.");
     case "rich-content-pastes-as-plain-text":
-      return result(state.source.includes("*Rich*") && state.source.includes("_Text_"), "Rich clipboard markup was mapped through the actual paste/write-back path.");
+      return result(
+        state.source.includes("*Rich*") && state.source.includes("_Text_"),
+        "Rich clipboard markup was mapped through the actual paste/write-back path."
+      );
     case "format-review-visible":
-      return result(Boolean(document.querySelector("[data-review-target='format-review']:not([hidden])")), "Format review is visible after the format command.");
+      return result(
+        Boolean(document.querySelector("[data-review-target='format-review']:not([hidden])")),
+        "Format review is visible after the format command."
+      );
     case "stale-session-draft-remains-visible": {
       const diagnosticText = document.querySelector("[data-review-target='diagnostics']")?.textContent ?? "";
       const draft = document.querySelector("textarea[data-cell-editor-control='contentRaw']")?.value;
+      const mutationBlocked =
+        document.querySelector("[data-review-target='table-grid']")?.getAttribute("aria-readonly") === "true" &&
+        document.querySelector("button[data-action='update-cell-content']")?.getAttribute("aria-disabled") === "true";
       return result(
-        diagnosticText.includes("writeback.table-changed") && draft === state.expectedDraft,
-        "A stale-session conflict is visible without replacing the unsent cell draft.",
-        `diagnostic=${diagnosticText.includes("writeback.table-changed")}, draftRetained=${draft === state.expectedDraft}`
+        diagnosticText.includes("writeback.table-changed") && draft === state.expectedDraft && mutationBlocked,
+        "A stale-session conflict is visible, retains the submitted cell draft, and blocks further mutation.",
+        `diagnostic=${diagnosticText.includes("writeback.table-changed")}, draftRetained=${draft === state.expectedDraft}, mutationBlocked=${mutationBlocked}`
       );
     }
     case "rapid-mutation-order-stable": {
       const rapid = state.rapidMutation;
       const draft = document.querySelector("textarea[data-cell-editor-control='contentRaw']")?.value;
-      const passed = Boolean(rapid &&
+      const passed = Boolean(
+        rapid &&
         rapid.requestCountAfterDoubleApply === 1 &&
         rapid.busyAfterDoubleApply &&
         rapid.draftRetainedAfterStale &&
@@ -854,7 +992,8 @@ function evaluateDomAssertion(id, state, core) {
         rapid.activeApplied &&
         rapid.tokenAdvanced &&
         rapid.busyCleared &&
-        draft === state.expectedDraft);
+        draft === state.expectedDraft
+      );
       return result(
         passed,
         "Rapid mutation ordering keeps one active request, ignores stale results, and applies only the matching result.",
@@ -871,21 +1010,25 @@ function createWebviewSnapshot(state, uiReview, core, app) {
   const grid = core.projectGridModel(parsed);
   const model = app.createWebviewAppModel(grid, {
     diagnostics: state.diagnostics,
-    ...(state.formatResult?.ok ? {
-      formatReview: {
-        before: state.source,
-        selectedMode: state.formatResult.mode,
-        variants: [{
-          mode: state.formatResult.mode,
-          label: state.formatResult.mode,
-          after: state.formatResult.source,
-          changedLineCount: state.formatResult.summary.changedLineCount,
-          formattedRowCount: state.formatResult.summary.formattedRowCount,
-          preservedRowCount: state.formatResult.summary.preservedRowCount,
-          diagnostics: state.formatResult.diagnostics.map((diagnostic) => diagnostic.message)
-        }]
-      }
-    } : {})
+    ...(state.formatResult?.ok
+      ? {
+          formatReview: {
+            before: state.source,
+            selectedMode: state.formatResult.mode,
+            variants: [
+              {
+                mode: state.formatResult.mode,
+                label: state.formatResult.mode,
+                after: state.formatResult.source,
+                changedLineCount: state.formatResult.summary.changedLineCount,
+                formattedRowCount: state.formatResult.summary.formattedRowCount,
+                preservedRowCount: state.formatResult.summary.preservedRowCount,
+                diagnostics: state.formatResult.diagnostics.map((diagnostic) => diagnostic.message)
+              }
+            ]
+          }
+        }
+      : {})
   });
   state.editorMode = actualEditorMode(state.harness);
   return uiReview.createUiReviewSnapshotFromWebviewModel(model, "headless-webview-ui-review", { editorMode: state.editorMode });

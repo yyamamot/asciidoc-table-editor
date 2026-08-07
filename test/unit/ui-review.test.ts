@@ -25,23 +25,27 @@ describe("UI review checks", () => {
   });
 
   it("flags clipped controls and detached popups", () => {
-    const checks = evaluateUiReviewSnapshot(snapshot({
-      geometry: {
-        relationships: [{
-          type: "popup-anchor",
-          sourceReviewId: "merge-menu",
-          targetReviewId: "merge-button",
-          distance: 160
-        }],
-        elements: [
-          element("clipped-button", "BUTTON", "button", rect(10, 10, 20, 20), {
-            label: "Very long label",
-            scrollWidth: 200,
-            clientWidth: 20
-          })
-        ]
-      }
-    }));
+    const checks = evaluateUiReviewSnapshot(
+      snapshot({
+        geometry: {
+          relationships: [
+            {
+              type: "popup-anchor",
+              sourceReviewId: "merge-menu",
+              targetReviewId: "merge-button",
+              distance: 160
+            }
+          ],
+          elements: [
+            element("clipped-button", "BUTTON", "button", rect(10, 10, 20, 20), {
+              label: "Very long label",
+              scrollWidth: 200,
+              clientWidth: 20
+            })
+          ]
+        }
+      })
+    );
 
     expect(checks.map((check) => check.id)).toContain("clipping-clipped-button");
     expect(checks.map((check) => check.id)).toContain("popup-anchor-merge-menu-merge-button");
@@ -49,54 +53,65 @@ describe("UI review checks", () => {
   });
 
   it("blocks structured source-changing actions in fallback mode", () => {
-    const checks = evaluateUiReviewSnapshot(snapshot({
-      selfReview: { mode: "fallback" },
-      geometry: {
-        elements: [
-          element("merge-button", "BUTTON", "button", rect(10, 10, 96, 28), {
-            action: "merge-cells"
-          })
-        ]
-      }
-    }));
+    const checks = evaluateUiReviewSnapshot(
+      snapshot({
+        selfReview: { mode: "fallback" },
+        geometry: {
+          elements: [
+            element("merge-button", "BUTTON", "button", rect(10, 10, 96, 28), {
+              action: "merge-cells"
+            })
+          ]
+        }
+      })
+    );
 
     expect(checks.find((check) => check.id === "fallback-hides-structured-actions")?.passed).toBe(false);
   });
 
   it("requires preview pane and hides source-changing actions in preview mode", () => {
-    const passingChecks = evaluateUiReviewSnapshot(snapshot({
-      selfReview: { editorMode: "preview" },
-      geometry: {
-        elements: [
-          element("table-grid", "SECTION", "region", rect(10, 80, 760, 500), { visible: false }),
-          element("table-preview", "SECTION", "region", rect(10, 80, 760, 500))
-        ]
-      }
-    }));
+    const passingChecks = evaluateUiReviewSnapshot(
+      snapshot({
+        selfReview: { editorMode: "preview" },
+        geometry: {
+          elements: [
+            element("table-grid", "SECTION", "region", rect(10, 80, 760, 500), { visible: false }),
+            element("table-preview", "SECTION", "region", rect(10, 80, 760, 500))
+          ]
+        }
+      })
+    );
     expect(passingChecks.find((check) => check.id === "required-visible-table-preview")?.passed).toBe(true);
     expect(passingChecks.find((check) => check.id === "preview-hides-source-actions")?.passed).toBe(true);
 
-    const blockedChecks = evaluateUiReviewSnapshot(snapshot({
-      selfReview: { editorMode: "preview" },
-      geometry: {
-        elements: [
-          element("table-grid", "SECTION", "region", rect(10, 80, 760, 500), { visible: false }),
-          element("table-preview", "SECTION", "region", rect(10, 80, 760, 500)),
-          element("merge-button", "BUTTON", "button", rect(10, 10, 96, 28), { action: "merge-cells" })
-        ]
-      }
-    }));
+    const blockedChecks = evaluateUiReviewSnapshot(
+      snapshot({
+        selfReview: { editorMode: "preview" },
+        geometry: {
+          elements: [
+            element("table-grid", "SECTION", "region", rect(10, 80, 760, 500), { visible: false }),
+            element("table-preview", "SECTION", "region", rect(10, 80, 760, 500)),
+            element("merge-button", "BUTTON", "button", rect(10, 10, 96, 28), { action: "merge-cells" })
+          ]
+        }
+      })
+    );
 
     expect(blockedChecks.find((check) => check.id === "preview-hides-source-actions")?.passed).toBe(false);
   });
 
   it("creates an aggregate report", () => {
-    const report = createUiReviewReport([{
-      id: "scenario",
-      result: "needs-fix",
-      checks: [{ id: "bad", severity: "error", passed: false, summary: "Bad layout." }],
-      artifactPaths: { screenshot: "screen.png" }
-    }], { root: "/tmp/review" });
+    const report = createUiReviewReport(
+      [
+        {
+          id: "scenario",
+          result: "needs-fix",
+          checks: [{ id: "bad", severity: "error", passed: false, summary: "Bad layout." }],
+          artifactPaths: { screenshot: "screen.png" }
+        }
+      ],
+      { root: "/tmp/review" }
+    );
 
     expect(report.result).toBe("needs-fix");
     expect(report.findings[0]?.id).toBe("scenario:bad");
@@ -121,12 +136,17 @@ describe("UI review checks", () => {
     });
     const executed: ScenarioStep[] = [];
     let tick = 0;
-    const result = await runUiReviewScenario(spec, "run-1", {
-      execute(step) {
-        executed.push(step);
-        return { target: step.action, details: { execution: executed.length } };
-      }
-    }, () => `2026-08-02T00:00:0${tick++}.000Z`);
+    const result = await runUiReviewScenario(
+      spec,
+      "run-1",
+      {
+        execute(step) {
+          executed.push(step);
+          return { target: step.action, details: { execution: executed.length } };
+        }
+      },
+      () => `2026-08-02T00:00:0${tick++}.000Z`
+    );
 
     expect(result.outcome).toBe("passed");
     expect(executed.map((step) => step.action)).toEqual(["open", "command", "paste", "set-editor-mode", "keyboard", "context-menu"]);
@@ -136,13 +156,15 @@ describe("UI review checks", () => {
   });
 
   it("blocks an unsupported action instead of ignoring it", () => {
-    expect(() => parseUiReviewScenarioSpec({
-      id: "unsupported",
-      fixture: "fixtures/lossless/minimal-basic/source.adoc",
-      expectedMode: "structured",
-      steps: [{ id: "unknown", action: "drag-table" }],
-      assertions: []
-    })).toThrowError(ScenarioBlockedError);
+    expect(() =>
+      parseUiReviewScenarioSpec({
+        id: "unsupported",
+        fixture: "fixtures/lossless/minimal-basic/source.adoc",
+        expectedMode: "structured",
+        steps: [{ id: "unknown", action: "drag-table" }],
+        assertions: []
+      })
+    ).toThrowError(ScenarioBlockedError);
   });
 
   it("stops at a failed step and records a failed trace entry", async () => {
@@ -197,13 +219,17 @@ describe("UI review checks", () => {
     try {
       mkdirSync(join(root, "scenarios"));
       writeFileSync(join(root, "scenarios", "malformed.json"), "{", "utf8");
-      writeFileSync(join(root, "scenarios", "missing-fixture.json"), JSON.stringify({
-        id: "missing-fixture",
-        fixture: "missing.adoc",
-        expectedMode: "structured",
-        steps: [{ id: "open", action: "open" }],
-        assertions: []
-      }), "utf8");
+      writeFileSync(
+        join(root, "scenarios", "missing-fixture.json"),
+        JSON.stringify({
+          id: "missing-fixture",
+          fixture: "missing.adoc",
+          expectedMode: "structured",
+          steps: [{ id: "open", action: "open" }],
+          assertions: []
+        }),
+        "utf8"
+      );
       const aliases = new Map([["malformed", "scenarios/malformed.json"]]);
 
       expect(loadUiReviewScenarioSpec("unknown", root, aliases)).toMatchObject({ ok: false, failureClass: "unknown-scenario-alias" });
@@ -216,24 +242,29 @@ describe("UI review checks", () => {
   });
 
   it("prioritizes blocked scenarios in the aggregate result", () => {
-    const report = createUiReviewReport([
-      { id: "pass", result: "pass", checks: [], artifactPaths: {} },
-      { id: "blocked", result: "blocked", checks: [], artifactPaths: {} }
-    ], {});
+    const report = createUiReviewReport(
+      [
+        { id: "pass", result: "pass", checks: [], artifactPaths: {} },
+        { id: "blocked", result: "blocked", checks: [], artifactPaths: {} }
+      ],
+      {}
+    );
 
     expect(report.result).toBe("blocked");
   });
 
   it("marks harness completion failed when an assertion blocks an otherwise completed scenario", () => {
-    expect(createHarnessRunFinishedEvent({
-      ts: "2026-08-02T00:00:00.000Z",
-      runId: "run-blocked",
-      scenarioId: "scenario",
-      target: "fixture.adoc",
-      artifactPath: "/tmp/artifact",
-      executionOutcome: "passed",
-      assertionBlocked: true
-    })).toMatchObject({
+    expect(
+      createHarnessRunFinishedEvent({
+        ts: "2026-08-02T00:00:00.000Z",
+        runId: "run-blocked",
+        scenarioId: "scenario",
+        target: "fixture.adoc",
+        artifactPath: "/tmp/artifact",
+        executionOutcome: "passed",
+        assertionBlocked: true
+      })
+    ).toMatchObject({
       level: "error",
       event: "harness.run.finished",
       outcome: "failed",
@@ -268,11 +299,58 @@ describe("UI review checks", () => {
     expect(JSON.parse(readFileSync(join(scenarioRoot, "command-trace.json"), "utf8"))).toEqual([]);
   }, 15_000);
 
+  it("exercises a matching stale-session conflict through the mutation envelope", () => {
+    const execution = spawnSync(process.execPath, ["scripts/review-ui-llm.mjs", "--single"], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        ASCIIDOC_TABLE_UI_REVIEW_ID: "unit-stale-session-conflict",
+        ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: "stale-session-conflict"
+      }
+    });
+    expect(execution.status, `${execution.stdout}\n${execution.stderr}`).toBe(0);
+    const reviewRoot = [...execution.stdout.matchAll(/^ui review pack:\s*(.+)$/gmu)].at(-1)?.[1]?.trim();
+    expect(reviewRoot).toBeTruthy();
+    const report = JSON.parse(readFileSync(join(reviewRoot!, "ui-review-report.json"), "utf8"));
+    expect(report).toMatchObject({
+      result: "pass",
+      scenarioResults: [
+        {
+          id: "unit-stale-session-conflict",
+          result: "pass",
+          checks: expect.arrayContaining([
+            expect.objectContaining({
+              id: "assertion-stale-session-draft-remains-visible",
+              passed: true,
+              evidence: "diagnostic=true, draftRetained=true, mutationBlocked=true"
+            })
+          ])
+        }
+      ]
+    });
+    const trace = JSON.parse(readFileSync(join(reviewRoot!, "scenarios", "unit-stale-session-conflict", "command-trace.json"), "utf8"));
+    expect(trace).toContainEqual(
+      expect.objectContaining({
+        stepId: "submit-target-draft",
+        details: expect.objectContaining({ postedMessage: "update-cell-content", busy: true })
+      })
+    );
+    expect(trace).toContainEqual(
+      expect.objectContaining({
+        stepId: "show-stale-conflict",
+        details: expect.objectContaining({
+          postedMessage: "cell-content-update-result",
+          diagnosticCode: "writeback.table-changed",
+          draftRetained: true,
+          mutationBlocked: true
+        })
+      })
+    );
+  }, 15_000);
+
   it("isolates artifact roots and reports across parallel review child processes", async () => {
-    const [alpha, beta] = await Promise.all([
-      runReviewChild("parallel-alpha"),
-      runReviewChild("parallel-beta")
-    ]);
+    const [alpha, beta] = await Promise.all([runReviewChild("parallel-alpha"), runReviewChild("parallel-beta")]);
 
     expect(alpha.status).toBe(1);
     expect(beta.status).toBe(1);
@@ -294,17 +372,21 @@ describe("UI review checks", () => {
     const root = mkdtempSync(join(tmpdir(), "ui-review-expected-mode-"));
     const scenarioPath = join(root, "scenario.json");
     try {
-      writeFileSync(scenarioPath, JSON.stringify({
-        id: "expected-preview-without-action",
-        fixture: "fixtures/lossless/minimal-basic/source.adoc",
-        expectedMode: "structured",
-        expectedEditorMode: "preview",
-        steps: [
-          { id: "open", action: "open" },
-          { id: "open-editor", action: "command", command: "asciidocTable.openEditor" }
-        ],
-        assertions: [{ id: "table-grid-visible", type: "ui-review" }]
-      }), "utf8");
+      writeFileSync(
+        scenarioPath,
+        JSON.stringify({
+          id: "expected-preview-without-action",
+          fixture: "fixtures/lossless/minimal-basic/source.adoc",
+          expectedMode: "structured",
+          expectedEditorMode: "preview",
+          steps: [
+            { id: "open", action: "open" },
+            { id: "open-editor", action: "command", command: "asciidocTable.openEditor" }
+          ],
+          assertions: [{ id: "table-grid-visible", type: "ui-review" }]
+        }),
+        "utf8"
+      );
       const execution = spawnSync(process.execPath, ["scripts/review-ui-llm.mjs", "--single"], {
         cwd: process.cwd(),
         encoding: "utf8",
@@ -322,11 +404,13 @@ describe("UI review checks", () => {
       const scenarioRoot = join(reviewRoot!, "scenarios", "unit-expected-mode-mismatch");
       const snapshot = JSON.parse(readFileSync(join(scenarioRoot, "ui-review-snapshot.json"), "utf8"));
       expect(snapshot.selfReview.editorMode).toBe("edit");
-      expect(report.scenarioResults[0].checks).toContainEqual(expect.objectContaining({
-        id: "scenario-expected-editor-mode",
-        passed: false,
-        evidence: "expected=preview, actual=edit"
-      }));
+      expect(report.scenarioResults[0].checks).toContainEqual(
+        expect.objectContaining({
+          id: "scenario-expected-editor-mode",
+          passed: false,
+          evidence: "expected=preview, actual=edit"
+        })
+      );
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -348,8 +432,12 @@ function runReviewChild(id: string): Promise<{ status: number | null; stdout: st
     let stderr = "";
     child.stdout.setEncoding("utf8");
     child.stderr.setEncoding("utf8");
-    child.stdout.on("data", (chunk: string) => { stdout += chunk; });
-    child.stderr.on("data", (chunk: string) => { stderr += chunk; });
+    child.stdout.on("data", (chunk: string) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk: string) => {
+      stderr += chunk;
+    });
     child.once("error", reject);
     child.once("close", (status) => {
       const reviewRoot = [...stdout.matchAll(/^ui review pack:\s*(.+)$/gmu)].at(-1)?.[1]?.trim();

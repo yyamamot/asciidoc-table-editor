@@ -10,7 +10,6 @@
     "scripts/perf-preview-block-cells.mjs": "28f3ee9a325726729e223a59d2691ec6f22189b0322d357ddffc7f05fa468e34",
     "scripts/release-regression.mjs": "53e6104abb6cf529d9815fb59ac0d30909451269944ba5ecb5325cbc279aa9c4",
     "scripts/review-ui-feature.mjs": "b0b86cb3f7f7a28a794277bafdfa412bd7e01ddf366ac29a9c144edefb4a6741",
-    "scripts/review-ui-llm.mjs": "5bb3d08a308f0a08e9ecc1f50bb2a6beb6103fe51e9bdfae8b65a9e92df97fe3",
     "scripts/ui-model-review.mjs": "ff077891ae884fe03ed22c9ba71010f7a7c911dfc99d62a33c3b8470ca5fd818",
     "scripts/verify-ui-change.mjs": "5b6929396150e5956875b0a4151e1ac9aa797dc2e5c9271f24fa6827104d831b",
     "src/app/asciidoc-source-highlight.ts": "e1d211936634471a2972796be4962f47d96119fa2b1ddebcbbe3fbbfab733ac5",
@@ -96,7 +95,6 @@
     "test/unit/preview-performance.test.ts": "ae5e4af5c74c2045c199610ed5b9f42e43cbbb5a71376a8de5b2b47b58d70eff",
     "test/unit/preview-renderer.test.ts": "289828f59e929ea638bc4c28e57f022aca08684b640e8f6a2ed930e08b801b6f",
     "test/unit/ui-review-provenance.test.ts": "1628179248aedc5af539372fa1e04049d7359e9453802d41d3e4e5412e288334",
-    "test/unit/ui-review.test.ts": "5d35c02deec877a31e0cb31383bff88d76e3bc9f35ed77e3a27f89cdde385f73",
     "test/unit/vscode-test-launcher.test.ts": "eb92fd48f575f406ed388b606df04c28516563a595dd28af8a66f760151a30ae",
     "test/unit/webview-app.test.ts": "5052e3fb82d1272db3bfc0868520bc7ba5298eaee2ad3cad0d855999d34142df"
   }
