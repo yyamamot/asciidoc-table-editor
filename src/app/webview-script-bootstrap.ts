@@ -11,12 +11,12 @@ export function renderWebviewBootstrapScript(selectedSourceCellId: string, mode:
         setBlockInspectorTab(blockInspectorTab);
         applyGridState(initialState.gridState);
         const capture = () => {
-          const selfReviewText = document.getElementById("llm-ui-self-review")?.textContent || "{}";
+          const selfReviewText = document.getElementById("ui-self-review")?.textContent || "{}";
           let selfReview = {};
           try {
             selfReview = JSON.parse(selfReviewText);
           } catch {
-            selfReview = { mode: "${mode}", parseError: "llm-ui-self-review" };
+            selfReview = { mode: "${mode}", parseError: "ui-self-review" };
           }
           selfReview = { ...selfReview, editorMode, blockInspectorTab };
           const targets = Array.from(document.querySelectorAll("[data-review-target], .cell"));

@@ -55,7 +55,7 @@ ${renderTableEditorStyles(model)}
     ${renderPreviewScreen(model, labels)}
     ${model.mode === "table-grid" ? renderContextMenu(labels) : ""}
     ${diagnostics}
-    <script type="application/json" id="llm-ui-self-review">${reviewMetadata}</script>
+    <script type="application/json" id="ui-self-review">${reviewMetadata}</script>
     <script nonce="${nonce}">${options.hostBridgeScript ?? renderTableEditorHostAdapterScript()}</script>
     ${renderWebviewScript(nonce, scriptLabels, options.selectedSourceCellId ?? "", model.mode, options.revisionToken ?? "portable-session")}
   </main>

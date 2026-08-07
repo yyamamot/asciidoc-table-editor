@@ -30,7 +30,7 @@ describe("webview table editor shell", () => {
     expect(html).toContain("display: none !important;");
     expect(html).toContain("height: 100vh;");
     expect(html).toContain(".grid-wrap {\n  box-sizing: border-box;\n  height: 100%;\n  overflow: auto;");
-    expect(html).toContain('id="llm-ui-self-review"');
+    expect(html).toContain('id="ui-self-review"');
     expect(html).toContain('data-kind="origin"');
     expect(html).toContain('data-row-role="body"');
     expect(html).toContain('data-spanned="true"');

@@ -47,7 +47,7 @@ if (!options.scenario || !options.id) {
 }
 
 const scenario = scenarioAliases.get(options.scenario) ?? { path: options.scenario };
-const result = spawnSync("pnpm", ["run", "review:ui:llm:scenario"], {
+const result = spawnSync("pnpm", ["run", "review:ui:deterministic:scenario"], {
   cwd: root,
   env: {
     ...process.env,

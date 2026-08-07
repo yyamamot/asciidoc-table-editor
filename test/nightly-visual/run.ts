@@ -202,8 +202,8 @@ async function main(): Promise<void> {
     "webview.html",
     "ui-review-snapshot.json",
     "ui-review-snapshot.preview.json",
-    "llm-ui-self-review.json",
-    "llm-ui-self-review.preview.json",
+    "ui-self-review.json",
+    "ui-self-review.preview.json",
     "ui-geometry.json",
     "ui-geometry.preview.json",
     "ui-review-report.json"

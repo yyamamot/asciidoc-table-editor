@@ -194,15 +194,15 @@ export async function run(): Promise<void> {
       screenshots: screenshotRoot,
       runtimeJsonl: join(artifactRoot, "runtime.jsonl"),
       uiGeometry: join(artifactRoot, "ui-geometry.json"),
-      llmUiSelfReview: join(artifactRoot, "llm-ui-self-review.json")
+      uiSelfReview: join(artifactRoot, "ui-self-review.json")
     }
   );
 
   writeFileSync(join(artifactRoot, "webview.html"), commandResult.html, "utf8");
   writeFileSync(snapshotPath, `${JSON.stringify(editSnapshot, null, 2)}\n`, "utf8");
   writeFileSync(join(artifactRoot, "ui-review-snapshot.preview.json"), `${JSON.stringify(previewSnapshot, null, 2)}\n`, "utf8");
-  writeFileSync(join(artifactRoot, "llm-ui-self-review.json"), `${JSON.stringify(editSnapshot.selfReview, null, 2)}\n`, "utf8");
-  writeFileSync(join(artifactRoot, "llm-ui-self-review.preview.json"), `${JSON.stringify(previewSnapshot.selfReview, null, 2)}\n`, "utf8");
+  writeFileSync(join(artifactRoot, "ui-self-review.json"), `${JSON.stringify(editSnapshot.selfReview, null, 2)}\n`, "utf8");
+  writeFileSync(join(artifactRoot, "ui-self-review.preview.json"), `${JSON.stringify(previewSnapshot.selfReview, null, 2)}\n`, "utf8");
   writeFileSync(join(artifactRoot, "ui-geometry.json"), `${JSON.stringify({ ...editSnapshot.geometry, checks: editChecks }, null, 2)}\n`, "utf8");
   writeFileSync(join(artifactRoot, "ui-geometry.preview.json"), `${JSON.stringify({ ...previewSnapshot.geometry, checks: previewChecks }, null, 2)}\n`, "utf8");
   writeFileSync(join(artifactRoot, "ui-review-report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");

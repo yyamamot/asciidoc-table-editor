@@ -3,9 +3,18 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
+import {
+  applyModelReviewToScenarioResults,
+  createEvidenceManifest,
+  loadModelReview,
+  rewriteModelDerivedArtifacts,
+  rootAssertionResults,
+  sha256
+} from "./ui-model-review.mjs";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
 const singleScenario = process.argv.includes("--single");
+const deprecatedLlmAlias = process.argv.includes("--deprecated-llm-alias");
 const runId = `ui-review-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const reviewRoot = join(root, ".tmp", "ui-review-pack", runId);
 const scenariosRoot = join(reviewRoot, "scenarios");
@@ -59,6 +68,9 @@ main().catch((error) => {
 });
 
 async function main() {
+  if (deprecatedLlmAlias) {
+    console.warn("review:ui:llm is deprecated; use review:ui:deterministic.");
+  }
   mkdirSync(reviewRoot, { recursive: true });
   mkdirSync(scenariosRoot, { recursive: true });
   mkdirSync(screenshotsRoot, { recursive: true });
@@ -75,6 +87,7 @@ async function main() {
   const runtimeJsonl = [];
   const harnessJsonl = [];
   const commandTrace = [];
+  const modelAssertionIds = [];
 
   for (const scenario of scenarioMatrix) {
     const scenarioRoot = join(scenariosRoot, scenario.id);
@@ -93,6 +106,9 @@ async function main() {
       continue;
     }
     const scenarioSpec = loaded.spec;
+    modelAssertionIds.push(...scenarioSpec.assertions
+      .filter((assertion) => assertion.type === "vlm-review")
+      .map((assertion) => assertion.id));
     const state = createScenarioState(scenarioSpec, loaded.path);
     const execution = await scenarioRunner.runUiReviewScenario(
       scenarioSpec,
@@ -143,7 +159,7 @@ async function main() {
     harnessJsonl.push(harnessEvent);
     writeFileSync(join(scenarioRoot, "scenario.json"), JSON.stringify(redactScenarioArtifact(scenarioSpec), null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "ui-review-snapshot.json"), JSON.stringify(snapshot, null, 2), "utf8");
-    writeFileSync(join(scenarioRoot, "llm-ui-self-review.json"), JSON.stringify(snapshot.selfReview, null, 2), "utf8");
+    writeFileSync(join(scenarioRoot, "ui-self-review.json"), JSON.stringify(snapshot.selfReview, null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "ui-geometry.json"), JSON.stringify({ ...snapshot.geometry, checks }, null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "runtime.jsonl"), `${runtimeEvent}\n`, "utf8");
     writeFileSync(join(scenarioRoot, "harness.jsonl"), `${[...execution.events.map((entry) => JSON.stringify(entry)), harnessEvent].join("\n")}\n`, "utf8");
@@ -166,9 +182,10 @@ async function main() {
   writeFileSync(join(reviewRoot, "harness.jsonl"), `${harnessJsonl.join("\n")}\n`, "utf8");
   writeFileSync(join(reviewRoot, "workspace-state.json"), JSON.stringify({ scaffold: true }, null, 2), "utf8");
   writeFileSync(join(reviewRoot, "command-trace.json"), JSON.stringify(commandTrace, null, 2), "utf8");
-  writeFileSync(join(reviewRoot, "llm-ui-self-review.json"), JSON.stringify(aggregateSelfReview, null, 2), "utf8");
+  writeFileSync(join(reviewRoot, "ui-self-review.json"), JSON.stringify(aggregateSelfReview, null, 2), "utf8");
   writeFileSync(join(reviewRoot, "ui-geometry.json"), JSON.stringify(aggregateGeometry, null, 2), "utf8");
-  const report = uiReview.createUiReviewReport(scenarioResults, {
+  writeFileSync(join(reviewRoot, "assertion-results.json"), JSON.stringify(rootAssertionResults(scenarioResults), null, 2), "utf8");
+  const deterministicReport = uiReview.createUiReviewReport(scenarioResults, {
     reviewRoot,
     screenshots: screenshotsRoot,
     scenarios: scenariosRoot,
@@ -177,13 +194,42 @@ async function main() {
     workspaceState: join(reviewRoot, "workspace-state.json"),
     commandTrace: join(reviewRoot, "command-trace.json")
   });
+  const preliminaryReport = {
+    ...deterministicReport,
+    reviewKind: "deterministic",
+    deterministicResult: deterministicReport.result
+  };
+  writeFileSync(join(reviewRoot, "ui-review-report.json"), JSON.stringify(preliminaryReport, null, 2), "utf8");
+  const prompt = createPrompt(deterministicReport, modelAssertionIds);
+  const promptHash = sha256(prompt);
+  const evidenceManifest = createEvidenceManifest({ workspaceRoot: root, reviewRoot, scenariosRoot, screenshotsRoot });
+  const evidenceHash = sha256(JSON.stringify(evidenceManifest.entries));
+  writeFileSync(join(reviewRoot, "evidence-manifest.json"), JSON.stringify({ ...evidenceManifest, evidenceHash }, null, 2), "utf8");
+  const modelReview = loadModelReview({ root, promptHash, evidenceHash, expectedAssertionIds: modelAssertionIds });
+  const enrichedScenarioResults = applyModelReviewToScenarioResults(scenarioResults, modelReview.artifact);
+  rewriteModelDerivedArtifacts({ scenarioResults: enrichedScenarioResults, aggregateGeometry, reviewRoot, scenariosRoot });
+  const enrichedReport = uiReview.createUiReviewReport(enrichedScenarioResults, deterministicReport.artifactPaths);
+  const report = {
+    ...enrichedReport,
+    result: deterministicReport.result,
+    reviewKind: "deterministic",
+    deterministicResult: deterministicReport.result,
+    modelReview: {
+      policy: modelReview.artifact.policy,
+      status: modelReview.artifact.status,
+      artifactPath: join(reviewRoot, "model-ui-review.json")
+    }
+  };
   writeFileSync(join(reviewRoot, "ui-review-report.json"), JSON.stringify(report, null, 2), "utf8");
-  writeFileSync(join(reviewRoot, "ui-review-prompt.md"), createPrompt(report), "utf8");
+  writeFileSync(join(reviewRoot, "ui-review-prompt.md"), prompt, "utf8");
+  writeFileSync(join(reviewRoot, "model-ui-review.json"), JSON.stringify(modelReview.artifact, null, 2), "utf8");
   console.log(`\nui review pack: ${reviewRoot}`);
   console.log(`ui review result: ${report.result}`);
+  console.log(`model UI review status: ${modelReview.artifact.status} (${modelReview.artifact.policy})`);
   if (report.result === "needs-fix" || report.result === "blocked") {
     process.exitCode = 1;
   }
+  if (modelReview.fail) process.exitCode = 1;
 }
 
 function redactScenarioArtifact(scenarioSpec) {
@@ -637,10 +683,10 @@ function evaluateScenarioAssertions(scenario, state, core) {
         id: `assertion-${assertion.id}`,
         severity: "info",
         passed: false,
-        status: "deferred",
+        status: "not-run",
         assertionType: assertion.type,
         provenance: "model-derived-review",
-        summary: `${assertion.id} is deferred; no model-derived review was executed.`
+        summary: `${assertion.id} was not run; no model-derived review response was configured.`
       };
     }
     const evaluated = evaluateDomAssertion(assertion.id, state, core);
@@ -786,21 +832,22 @@ function createWebviewSnapshot(state, uiReview, core, app) {
     } : {})
   });
   state.editorMode = actualEditorMode(state.harness);
-  return uiReview.createUiReviewSnapshotFromWebviewModel(model, "webview-model-ui-review", { editorMode: state.editorMode });
+  return uiReview.createUiReviewSnapshotFromWebviewModel(model, "headless-webview-ui-review", { editorMode: state.editorMode });
 }
 
-function createPrompt(report) {
+function createPrompt(report, modelAssertionIds) {
   return [
-    "# LLM UI Review Prompt",
+    "# Model UI Review Prompt",
     "",
     "Review this AsciiDoc Table Editor UI evidence pack.",
     "",
     "## Inputs",
     "",
     "- Read `ui-review-report.json` first.",
-    "- Use `llm-ui-self-review.json` and `ui-geometry.json` for logical UI state and geometry.",
+    "- Use `ui-self-review.json` and `ui-geometry.json` for logical UI state and geometry.",
     "- Inspect screenshots under `screenshots/` when present.",
     "- Per-scenario raw artifacts are under `scenarios/<scenario-id>/`.",
+    "- Verify file hashes against `evidence-manifest.json`.",
     "",
     "## Checklist",
     "",
@@ -831,12 +878,15 @@ function createPrompt(report) {
     `- result: ${report.result}`,
     `- findings: ${report.findings.length}`,
     "",
-    "## Final Response Template",
+    "## Required Structured Response",
     "",
-    "- Result: pass / needs-fix / human-review",
-    "- Evidence: screenshots and JSON files checked",
-    "- Findings: severity, area, summary, suggested fix",
-    "- Human review needed: only smoothness, hover timing, native popup behavior, or long-session comfort",
+    "Return JSON only. The response field must contain exactly this shape:",
+    "",
+    "```json",
+    JSON.stringify({ assertions: modelAssertionIds.map((id) => ({ id, result: "pass" })) }, null, 2),
+    "```",
+    "",
+    "Each result must be pass, needs-fix, or human-review. Include every listed assertion exactly once.",
     ""
   ].join("\n");
 }
