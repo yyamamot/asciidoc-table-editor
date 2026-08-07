@@ -4,7 +4,14 @@
   "expectedMode": "structured",
   "steps": [
     { "id": "open-fixture", "action": "open" },
-    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    {
+      "id": "paste-block-source",
+      "action": "paste",
+      "format": "plain",
+      "startSourceCellId": "cell:0:0",
+      "text": "* updated\n* retained"
+    }
   ],
   "assertions": [
     { "id": "block-cell-raw-editor-visible", "type": "ui-review" },

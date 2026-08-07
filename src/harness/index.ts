@@ -4,4 +4,5 @@ export interface HarnessScenario {
 }
 
 export * from "./debug-bundle";
+export * from "./scenario-runner";
 export * from "./ui-review";

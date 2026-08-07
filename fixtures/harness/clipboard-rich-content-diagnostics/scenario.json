@@ -4,7 +4,15 @@
   "expectedMode": "structured",
   "steps": [
     { "id": "open-fixture", "action": "open" },
-    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    {
+      "id": "paste-rich-html-table",
+      "action": "paste",
+      "format": "html-table",
+      "startSourceCellId": "cell:0:0",
+      "sourceLabel": "Harness",
+      "html": "<table><tr><td><strong>Rich</strong></td><td><em>Text</em></td></tr></table>"
+    }
   ],
   "assertions": [
     { "id": "rich-content-pastes-as-plain-text", "type": "ui-review" },

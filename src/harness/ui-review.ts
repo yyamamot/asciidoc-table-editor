@@ -1,6 +1,6 @@
 import type { WebviewAppModel } from "../app";
 
-export type UiReviewResult = "pass" | "needs-fix" | "human-review";
+export type UiReviewResult = "pass" | "needs-fix" | "human-review" | "blocked";
 export type UiReviewSeverity = "error" | "warning" | "info";
 
 export interface UiReviewRect {
@@ -65,6 +65,9 @@ export interface UiReviewCheck {
   passed: boolean;
   summary: string;
   evidence?: string;
+  status?: "passed" | "failed" | "blocked" | "deferred";
+  assertionType?: "ui-review" | "vlm-review";
+  provenance?: "headless-dom" | "model-derived-review";
 }
 
 export interface UiReviewScenarioResult {
@@ -221,8 +224,10 @@ export function createUiReviewReport(
         id: `${scenario.id}:${check.id}`
       }))
   );
-  const result = scenarioResults.some((scenario) => scenario.result === "needs-fix")
-    ? "needs-fix"
+  const result = scenarioResults.some((scenario) => scenario.result === "blocked")
+    ? "blocked"
+    : scenarioResults.some((scenario) => scenario.result === "needs-fix")
+      ? "needs-fix"
     : scenarioResults.some((scenario) => scenario.result === "human-review")
       ? "human-review"
       : "pass";

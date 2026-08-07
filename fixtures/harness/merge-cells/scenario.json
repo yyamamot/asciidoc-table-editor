@@ -1,10 +1,13 @@
 {
   "id": "merge-cells",
-  "fixture": "fixtures/lossless/horizontal-span/source.adoc",
+  "fixture": "fixtures/lossless/minimal-basic/source.adoc",
   "expectedMode": "structured",
   "steps": [
     { "id": "open-fixture", "action": "open" },
-    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" }
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "select-first-cell", "action": "select-cell", "sourceCellId": "cell:0:0" },
+    { "id": "extend-selection", "action": "keyboard", "key": "ArrowRight", "shiftKey": true },
+    { "id": "merge-first-row", "action": "button", "button": "merge-cells" }
   ],
   "assertions": [
     { "id": "covered-cell-visible", "type": "ui-review" }
