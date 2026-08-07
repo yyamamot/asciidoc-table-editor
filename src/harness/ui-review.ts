@@ -277,7 +277,7 @@ export function createUiReviewSnapshotFromWebviewModel(
           `cell-${index}`,
           "DIV",
           "gridcell",
-          cell.kind === "origin" ? cell.contentRaw.trim() : "covered",
+          cell.sourceCellId,
           12 + col * 128,
           52 + row * 42,
           width,

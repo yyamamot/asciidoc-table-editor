@@ -7,121 +7,135 @@ import { revealSourceCellInEditor } from "./table-editor-source-reveal";
 import type { CellContentReplacement, CellContentUpdateResult, RowColumnEditMessage, UndoRedoResult } from "./types";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorHtml } from "../app";
-import { createNonce, refreshPanelFromEditor, renderCurrentTablePreview, requiresFullRefreshForPlainCellContentsUpdate, requiresFullRefreshForPlainCellUpdate } from "./command-utils";
+import { createNonce, refreshPanelFromEditor } from "./command-utils";
 import type { TableEditorSessionTarget } from "./table-editor-session-target";
+
+export type MutationRequestMetadata = {
+  readonly operationId?: string;
+  readonly revisionToken?: string;
+};
+
+type MutationContext = { readonly operationId: string };
+
+export async function reportMutationHandlerFailure(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  target: TableEditorSessionTarget,
+  message: unknown,
+  _error: unknown
+): Promise<void> {
+  const operationId = typeof message === "object" && message !== null &&
+    typeof (message as { operationId?: unknown }).operationId === "string"
+    ? (message as { operationId: string }).operationId
+    : "invalid-operation";
+  await postMutationMessage(editor, panel, target, { operationId }, {
+    type: mutationResultType(message),
+    result: {
+      ok: false,
+      diagnostics: [{
+        code: "writeback.apply-raced",
+        severity: "error",
+        message: "The table operation failed and its source state could not be verified"
+      }]
+    }
+  });
+}
 
 export async function applyCellContentUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }
+  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
-  const requiresRefresh = requiresFullRefreshForPlainCellUpdate(editor, target, message.sourceCellId);
+  const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
+  if (mutation === undefined) return;
   const result = await applyPlainCellContentToEditor(editor, target, message.sourceCellId, message.contentRaw);
-  const preview = result.ok && !requiresRefresh
-    ? await renderCurrentTablePreview(editor, target)
-    : undefined;
-  await panel.webview.postMessage({
-    type: "cell-content-update-result",
-    result,
-    applied: result.ok && !requiresRefresh
-      ? {
-          sourceCellId: message.sourceCellId,
-          contentRaw: message.contentRaw,
-          selectedSourceCellId: message.selectedSourceCellId ?? message.sourceCellId,
-          tablePreviewHtml: preview?.preview.tableHtml
-        }
-      : undefined
-  });
-  if (result.ok && requiresRefresh) {
+  if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, {
+    type: "cell-content-update-result",
+    result
+  });
 }
 
 export async function applyCellContentsUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }
+  message: { replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] } & MutationRequestMetadata
 ): Promise<void> {
-  const requiresRefresh = requiresFullRefreshForPlainCellContentsUpdate(editor, target, message.replacements);
+  const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
+  if (mutation === undefined) return;
   const result = await applyPlainCellContentsToEditor(editor, target, message.replacements);
   const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
-  const preview = result.ok && !requiresRefresh
-    ? await renderCurrentTablePreview(editor, target)
-    : undefined;
-  await panel.webview.postMessage({
-    type: "cell-content-update-result",
-    result: resultWithDiagnostics,
-    applied: result.ok && !requiresRefresh
-      ? {
-          replacements: message.replacements,
-          selectedSourceCellId: message.selectedSourceCellId ?? message.replacements.at(-1)?.sourceCellId,
-          tablePreviewHtml: preview?.preview.tableHtml
-        }
-      : undefined
-  });
-  if (result.ok && requiresRefresh) {
+  if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.replacements.at(-1)?.sourceCellId, message.diagnostics);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, {
+    type: "cell-content-update-result",
+    result: resultWithDiagnostics
+  });
 }
 
 export async function applyRectangularPaste(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { startSourceCellId: string; rows: readonly (readonly string[])[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }
+  message: { startSourceCellId: string; rows: readonly (readonly string[])[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
+  if (mutation === undefined) return;
   const result = await applyRectangularPasteToEditor(editor, target, {
     startSourceCellId: message.startSourceCellId,
     rows: message.rows
   });
   const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
-  await panel.webview.postMessage({ type: "cell-content-update-result", result: resultWithDiagnostics });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, message.diagnostics);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "cell-content-update-result", result: resultWithDiagnostics });
 }
 
 export async function applyImportedPaste(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: Parameters<typeof applyImportedTablePasteToEditor>[2] & { selectedSourceCellId?: string }
+  message: Parameters<typeof applyImportedTablePasteToEditor>[2] & { selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
+  if (mutation === undefined) return;
   const result = await applyImportedTablePasteToEditor(editor, target, message);
   const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
-  await panel.webview.postMessage({ type: "cell-content-update-result", result: resultWithDiagnostics });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, message.diagnostics);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "cell-content-update-result", result: resultWithDiagnostics });
 }
 
 export async function applyBlockCellSourceUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }
+  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "block-cell-update-result");
+  if (mutation === undefined) return;
   const result = await applyBlockCellContentToEditor(editor, target, {
     sourceCellId: message.sourceCellId,
     contentRaw: message.contentRaw
   });
-  const preview = result.ok
-    ? await renderCurrentTablePreview(editor, target)
-    : undefined;
-  await panel.webview.postMessage({
+  if (result.ok) {
+    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId);
+    return;
+  }
+  await postMutationMessage(editor, panel, target, mutation, {
     type: "block-cell-update-result",
-    result,
-    applied: result.ok
-      ? {
-          sourceCellId: message.sourceCellId,
-          contentRaw: message.contentRaw,
-          selectedSourceCellId: message.selectedSourceCellId ?? message.sourceCellId,
-          tablePreviewHtml: preview?.preview.tableHtml,
-          blockCellPreviewHtml: preview?.preview.blockCellHtmlBySourceCellId[message.sourceCellId]
-        }
-      : undefined
+    result
   });
 }
 
@@ -129,108 +143,132 @@ export async function applyPlainCellBlockSourceReplace(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }
+  message: { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "block-cell-update-result");
+  if (mutation === undefined) return;
   const result = await applyPlainCellBlockContentToEditor(editor, target, {
     sourceCellId: message.sourceCellId,
     contentRaw: message.contentRaw
   });
   const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
-  await panel.webview.postMessage({ type: "block-cell-update-result", result: resultWithDiagnostics });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId, message.diagnostics);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "block-cell-update-result", result: resultWithDiagnostics });
 }
 
 export async function applyMergeCells(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellIds: string[]; selectedSourceCellId?: string }
+  message: { sourceCellIds: string[]; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "merge-cells-result");
+  if (mutation === undefined) return;
   const result = await applyHorizontalMergeToEditor(editor, target, message.sourceCellIds);
-  await panel.webview.postMessage({ type: "merge-cells-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellIds[0]);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "merge-cells-result", result });
 }
 
 export async function applyUnmergeCell(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellId: string; selectedSourceCellId?: string }
+  message: { sourceCellId: string; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "unmerge-cell-result");
+  if (mutation === undefined) return;
   const result = await applyHorizontalUnmergeToEditor(editor, target, message.sourceCellId);
-  await panel.webview.postMessage({ type: "unmerge-cell-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "unmerge-cell-result", result });
 }
 
 export async function applyRowColumnEdit(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: RowColumnEditMessage
+  message: RowColumnEditMessage & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "row-column-edit-result");
+  if (mutation === undefined) return;
   const result = await applyRowColumnEditToEditor(editor, target, message);
-  await panel.webview.postMessage({ type: "row-column-edit-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "row-column-edit-result", result });
 }
 
 export async function applyCellStyleUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }
+  message: { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "cell-style-update-result");
+  if (mutation === undefined) return;
   const result = await applyPlainCellStyleToEditor(editor, target, message);
-  await panel.webview.postMessage({ type: "cell-style-update-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellIds[0]);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "cell-style-update-result", result });
 }
 
 export async function applyHeaderFooterUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }
+  message: { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "table-settings-update-result");
+  if (mutation === undefined) return;
   const result = await applyTableHeaderFooterToEditor(editor, target, message);
-  await panel.webview.postMessage({ type: "table-settings-update-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "table-settings-update-result", result });
 }
 
 export async function applyColumnSpecUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }
+  message: { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "table-settings-update-result");
+  if (mutation === undefined) return;
   const result = await applyColumnSpecToEditor(editor, target, message);
-  await panel.webview.postMessage({ type: "table-settings-update-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "table-settings-update-result", result });
 }
 
 export async function applyAppearanceUpdate(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string }
+  message: { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "table-settings-update-result");
+  if (mutation === undefined) return;
   const result = await applyTableAppearanceToEditor(editor, target, message);
-  await panel.webview.postMessage({ type: "table-settings-update-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "table-settings-update-result", result });
 }
 
 export async function applyRevealSourceCell(
@@ -250,12 +288,14 @@ export async function applyUndoRedo(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  message: { type: "request-undo" | "request-redo"; selectedSourceCellId?: string }
+  message: { type: "request-undo" | "request-redo"; selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, message, "undo-redo-result");
+  if (mutation === undefined) return;
   const direction = message.type === "request-undo" ? "undo" : "redo";
   const preparation = target.prepareUndoRedo(editor.document, direction);
   if (preparation.status !== "ready") {
-    await panel.webview.postMessage({ type: "undo-redo-result", result: sessionTargetFailureResult(preparation) });
+    await postMutationMessage(editor, panel, target, mutation, { type: "undo-redo-result", result: sessionTargetFailureResult(preparation) });
     return;
   }
   let result = await runEditorUndoRedo(editor, direction);
@@ -265,18 +305,21 @@ export async function applyUndoRedo(
       result = sessionTargetFailureResult(reacquired);
     }
   }
-  await panel.webview.postMessage({ type: "undo-redo-result", result });
   if (result.ok) {
     await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId);
+    return;
   }
+  await postMutationMessage(editor, panel, target, mutation, { type: "undo-redo-result", result });
 }
 
 export async function openFormatReviewInPanel(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
   target: TableEditorSessionTarget,
-  selectedSourceCellId?: string
+  message: { selectedSourceCellId?: string } & MutationRequestMetadata
 ): Promise<WebviewAppModel["formatReview"] | undefined> {
+  const mutation = await beginMutation(editor, panel, target, message, "format-table-result");
+  if (mutation === undefined) return undefined;
   const resolution = target.resolve(editor.document);
   const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
   if (tableBlock === undefined) {
@@ -288,19 +331,19 @@ export async function openFormatReviewInPanel(
         message: "Target AsciiDoc table block was not found"
       }]
     };
-    await panel.webview.postMessage({ type: "format-table-result", result });
+    await postMutationMessage(editor, panel, target, mutation, { type: "format-table-result", result });
     return undefined;
   }
   const preview = await createFormatPreviewModel(tableBlock.raw, createTableEditorLabels());
   if (!preview.ok) {
     const hasError = preview.model.diagnostics.some((diagnostic) => diagnostic.severity === "error");
-    await panel.webview.postMessage({
+    await postMutationMessage(editor, panel, target, mutation, {
       type: "format-table-result",
       result: { ok: !hasError, diagnostics: preview.model.diagnostics }
     });
     return undefined;
   }
-  panel.webview.html = renderTableEditorHtml(preview.model, createNonce(), { selectedSourceCellId }, createTableEditorLabels());
+  panel.webview.html = renderTableEditorHtml(preview.model, createNonce(), { selectedSourceCellId: message.selectedSourceCellId, revisionToken: target.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
   panel.reveal(vscode.ViewColumn.Beside, true);
   return preview.formatReview;
 }
@@ -311,10 +354,13 @@ export async function applyFormatReview(
   target: TableEditorSessionTarget,
   formatReview: WebviewAppModel["formatReview"] | undefined,
   mode?: TableFormatMode,
-  selectedSourceCellId?: string
+  selectedSourceCellId?: string,
+  metadata: MutationRequestMetadata = {}
 ): Promise<void> {
+  const mutation = await beginMutation(editor, panel, target, metadata, "format-table-result");
+  if (mutation === undefined) return;
   if (formatReview === undefined) {
-    await panel.webview.postMessage({
+    await postMutationMessage(editor, panel, target, mutation, {
       type: "format-table-result",
       result: {
         ok: false,
@@ -338,13 +384,13 @@ export async function applyFormatReview(
         message: "Format preview is stale. Re-run format."
       }]
     };
-    await panel.webview.postMessage({ type: "format-table-result", result });
+    await postMutationMessage(editor, panel, target, mutation, { type: "format-table-result", result });
     return;
   }
   const selectedMode = mode ?? formatReview.selectedMode;
   const variant = formatReview.variants.find((candidate) => candidate.mode === selectedMode);
   if (variant === undefined) {
-    await panel.webview.postMessage({
+    await postMutationMessage(editor, panel, target, mutation, {
       type: "format-table-result",
       result: {
         ok: false,
@@ -370,11 +416,9 @@ export async function applyFormatReview(
             : "VS Code did not apply the table format edit"
       }]
     };
-    await panel.webview.postMessage({ type: "format-table-result", result });
+    await postMutationMessage(editor, panel, target, mutation, { type: "format-table-result", result });
     return;
   }
-  const result = { ok: true, diagnostics: [] };
-  await panel.webview.postMessage({ type: "format-table-result", result });
   await refreshPanelFromEditor(editor, panel, target, selectedSourceCellId);
 }
 
@@ -386,6 +430,58 @@ function mergeResultDiagnostics<T extends CellContentUpdateResult>(result: T, di
     ...result,
     diagnostics: [...diagnostics, ...result.diagnostics]
   };
+}
+
+async function beginMutation(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  target: TableEditorSessionTarget,
+  metadata: MutationRequestMetadata,
+  resultType: string
+): Promise<MutationContext | undefined> {
+  const operationId = typeof metadata.operationId === "string" && metadata.operationId.length > 0
+    ? metadata.operationId
+    : "invalid-operation";
+  const resolution = typeof metadata.revisionToken === "string" && metadata.revisionToken.length > 0
+    ? target.resolve(editor.document, metadata.revisionToken)
+    : target.resolve(editor.document, "invalid-revision");
+  if (resolution.status !== "ready") {
+    await postMutationMessage(editor, panel, target, { operationId }, {
+      type: resultType,
+      result: sessionTargetFailureResult(resolution)
+    });
+    return undefined;
+  }
+  return { operationId };
+}
+
+async function postMutationMessage(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  target: TableEditorSessionTarget,
+  mutation: MutationContext,
+  message: Record<string, unknown>
+): Promise<boolean> {
+  return panel.webview.postMessage({
+    ...message,
+    operationId: mutation.operationId,
+    ...target.currentRevision(editor.document)
+  });
+}
+
+function mutationResultType(message: unknown): string {
+  const type = typeof message === "object" && message !== null
+    ? (message as { type?: unknown }).type
+    : undefined;
+  if (type === "update-block-cell-source" || type === "replace-cell-with-block-source") return "block-cell-update-result";
+  if (type === "request-merge-cells") return "merge-cells-result";
+  if (type === "request-unmerge-cell") return "unmerge-cell-result";
+  if (typeof type === "string" && (type.startsWith("request-insert-") || type.startsWith("request-delete-"))) return "row-column-edit-result";
+  if (type === "request-undo" || type === "request-redo") return "undo-redo-result";
+  if (type === "request-format-table" || type === "apply-format-table") return "format-table-result";
+  if (type === "request-update-cell-style") return "cell-style-update-result";
+  if (type === "request-update-header-footer" || type === "request-update-column-spec" || type === "request-update-table-appearance") return "table-settings-update-result";
+  return "cell-content-update-result";
 }
 
 async function runEditorUndoRedo(editor: vscode.TextEditor, command: "undo" | "redo"): Promise<UndoRedoResult> {

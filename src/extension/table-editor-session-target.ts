@@ -81,6 +81,14 @@ export class TableEditorSessionTarget implements vscode.Disposable {
     this.changeSubscription?.dispose();
   }
 
+  currentRevision(document: vscode.TextDocument): { readonly documentVersion: number; readonly revisionToken: string; readonly lastKnownRevisionToken?: string } {
+    return {
+      documentVersion: document.version,
+      revisionToken: this.revisionToken,
+      ...(this.indeterminate ? { lastKnownRevisionToken: this.revisionToken } : {})
+    };
+  }
+
   resolve(document: vscode.TextDocument, requestRevisionToken = this.revisionToken): SessionTargetResolution {
     if (this.indeterminate) {
       return this.indeterminateResult(document);

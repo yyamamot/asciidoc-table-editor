@@ -90,6 +90,7 @@ export function createTableEditorLabels(): TableEditorWebviewLabels {
     fallbackGuidanceBody: vscode.l10n.t("Review the diagnostics to see why this table is read-only in the grid."),
     focusDiagnostics: vscode.l10n.t("Focus diagnostics"),
     operationAppliedMessage: vscode.l10n.t("{operation} applied."),
+    operationInProgressMessage: vscode.l10n.t("Applying table change…"),
     operationBlockedMessage: vscode.l10n.t("{operation} failed: {message} ({code})"),
     operationBlockedWithoutDetailMessage: vscode.l10n.t("{operation} failed."),
     alignLeft: vscode.l10n.t("Align left"),

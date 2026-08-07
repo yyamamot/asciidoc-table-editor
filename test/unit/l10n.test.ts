@@ -132,6 +132,7 @@ function japaneseLabels(): TableEditorWebviewLabels {
     fallbackGuidanceBody: bundle["Review the diagnostics to see why this table is read-only in the grid."],
     focusDiagnostics: bundle["Focus diagnostics"],
     operationAppliedMessage: bundle["{operation} applied."],
+    operationInProgressMessage: bundle["Applying table change…"],
     operationBlockedMessage: bundle["{operation} failed: {message} ({code})"],
     operationBlockedWithoutDetailMessage: bundle["{operation} failed."],
     alignLeft: bundle["Align left"],

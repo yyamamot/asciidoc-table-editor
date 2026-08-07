@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { createWebviewAppModel, renderTableEditorHtml } from "../app";
 import { findAsciiDocTableBlock, formatAsciiDocTable, parseAsciiDocTable, projectGridModel, recommendedTableFormatMode, type TableFormatMode, type TableFormatResult } from "../core";
-import { applyFormatReview } from "./command-webview-handlers";
+import { applyFormatReview, reportMutationHandlerFailure, type MutationRequestMetadata } from "./command-webview-handlers";
 import { createNonce, resolveTargetEditor, writeUiReviewSnapshotIfRequested, type OpenTableEditorCommandResult } from "./command-utils";
 import { createFormatReviewModel, formatEnabled } from "./format-command";
 import { registerTableEditorMessageRouter } from "./message-router";
@@ -74,13 +74,14 @@ export function registerFormatTableCommand(): vscode.Disposable {
       diagnostics: preview.diagnostics,
       formatReview
     });
-    const html = renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels());
-    const panel = createTableEditorPanel();
     const sessionTarget = createTableEditorSessionTarget(editor.document, tableBlock);
+    const html = renderTableEditorHtml(model, createNonce(), { revisionToken: sessionTarget.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
+    const panel = createTableEditorPanel();
     panel.onDidDispose(() => sessionTarget.dispose());
     registerTableEditorMessageRouter(panel, {
       uiReviewSnapshot: writeUiReviewSnapshotIfRequested,
-      applyFormatTable: (message) => void applyFormatReview(editor, panel, sessionTarget, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId)
+      mutationError: (message, error) => reportMutationHandlerFailure(editor, panel, sessionTarget, message, error),
+      applyFormatTable: (message) => applyFormatReview(editor, panel, sessionTarget, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId, message as MutationRequestMetadata)
     });
     panel.webview.html = html;
     return {

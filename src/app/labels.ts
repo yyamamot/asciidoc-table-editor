@@ -88,6 +88,7 @@ export const DEFAULT_TABLE_EDITOR_LABELS: TableEditorWebviewLabels = {
   fallbackGuidanceBody: "Review the diagnostics to see why this table is read-only in the grid.",
   focusDiagnostics: "Focus diagnostics",
   operationAppliedMessage: "{operation} applied.",
+  operationInProgressMessage: "Applying table change…",
   operationBlockedMessage: "{operation} failed: {message} ({code})",
   operationBlockedWithoutDetailMessage: "{operation} failed.",
   alignLeft: "Align left",

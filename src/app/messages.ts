@@ -63,7 +63,19 @@ export type RowColumnEditMessage = {
   readonly selectedSourceCellId?: string;
 };
 
-export type TableEditorHostMessage =
+export interface TableEditorOperationEnvelope {
+  readonly operationId: string;
+  readonly revisionToken: string;
+}
+
+export interface TableEditorResultMetadata {
+  readonly operationId: string;
+  readonly documentVersion: number;
+  readonly revisionToken: string;
+  readonly lastKnownRevisionToken?: string;
+}
+
+export type TableEditorHostMessage = (
   | { type: "ui-review-snapshot"; snapshot: unknown }
   | { type: "update-cell-content"; sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }
   | { type: "update-cell-contents"; replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: RectangularPastePayload["diagnostics"] }
@@ -81,9 +93,10 @@ export type TableEditorHostMessage =
   | { type: "request-update-cell-style"; sourceCellIds: string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }
   | { type: "request-update-header-footer"; header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }
   | { type: "request-update-column-spec"; columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }
-  | { type: "request-update-table-appearance"; title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string };
+  | { type: "request-update-table-appearance"; title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string }
+) & Partial<TableEditorOperationEnvelope>;
 
-export type TableEditorResultMessage =
+export type TableEditorResultMessage = (
   | { readonly type: "cell-content-update-result"; readonly result: CellContentUpdateResult }
   | { readonly type: "block-cell-update-result"; readonly result: CellContentUpdateResult }
   | { readonly type: "merge-cells-result"; readonly result: CellContentUpdateResult }
@@ -93,7 +106,17 @@ export type TableEditorResultMessage =
   | { readonly type: "source-cell-reveal-result"; readonly result: SourceCellRevealResult }
   | { readonly type: "format-table-result"; readonly result: CellContentUpdateResult }
   | { readonly type: "cell-style-update-result"; readonly result: CellContentUpdateResult }
-  | { readonly type: "table-settings-update-result"; readonly result: CellContentUpdateResult };
+  | { readonly type: "table-settings-update-result"; readonly result: CellContentUpdateResult }
+) & Partial<TableEditorResultMetadata>;
+
+export function hasTableEditorOperationEnvelope(message: unknown): message is TableEditorOperationEnvelope {
+  return typeof message === "object" &&
+    message !== null &&
+    typeof (message as { operationId?: unknown }).operationId === "string" &&
+    (message as { operationId: string }).operationId.length > 0 &&
+    typeof (message as { revisionToken?: unknown }).revisionToken === "string" &&
+    (message as { revisionToken: string }).revisionToken.length > 0;
+}
 
 export function isUiReviewSnapshotMessage(message: unknown): message is Extract<TableEditorHostMessage, { type: "ui-review-snapshot" }> {
   return typeof message === "object" &&

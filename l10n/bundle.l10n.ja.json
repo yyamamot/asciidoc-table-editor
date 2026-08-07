@@ -70,6 +70,7 @@
   "Open an AsciiDoc document before formatting a table.": "テーブルを整形する前に AsciiDoc ドキュメントを開いてください。",
   "Open an AsciiDoc document before opening the table editor.": "Table Editor を開く前に AsciiDoc ドキュメントを開いてください。",
   "Open Table Editor": "Table Editor を開く",
+  "Applying table change…": "テーブルの変更を適用しています…",
   "{operation} applied.": "{operation}を適用しました。",
   "{operation} failed: {message} ({code})": "{operation}に失敗しました: {message} ({code})",
   "{operation} failed.": "{operation}に失敗しました。",

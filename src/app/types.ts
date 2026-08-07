@@ -49,6 +49,7 @@ export interface RenderTableEditorOptions {
   readonly selectedSourceCellId?: string;
   readonly blockCellPreviewHtmlBySourceCellId?: Record<string, string>;
   readonly hostBridgeScript?: string;
+  readonly revisionToken?: string;
 }
 
 export interface TableEditorWebviewLabels {
@@ -139,6 +140,7 @@ export interface TableEditorWebviewLabels {
   readonly fallbackGuidanceBody: string;
   readonly focusDiagnostics: string;
   readonly operationAppliedMessage: string;
+  readonly operationInProgressMessage: string;
   readonly operationBlockedMessage: string;
   readonly operationBlockedWithoutDetailMessage: string;
   readonly alignLeft: string;

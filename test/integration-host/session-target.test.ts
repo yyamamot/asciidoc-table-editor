@@ -143,7 +143,7 @@ export async function testUndoRedoPreflightPreservesExternallyChangedTarget(): P
   const changed = editor.document.getText();
   const messages: unknown[] = [];
 
-  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo" });
+  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo", ...mutationMetadata(session) });
   assert.equal(editor.document.getText(), changed, "preflight conflict must not invoke the document undo command");
   assert.equal(diagnosticCode(messages), "writeback.table-changed");
   session.dispose();
@@ -161,7 +161,7 @@ export async function testUndoRedoDoesNotRecoverIndeterminateSession(): Promise<
   const raced = editor.document.getText();
   const messages: unknown[] = [];
 
-  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo" });
+  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo", ...mutationMetadata(session) });
   assert.equal(editor.document.getText(), raced, "indeterminate state must not invoke undo or reacquire implicitly");
   assert.equal(diagnosticCode(messages), "writeback.apply-raced");
   assert.equal(session.resolve(editor.document).status, "indeterminate");
@@ -177,7 +177,7 @@ export async function testUndoWithoutSessionHistoryLeavesDocumentUnchanged(): Pr
   const session = sessionAt(editor, current.indexOf("|==="));
   const messages: unknown[] = [];
 
-  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo" });
+  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo", ...mutationMetadata(session) });
   assert.equal(editor.document.getText(), current, "unrelated document undo history must not be consumed");
   assert.equal(diagnosticCode(messages), "writeback.revision-mismatch");
   session.dispose();
@@ -195,7 +195,7 @@ export async function testUndoDoesNotConsumeNewerTargetExternalDocumentEdit(): P
   const current = editor.document.getText();
   const messages: unknown[] = [];
 
-  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo" });
+  await applyUndoRedo(editor, panel(messages), session, { type: "request-undo", ...mutationMetadata(session) });
   assert.equal(editor.document.getText(), current, "a newer unrelated document edit must remain at the top of the VS Code undo stack");
   assert.equal(diagnosticCode(messages), "writeback.revision-mismatch");
   session.dispose();
@@ -254,4 +254,9 @@ function panel(messages: unknown[]): vscode.WebviewPanel {
 function diagnosticCode(messages: unknown[]): string | undefined {
   const message = messages.at(-1) as { result?: { diagnostics?: readonly { code?: string }[] } } | undefined;
   return message?.result?.diagnostics?.[0]?.code;
+}
+
+let nextOperationId = 1;
+function mutationMetadata(session: ReturnType<typeof sessionAt>): { operationId: string; revisionToken: string } {
+  return { operationId: `host-test-${nextOperationId += 1}`, revisionToken: session.revisionToken };
 }

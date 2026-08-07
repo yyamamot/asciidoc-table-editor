@@ -21,7 +21,7 @@ import {
 } from "../../src/core";
 import type { TableDiagnostic } from "../../src/core";
 
-export type PostedMessage =
+type SourcePostedMessagePayload =
   | { type: "update-cell-content"; sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }
   | { type: "update-cell-contents"; replacements: Array<{ sourceCellId: string; contentRaw: string }>; selectedSourceCellId?: string; diagnostics?: TableDiagnostic[] }
   | { type: "paste-rectangular-table"; startSourceCellId: string; rows: string[][]; selectedSourceCellId?: string; diagnostics?: TableDiagnostic[] }
@@ -52,14 +52,26 @@ export type PostedMessage =
   | { type: "request-undo" | "request-redo"; selectedSourceCellId?: string }
   | { type: "request-format-table"; selectedSourceCellId?: string }
   | { type: "apply-format-table"; mode?: string; selectedSourceCellId?: string }
-  | { type: "ui-review-snapshot"; snapshot: unknown };
+  | { type: "request-update-cell-style"; sourceCellIds: string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }
+  | { type: "request-update-header-footer"; header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }
+  | { type: "request-update-column-spec"; columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }
+  | { type: "request-update-table-appearance"; title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string };
+
+type SourcePostedMessage = SourcePostedMessagePayload & MutationEnvelope;
+
+export type PostedMessage = SourcePostedMessage | { type: "ui-review-snapshot"; snapshot: unknown };
+
+interface MutationEnvelope {
+  operationId: string;
+  revisionToken: string;
+}
 
 
 export async function createHarness(
   source: string,
   selectedSourceCellId?: string,
   tablePreviewHtml = "<table><tbody><tr><td>preview</td></tr></tbody></table>",
-  options: { exposeVsCodeApi?: boolean; initialState?: unknown; diagnostics?: TableDiagnostic[]; formatReview?: NonNullable<Parameters<typeof createWebviewAppModel>[1]>["formatReview"] } = {}
+  options: { exposeVsCodeApi?: boolean; initialState?: unknown; diagnostics?: TableDiagnostic[]; formatReview?: NonNullable<Parameters<typeof createWebviewAppModel>[1]>["formatReview"]; revisionToken?: string; autoAcknowledgeMutations?: boolean } = {}
 ) {
   const messages: PostedMessage[] = [];
   let vscodeState = options.initialState ?? {};
@@ -73,7 +85,7 @@ export async function createHarness(
     diagnostics: options.diagnostics,
     formatReview: options.formatReview
   });
-  const html = renderTableEditorHtml(model, "testNonce", { selectedSourceCellId });
+  const html = renderTableEditorHtml(model, "testNonce", { selectedSourceCellId, revisionToken: options.revisionToken });
   const window = new Window({ url: "https://webview.test/" });
   (window as unknown as { requestAnimationFrame: (callback: FrameRequestCallback) => number }).requestAnimationFrame = (callback: FrameRequestCallback): number => {
     callback(0);
@@ -100,6 +112,15 @@ export async function createHarness(
     window.eval(script.textContent ?? "");
   }
   await window.happyDOM.waitUntilComplete();
+  if (options.autoAcknowledgeMutations !== false) {
+    const acknowledgeBeforeNextInteraction = (): void => {
+      const pending = latestSourceMessage(messages);
+      if (pending && shellIsBusy(window)) acknowledgeMutation(window, pending);
+    };
+    for (const type of ["click", "keydown", "paste", "contextmenu"] as const) {
+      window.document.addEventListener(type, acknowledgeBeforeNextInteraction, { capture: true });
+    }
+  }
 
   return {
     window,
@@ -113,6 +134,13 @@ export async function createHarness(
         throw new Error("grid not found");
       }
       return grid;
+    },
+    shell(): HTMLElement {
+      const shell = window.document.querySelector("[data-review-target='shell']") as unknown as HTMLElement | null;
+      if (shell === null) {
+        throw new Error("shell not found");
+      }
+      return shell;
     },
     gridWrap(): HTMLElement {
       const gridWrap = window.document.querySelector(".grid-wrap") as unknown as HTMLElement | null;
@@ -204,7 +232,8 @@ export async function createHarness(
       }) as unknown as Event);
     },
     dispatchExtensionMessage(message: unknown): void {
-      window.dispatchEvent(new window.MessageEvent("message", { data: message }));
+      const data = addResultEnvelopeForCompatibility(message, messages);
+      window.dispatchEvent(new window.MessageEvent("message", { data }));
     },
     diagnosticsText(): string {
       return window.document.querySelector("[data-review-target='diagnostics']")?.textContent ?? "";
@@ -264,12 +293,71 @@ export async function createHarness(
       if (message === undefined) {
         throw new Error(`message not posted: ${type}`);
       }
+      if (options.autoAcknowledgeMutations !== false && message.type !== "ui-review-snapshot" && "diagnostics" in message && Array.isArray(message.diagnostics)) {
+        const diagnostic = message.diagnostics[0];
+        const diagnostics = window.document.querySelector("[data-review-target='diagnostics']");
+        if (diagnostic && diagnostics) diagnostics.textContent = diagnostic.message;
+      }
       return message as Extract<PostedMessage, { type: TType }>;
     }
   };
 }
 
-export function applyWebviewMessage(source: string, message: PostedMessage): WriteBackResult {
+function shellIsBusy(window: Window): boolean {
+  return window.document.querySelector("[data-review-target='shell']")?.getAttribute("aria-busy") === "true";
+}
+
+function latestSourceMessage(messages: PostedMessage[]): SourcePostedMessage | undefined {
+  return [...messages].reverse().find((candidate): candidate is SourcePostedMessage => candidate.type !== "ui-review-snapshot");
+}
+
+function acknowledgeMutation(window: Window, message: SourcePostedMessage): void {
+  window.dispatchEvent(new window.MessageEvent("message", {
+    data: {
+      type: resultTypeFor(message.type),
+      operationId: message.operationId,
+      revisionToken: message.revisionToken,
+      documentVersion: 1,
+      result: { ok: true, diagnostics: [] }
+    }
+  }));
+}
+
+function resultTypeFor(type: SourcePostedMessage["type"]): string {
+  if (type === "update-block-cell-source" || type === "replace-cell-with-block-source") return "block-cell-update-result";
+  if (type === "request-merge-cells") return "merge-cells-result";
+  if (type === "request-unmerge-cell") return "unmerge-cell-result";
+  if (type.startsWith("request-insert-") || type.startsWith("request-delete-")) return "row-column-edit-result";
+  if (type === "request-undo" || type === "request-redo") return "undo-redo-result";
+  if (type === "request-format-table" || type === "apply-format-table") return "format-table-result";
+  if (type === "request-update-cell-style") return "cell-style-update-result";
+  if (type === "request-update-header-footer" || type === "request-update-column-spec" || type === "request-update-table-appearance") return "table-settings-update-result";
+  return "cell-content-update-result";
+}
+
+function addResultEnvelopeForCompatibility(message: unknown, messages: PostedMessage[]): unknown {
+  if (!isRecord(message) || typeof message.type !== "string" || !message.type.endsWith("-result")) {
+    return message;
+  }
+  const activeRequest = [...messages].reverse().find((candidate): candidate is SourcePostedMessage =>
+    candidate.type !== "ui-review-snapshot" && typeof candidate.operationId === "string"
+  );
+  if (activeRequest === undefined) {
+    return message;
+  }
+  return {
+    ...message,
+    operationId: typeof message.operationId === "string" ? message.operationId : activeRequest.operationId,
+    revisionToken: typeof message.revisionToken === "string" ? message.revisionToken : activeRequest.revisionToken,
+    documentVersion: typeof message.documentVersion === "number" ? message.documentVersion : 1
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function applyWebviewMessage(source: string, message: PostedMessage | SourcePostedMessagePayload): WriteBackResult {
   const table = parseAsciiDocTable(source);
   if (message.type === "update-cell-content") {
     return replacePlainCellContent(table, message.sourceCellId, message.contentRaw);

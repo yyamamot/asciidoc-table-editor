@@ -5,6 +5,7 @@ import { testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks, testAsciiDocTabl
 import { testUnsupportedCsvTableFallsBack } from "./fallback.test";
 import { testAsciiDocTableFormatCodeLensShowsReview } from "./format.test";
 import { testHorizontalMergeWriteBackCommand, testHorizontalUnmergeWriteBackCommand } from "./merge.test";
+import { testDisposedMutationQueueDropsWaitingOperations, testMessageRouterReportsHandlerFailureAndContinuesQueue, testMessageRouterSerializesPanelMutations, testMutationQueueRetainsPendingOperationIdsPastCompletedHistoryLimit, testPanelMutationQueueRunsFIFOAndDiscardsStaleRevision, testQueueWaitsForHtmlRefreshBeforeStartingNextTask, testQueuedPasteCompletesBeforeStaleUndoIsDiscarded } from "./mutation-queue.test";
 import { testRowColumnStructureEditCommands } from "./structure.test";
 import { testPlainCellContentUndoRedoUsesVSCodeStack } from "./undo-redo.test";
 import { testSessionTargetBlocksTargetChangesAndDeletionAtomically, testSessionTargetDetectsMultipleAnchorCandidates, testSessionTargetDoesNotFallBackToIdenticalTable, testSessionTargetReacquiresAfterUndoRedo, testSessionTargetSafelyRebasesChangesBeforeTable, testSessionTargetTracksUtf16MultiChangeBeforeTable, testStaleParallelSessionCannotOverwriteFirstSession, testUndoDoesNotConsumeNewerTargetExternalDocumentEdit, testUndoRedoDoesNotRecoverIndeterminateSession, testUndoRedoPreflightPreservesExternallyChangedTarget, testUndoWithoutSessionHistoryLeavesDocumentUnchanged } from "./session-target.test";
@@ -27,6 +28,13 @@ export async function run(): Promise<void> {
   await testRowColumnStructureEditCommands();
   await testUnsupportedCsvTableFallsBack();
   await testPlainCellContentUndoRedoUsesVSCodeStack();
+  await testPanelMutationQueueRunsFIFOAndDiscardsStaleRevision();
+  await testDisposedMutationQueueDropsWaitingOperations();
+  await testMutationQueueRetainsPendingOperationIdsPastCompletedHistoryLimit();
+  await testMessageRouterSerializesPanelMutations();
+  await testMessageRouterReportsHandlerFailureAndContinuesQueue();
+  await testQueuedPasteCompletesBeforeStaleUndoIsDiscarded();
+  await testQueueWaitsForHtmlRefreshBeforeStartingNextTask();
   await testSessionTargetSafelyRebasesChangesBeforeTable();
   await testSessionTargetTracksUtf16MultiChangeBeforeTable();
   await testSessionTargetBlocksTargetChangesAndDeletionAtomically();

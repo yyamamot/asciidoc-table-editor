@@ -15,7 +15,7 @@ export function renderWebviewFormatReviewScript(): string {
           }
           for (const button of sourceActionButtons) {
             button.hidden = editorMode !== "edit";
-            button.disabled = editorMode !== "edit";
+            button.disabled = editorMode !== "edit" || isSourceMutationUnavailable();
           }
           closeContextMenu();
           persistUiState();

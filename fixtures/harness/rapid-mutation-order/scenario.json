@@ -1,0 +1,17 @@
+{
+  "id": "rapid-mutation-order",
+  "fixture": "fixtures/lossless/minimal-basic/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "set-target-draft", "action": "set-cell-draft", "sourceCellId": "cell:0:1", "value": "Bee draft" },
+    { "id": "apply-draft", "action": "button", "button": "update-cell-content" },
+    { "id": "repeat-apply-while-busy", "action": "button", "button": "update-cell-content" },
+    { "id": "inject-stale-success", "action": "command", "command": "asciidocTable.test.injectWrongOperationSuccess" },
+    { "id": "inject-active-success", "action": "command", "command": "asciidocTable.test.injectActiveOperationSuccess" }
+  ],
+  "assertions": [
+    { "id": "rapid-mutation-order-stable", "type": "ui-review" }
+  ]
+}

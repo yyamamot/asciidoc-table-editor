@@ -70,12 +70,19 @@ describe("static site portability seed", () => {
 
     const cellEdit = await applyPortableTableEditorMessage(session, {
       type: "update-cell-content",
+      operationId: "portable-operation-1",
+      revisionToken: "portable-revision-1",
       sourceCellId: "cell:0:0",
       contentRaw: "Alpha"
     });
     expect(cellEdit.handled).toBe(true);
     if (cellEdit.handled) {
-      expect(cellEdit.message).toMatchObject({ type: "cell-content-update-result", result: { ok: true } });
+      expect(cellEdit.message).toMatchObject({
+        type: "cell-content-update-result",
+        operationId: "portable-operation-1",
+        revisionToken: "portable-revision-1",
+        result: { ok: true }
+      });
     }
     session = cellEdit.session;
     expect(session.source).toContain("|Alpha | B");

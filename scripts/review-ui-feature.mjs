@@ -28,7 +28,8 @@ const scenarioAliases = new Map([
   ["nested-table-non-goal", { path: "fixtures/harness/nested-table-non-goal/scenario.json" }],
   ["preview-comprehensive", { path: "fixtures/harness/preview-comprehensive/scenario.json" }],
   ["format-table-preview", { path: "fixtures/harness/format-table-preview/scenario.json" }],
-  ["stale-session-conflict", { path: "fixtures/harness/stale-session-conflict/scenario.json" }]
+  ["stale-session-conflict", { path: "fixtures/harness/stale-session-conflict/scenario.json" }],
+  ["rapid-mutation-order", { path: "fixtures/harness/rapid-mutation-order/scenario.json" }]
 ]);
 
 let options;
@@ -105,6 +106,7 @@ function printUsage(exitCode) {
     "  duplicate-cells | clipboard-rich-content-diagnostics",
     "  unsupported-data-table | nested-table-non-goal",
     "  preview-comprehensive | format-table-preview | large-table-scroll",
+    "  stale-session-conflict | rapid-mutation-order",
     "  official-table-syntax-compat | table-attribute-preview",
     "",
     "Examples:",

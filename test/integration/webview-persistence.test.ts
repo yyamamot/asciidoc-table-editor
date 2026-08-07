@@ -65,7 +65,7 @@ describe("webview layout persistence interactions", () => {
 
   it("applies clear results locally without resizing the grid on the first delete", async () => {
     const source = "|===\n| Alpha | Beta\n| Gamma | Delta\n|===\n";
-    const harness = await createHarness(source);
+    const harness = await createHarness(source, undefined, undefined, { autoAcknowledgeMutations: false });
     harness.grid().style.gridTemplateColumns = "180px 240px";
     harness.gridWrap().scrollLeft = 37;
     harness.gridWrap().scrollTop = 11;
@@ -89,19 +89,24 @@ describe("webview layout persistence interactions", () => {
         scrollTop: 11
       }
     });
-
     harness.dispatchExtensionMessage({
       type: "cell-content-update-result",
-      result: { ok: true, diagnostics: [] },
-      applied: {
-        replacements: clearMessage.replacements,
-        selectedSourceCellId: "cell:0:0"
-      }
+      operationId: clearMessage.operationId,
+      revisionToken: "revision-after-clear",
+      documentVersion: 2,
+      result: { ok: true, diagnostics: [] }
     });
 
-    expect(harness.grid().style.gridTemplateColumns).toBe("180px 240px");
-    expect(harness.cell("cell:0:0").textContent).toBe("");
-    expect(harness.cell("cell:0:1").textContent).toBe("");
+    expect(harness.cell("cell:0:0").textContent).toBe("Alpha");
+    const applied = applyWebviewMessage(source, clearMessage);
+    expect(applied.ok).toBe(true);
+    const refreshed = await createHarness(applied.source, "cell:0:0", undefined, {
+      initialState: harness.vscodeState(),
+      revisionToken: "revision-after-clear"
+    });
+    expect(refreshed.grid().style.gridTemplateColumns).toBe("180px 240px");
+    expect(refreshed.cell("cell:0:0").textContent).toBe("");
+    expect(refreshed.cell("cell:0:1").textContent).toBe("");
   });
 
   it("falls back to measured cell widths before the first merge changes the grid", async () => {

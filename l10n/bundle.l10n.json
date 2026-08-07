@@ -70,6 +70,7 @@
   "Open an AsciiDoc document before formatting a table.": "Open an AsciiDoc document before formatting a table.",
   "Open an AsciiDoc document before opening the table editor.": "Open an AsciiDoc document before opening the table editor.",
   "Open Table Editor": "Open Table Editor",
+  "Applying table change…": "Applying table change…",
   "{operation} applied.": "{operation} applied.",
   "{operation} failed: {message} ({code})": "{operation} failed: {message} ({code})",
   "{operation} failed.": "{operation} failed.",

@@ -122,9 +122,15 @@ describe("webview mode format and block interactions", () => {
 
   it("shows row and column edit failures returned from the extension", async () => {
     const harness = await createHarness("|===\n2+| A\n| B | C\n|===\n");
+    harness.openContextMenu("cell:0:0");
+    harness.menuItem("delete-row").click();
+    const request = harness.lastMessage("request-delete-row") as unknown as { operationId: string; revisionToken: string };
 
     harness.dispatchExtensionMessage({
       type: "row-column-edit-result",
+      operationId: request.operationId,
+      revisionToken: request.revisionToken,
+      documentVersion: 1,
       result: {
         ok: false,
         diagnostics: [{
@@ -166,33 +172,44 @@ describe("webview mode format and block interactions", () => {
     });
     harness.dispatchExtensionMessage({
       type: "block-cell-update-result",
+      operationId: message.operationId,
+      revisionToken: "revision-after-block-update",
+      documentVersion: 2,
       result: { ok: true, diagnostics: [] },
-      applied: {
-        sourceCellId: "cell:0:0",
-        contentRaw: " * updated\n* next",
-        selectedSourceCellId: "cell:0:0",
-        tablePreviewHtml: "<table><tbody><tr><td><ul><li>updated</li><li>next</li></ul></td></tr></tbody></table>",
-        blockCellPreviewHtml: "<ul><li>updated</li><li>next</li></ul>"
-      }
     });
     expect(harness.grid()).toBe(gridBefore);
     expect(harness.cell("cell:0:0")).toBe(blockCell);
-    expect(blockCell.dataset.editContent).toBe("* updated\n* next");
-    expect(blockCell.textContent).toBe("* updated\n* next");
-    expect(blockEditor.value).toBe("* updated\n* next");
-    expect(harness.blockPreview().innerHTML).toContain("updated");
-    harness.modeButton("preview").click();
-    expect(harness.previewPane().innerHTML).toContain("updated");
+    expect(blockCell.dataset.editContent).toBe("* item\n* detail");
 
-    harness.cell("cell:1:0").focus();
-    expect(harness.button("update-cell-content").disabled).toBe(false);
+    const applied = applyWebviewMessage(source, message);
+    expect(applied.ok).toBe(true);
+    const refreshed = await createHarness(
+      applied.source,
+      message.selectedSourceCellId,
+      "<table><tbody><tr><td><ul><li>updated</li><li>next</li></ul></td></tr></tbody></table>",
+      { revisionToken: "revision-after-block-update" }
+    );
+    expect(refreshed.cell("cell:0:0").dataset.editContent).toBe("* updated\n* next");
+    expect(refreshed.textarea("contentRaw").value).toBe("* updated\n* next");
+    refreshed.modeButton("preview").click();
+    expect(refreshed.previewPane().innerHTML).toContain("updated");
+
+    refreshed.cell("cell:1:0").focus();
+    expect(refreshed.button("update-cell-content").disabled).toBe(false);
   });
 
   it("shows block cell update failures returned from the extension", async () => {
     const harness = await createHarness("|===\na| * item\n|===\n");
+    harness.cell("cell:0:0").focus();
+    harness.textarea("contentRaw").value = "* draft";
+    harness.button("update-block-cell-source").click();
+    const request = harness.lastMessage("update-block-cell-source");
 
     harness.dispatchExtensionMessage({
       type: "block-cell-update-result",
+      operationId: request.operationId,
+      revisionToken: request.revisionToken,
+      documentVersion: 1,
       result: {
         ok: false,
         diagnostics: [{

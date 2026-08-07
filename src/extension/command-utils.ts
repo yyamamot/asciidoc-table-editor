@@ -5,7 +5,7 @@ import { createWebviewAppModel, renderTableEditorHtml, type WebviewAppModel } fr
 import { parseAsciiDocTable, projectGridModel, type TableDiagnostic } from "../core";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorPreview } from "./table-editor-preview";
-import type { CellContentReplacement, OpenTableEditorTarget } from "./types";
+import type { OpenTableEditorTarget } from "./types";
 import type { TableEditorSessionTarget } from "./table-editor-session-target";
 
 export type OpenTableEditorCommandResult =
@@ -67,7 +67,7 @@ export async function refreshPanelFromEditor(
   const model = tableBlock === undefined
     ? createMissingTableFallbackModel()
     : await createRefreshedTableEditorModel(tableBlock.raw, diagnostics);
-  panel.webview.html = renderTableEditorHtml(model, createNonce(), { selectedSourceCellId }, createTableEditorLabels());
+  panel.webview.html = renderTableEditorHtml(model, createNonce(), { selectedSourceCellId, revisionToken: target.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
 }
 
 export async function createRefreshedTableEditorModel(tableSource: string, diagnostics: readonly TableDiagnostic[] = []): Promise<WebviewAppModel> {
@@ -93,35 +93,4 @@ export function createMissingTableFallbackModel(): WebviewAppModel {
       message: "Target AsciiDoc table block was not found after undo/redo"
     }]
   });
-}
-
-export function requiresFullRefreshForPlainCellUpdate(editor: vscode.TextEditor, target: TableEditorSessionTarget, sourceCellId: string): boolean {
-  const resolution = target.resolve(editor.document);
-  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
-  if (tableBlock === undefined) {
-    return true;
-  }
-  const table = parseAsciiDocTable(tableBlock.raw);
-  const cell = table.rows.flatMap((row) => row.cells).find((candidate) => candidate.nodeId === sourceCellId);
-  return (cell?.duplicateCount ?? 1) > 1;
-}
-
-export function requiresFullRefreshForPlainCellContentsUpdate(editor: vscode.TextEditor, target: TableEditorSessionTarget, replacements: readonly CellContentReplacement[]): boolean {
-  const resolution = target.resolve(editor.document);
-  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
-  if (tableBlock === undefined) {
-    return true;
-  }
-  const table = parseAsciiDocTable(tableBlock.raw);
-  const cellsById = new Map(table.rows.flatMap((row) => row.cells).map((cell) => [cell.nodeId, cell]));
-  return replacements.some((replacement) => (cellsById.get(replacement.sourceCellId)?.duplicateCount ?? 1) > 1);
-}
-
-export async function renderCurrentTablePreview(editor: vscode.TextEditor, target: TableEditorSessionTarget): Promise<Awaited<ReturnType<typeof renderTableEditorPreview>> | undefined> {
-  const resolution = target.resolve(editor.document);
-  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
-  if (tableBlock === undefined) {
-    return undefined;
-  }
-  return renderTableEditorPreview(tableBlock.raw);
 }

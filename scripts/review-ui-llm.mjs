@@ -18,7 +18,7 @@ const scenarioAliases = new Map([
     "table-spec-header-footer", "table-spec-column-cell-spec", "official-table-syntax-compat", "table-attribute-preview",
     "block-cell-boundary", "clipboard-auto-expand-paste", "clipboard-merged-cell-paste", "block-cell-paste", "duplicate-cells",
     "clipboard-rich-content-diagnostics", "unsupported-data-table", "nested-table-non-goal", "preview-comprehensive",
-    "format-table-preview", "stale-session-conflict"
+    "format-table-preview", "stale-session-conflict", "rapid-mutation-order"
   ].map((id) => [id, `fixtures/harness/${id}/scenario.json`]),
   ["large-table-scroll", "fixtures/harness/large-table/scenario.json"]
 ]);
@@ -141,7 +141,7 @@ async function main() {
     }));
     runtimeJsonl.push(runtimeEvent);
     harnessJsonl.push(harnessEvent);
-    writeFileSync(join(scenarioRoot, "scenario.json"), JSON.stringify(scenarioSpec, null, 2), "utf8");
+    writeFileSync(join(scenarioRoot, "scenario.json"), JSON.stringify(redactScenarioArtifact(scenarioSpec), null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "ui-review-snapshot.json"), JSON.stringify(snapshot, null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "llm-ui-self-review.json"), JSON.stringify(snapshot.selfReview, null, 2), "utf8");
     writeFileSync(join(scenarioRoot, "ui-geometry.json"), JSON.stringify({ ...snapshot.geometry, checks }, null, 2), "utf8");
@@ -184,6 +184,16 @@ async function main() {
   if (report.result === "needs-fix" || report.result === "blocked") {
     process.exitCode = 1;
   }
+}
+
+function redactScenarioArtifact(scenarioSpec) {
+  const contentFields = new Set(["html", "rows", "sourceLabel", "text", "value"]);
+  return {
+    ...scenarioSpec,
+    steps: scenarioSpec.steps.map((step) => Object.fromEntries(
+      Object.entries(step).map(([key, value]) => [key, contentFields.has(key) ? "[redacted]" : value])
+    ))
+  };
 }
 
 function run(command, args) {
@@ -253,7 +263,17 @@ function createScenarioState(scenario, scenarioPath) {
     editorOpened: false,
     editorMode: "edit",
     formatResult: undefined,
-    diagnostics: []
+    diagnostics: [],
+    rapidMutation: scenario.id === "rapid-mutation-order" ? {
+      requestCountAfterDoubleApply: 0,
+      busyAfterDoubleApply: false,
+      draftRetainedAfterStale: false,
+      staleIgnored: false,
+      busyAfterStale: false,
+      activeApplied: false,
+      tokenAdvanced: false,
+      busyCleared: false
+    } : undefined
   };
 }
 
@@ -307,6 +327,82 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
           });
           state.diagnostics = [diagnostic];
           return { target: step.command, details: { adapter: "simulated-host", postedMessage: "cell-content-update-result", diagnosticCode: diagnostic.code } };
+        }
+        if (step.command === "asciidocTable.test.injectWrongOperationSuccess") {
+          const harness = requireHarness(state, step, scenarioRunner);
+          const rapid = requireRapidMutationState(state, step, scenarioRunner);
+          const active = rapid.activeRequest;
+          if (!active) {
+            throw new scenarioRunner.ScenarioBlockedError("No active mutation request was captured.", "scenario-precondition-failed");
+          }
+          const draftBefore = harness.textarea("contentRaw").value;
+          const cellBefore = harness.cell(active.sourceCellId).dataset.content;
+          harness.dispatchExtensionMessage({
+            type: "cell-content-update-result",
+            operationId: `${active.operationId}-stale`,
+            revisionToken: "review-stale-revision",
+            documentVersion: 2,
+            result: { ok: true, diagnostics: [] }
+          });
+          const draftAfter = harness.textarea("contentRaw").value;
+          const cellAfter = harness.cell(active.sourceCellId).dataset.content;
+          rapid.draftRetainedAfterStale = draftAfter === draftBefore && draftAfter === state.expectedDraft;
+          rapid.staleIgnored = cellAfter === cellBefore;
+          rapid.busyAfterStale = mutationBusy(harness);
+          return {
+            target: step.command,
+            details: {
+              adapter: "simulated-host",
+              resultKind: "stale-success",
+              requestCount: rapid.requestCountAfterDoubleApply,
+              busy: rapid.busyAfterStale,
+              draftRetained: rapid.draftRetainedAfterStale,
+              staleIgnored: rapid.staleIgnored
+            }
+          };
+        }
+        if (step.command === "asciidocTable.test.injectActiveOperationSuccess") {
+          const harness = requireHarness(state, step, scenarioRunner);
+          const rapid = requireRapidMutationState(state, step, scenarioRunner);
+          const active = rapid.activeRequest;
+          if (!active) {
+            throw new scenarioRunner.ScenarioBlockedError("No active mutation request was captured.", "scenario-precondition-failed");
+          }
+          const advancedRevisionToken = "review-active-revision";
+          const applied = webviewHarness.applyWebviewMessage(state.source, active);
+          if (!applied.ok) {
+            throw new scenarioRunner.ScenarioBlockedError(applied.diagnostics.map((diagnostic) => diagnostic.message).join("; "), "host-writeback-blocked");
+          }
+          state.source = applied.source;
+          await refreshHarness(state, webviewHarness, active.sourceCellId, advancedRevisionToken);
+          rapid.activeApplied = state.harness.cell(active.sourceCellId).dataset.content === active.contentRaw.trim();
+          rapid.busyCleared = !mutationBusy(state.harness);
+
+          const refreshedHarness = state.harness;
+          const beforeProbeCount = refreshedHarness.messages.length;
+          refreshedHarness.button("update-cell-content").click();
+          const probe = refreshedHarness.messages.slice(beforeProbeCount).find((message) => message.type === "update-cell-content");
+          rapid.tokenAdvanced = probe?.revisionToken === advancedRevisionToken;
+          if (probe) {
+            const probeApplied = webviewHarness.applyWebviewMessage(state.source, probe);
+            if (!probeApplied.ok) {
+              throw new scenarioRunner.ScenarioBlockedError(probeApplied.diagnostics.map((diagnostic) => diagnostic.message).join("; "), "host-writeback-blocked");
+            }
+            state.source = probeApplied.source;
+            await refreshHarness(state, webviewHarness, probe.sourceCellId, "review-probe-revision");
+          }
+          rapid.busyCleared = rapid.busyCleared && !mutationBusy(state.harness);
+          return {
+            target: step.command,
+            details: {
+              adapter: "simulated-host",
+              resultKind: "active-success",
+              requestCount: rapid.requestCountAfterDoubleApply,
+              activeApplied: rapid.activeApplied,
+              tokenAdvanced: rapid.tokenAdvanced,
+              busyCleared: rapid.busyCleared
+            }
+          };
         }
         throw new scenarioRunner.ScenarioBlockedError(`Unsupported Host command: ${step.command}`, "unsupported-host-command");
       }
@@ -364,6 +460,25 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
         const harness = requireHarness(state, step, scenarioRunner);
         const beforeMessageCount = harness.messages.length;
         harness.button(step.button).click();
+        if (state.rapidMutation && step.button === "update-cell-content") {
+          const posted = harness.messages.slice(beforeMessageCount).filter((message) => message.type !== "ui-review-snapshot");
+          const sourceMessages = harness.messages.filter((message) => message.type !== "ui-review-snapshot");
+          const active = [...sourceMessages].reverse().find((message) => message.type === "update-cell-content");
+          if (active && !state.rapidMutation.activeRequest) {
+            state.rapidMutation.activeRequest = active;
+          }
+          state.rapidMutation.requestCountAfterDoubleApply = sourceMessages.filter((message) => message.type === "update-cell-content").length;
+          state.rapidMutation.busyAfterDoubleApply = mutationBusy(harness);
+          return {
+            target: step.button,
+            details: {
+              domEvent: "click",
+              postedMessage: posted.map((message) => message.type).join(",") || undefined,
+              requestCount: state.rapidMutation.requestCountAfterDoubleApply,
+              busy: state.rapidMutation.busyAfterDoubleApply
+            }
+          };
+        }
         const mutation = await applyPostedMutationIfPresent(state, beforeMessageCount, webviewHarness, scenarioRunner, step);
         return { target: step.button, details: { domEvent: "click", ...mutation } };
       }
@@ -387,11 +502,12 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
   };
 }
 
-async function refreshHarness(state, webviewHarness, selectedSourceCellId) {
+async function refreshHarness(state, webviewHarness, selectedSourceCellId, revisionToken) {
   state.harness?.window?.close();
   const formatReview = state.formatResult?.ok ? formatReviewModel(state.source, state.formatResult) : undefined;
   state.harness = await webviewHarness.createHarness(state.source, selectedSourceCellId, undefined, {
     diagnostics: state.diagnostics,
+    ...(revisionToken ? { revisionToken } : {}),
     ...(formatReview ? { formatReview } : {})
   });
 }
@@ -401,6 +517,17 @@ function requireHarness(state, step, scenarioRunner) {
     throw new scenarioRunner.ScenarioBlockedError(`Step ${step.id} requires an active Webview harness.`, "scenario-precondition-failed");
   }
   return state.harness;
+}
+
+function requireRapidMutationState(state, step, scenarioRunner) {
+  if (!state.rapidMutation) {
+    throw new scenarioRunner.ScenarioBlockedError(`Step ${step.id} requires the rapid mutation scenario.`, "scenario-precondition-failed");
+  }
+  return state.rapidMutation;
+}
+
+function mutationBusy(harness) {
+  return harness.window.document.querySelector("[data-review-target='shell']")?.getAttribute("aria-busy") === "true";
 }
 
 async function applyPostedMutation(state, beforeMessageCount, webviewHarness, scenarioRunner, step) {
@@ -611,6 +738,25 @@ function evaluateDomAssertion(id, state, core) {
         diagnosticText.includes("writeback.table-changed") && draft === state.expectedDraft,
         "A stale-session conflict is visible without replacing the unsent cell draft.",
         `diagnostic=${diagnosticText.includes("writeback.table-changed")}, draftRetained=${draft === state.expectedDraft}`
+      );
+    }
+    case "rapid-mutation-order-stable": {
+      const rapid = state.rapidMutation;
+      const draft = document.querySelector("textarea[data-cell-editor-control='contentRaw']")?.value;
+      const passed = Boolean(rapid &&
+        rapid.requestCountAfterDoubleApply === 1 &&
+        rapid.busyAfterDoubleApply &&
+        rapid.draftRetainedAfterStale &&
+        rapid.staleIgnored &&
+        rapid.busyAfterStale &&
+        rapid.activeApplied &&
+        rapid.tokenAdvanced &&
+        rapid.busyCleared &&
+        draft === state.expectedDraft);
+      return result(
+        passed,
+        "Rapid mutation ordering keeps one active request, ignores stale results, and applies only the matching result.",
+        `requestCount=${rapid?.requestCountAfterDoubleApply ?? 0}, busyDuring=${Boolean(rapid?.busyAfterDoubleApply && rapid?.busyAfterStale)}, draftRetained=${Boolean(rapid?.draftRetainedAfterStale && draft === state.expectedDraft)}, staleIgnored=${Boolean(rapid?.staleIgnored)}, activeApplied=${Boolean(rapid?.activeApplied)}, tokenAdvanced=${Boolean(rapid?.tokenAdvanced)}, busyCleared=${Boolean(rapid?.busyCleared)}`
       );
     }
     default:

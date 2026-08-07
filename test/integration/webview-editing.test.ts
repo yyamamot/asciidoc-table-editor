@@ -90,8 +90,9 @@ describe("webview editing interactions", () => {
     });
   });
 
-  it("applies successful single-cell updates without replacing the webview grid", async () => {
-    const harness = await createHarness("|===\n| A | B\n|===\n");
+  it("renders successful single-cell updates from a full refreshed Webview", async () => {
+    const source = "|===\n| A | B\n|===\n";
+    const harness = await createHarness(source, undefined, undefined, { autoAcknowledgeMutations: false });
     const second = harness.cell("cell:0:1");
     const gridBefore = harness.grid();
 
@@ -99,25 +100,32 @@ describe("webview editing interactions", () => {
     const editor = harness.textarea("contentRaw");
     editor.value = "https://example.com[Example]";
     harness.button("update-cell-content").click();
+    const request = harness.lastMessage("update-cell-content");
 
     harness.dispatchExtensionMessage({
       type: "cell-content-update-result",
+      operationId: request.operationId,
+      revisionToken: "revision-2",
+      documentVersion: 2,
       result: { ok: true, diagnostics: [] },
-      applied: {
-        sourceCellId: "cell:0:1",
-        contentRaw: " https://example.com[Example]",
-        selectedSourceCellId: "cell:0:1",
-        tablePreviewHtml: "<table><tbody><tr><td>Example</td></tr></tbody></table>"
-      }
     });
 
     expect(harness.grid()).toBe(gridBefore);
     expect(harness.cell("cell:0:1")).toBe(second);
-    expect(second.textContent).toBe("Example");
-    expect(second.dataset.editContent).toBe("https://example.com[Example]");
-    expect(editor.value).toBe("https://example.com[Example]");
-    harness.modeButton("preview").click();
-    expect(harness.previewPane().innerHTML).toContain("Example");
+    expect(second.textContent).toBe("B");
+
+    const applied = applyWebviewMessage(source, request);
+    expect(applied.ok).toBe(true);
+    const refreshed = await createHarness(
+      applied.source,
+      request.selectedSourceCellId,
+      "<table><tbody><tr><td>Example</td></tr></tbody></table>",
+      { revisionToken: "revision-2" }
+    );
+    expect(refreshed.cell("cell:0:1").textContent).toBe("Example");
+    expect(refreshed.textarea("contentRaw").value).toBe("https://example.com[Example]");
+    refreshed.modeButton("preview").click();
+    expect(refreshed.previewPane().innerHTML).toContain("Example");
   });
 
   it("supports Cmd/Ctrl+Enter apply and Escape reset in the bottom cell editor bar", async () => {

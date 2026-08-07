@@ -83,6 +83,25 @@ export async function applyPortableTableEditorMessage(
   session: PortableTableEditorSession,
   message: TableEditorHostMessage
 ): Promise<PortableTableEditorApplyResult> {
+  const applied = await applyPortableTableEditorMessageInternal(session, message);
+  if (!applied.handled || applied.message === undefined || message.operationId === undefined || message.revisionToken === undefined) {
+    return applied;
+  }
+  return {
+    ...applied,
+    message: {
+      ...applied.message,
+      operationId: message.operationId,
+      documentVersion: 0,
+      revisionToken: message.revisionToken
+    }
+  };
+}
+
+async function applyPortableTableEditorMessageInternal(
+  session: PortableTableEditorSession,
+  message: TableEditorHostMessage
+): Promise<PortableTableEditorApplyResult> {
   switch (message.type) {
     case "ui-review-snapshot":
     case "request-reveal-source-cell":

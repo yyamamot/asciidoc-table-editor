@@ -57,7 +57,7 @@ ${renderTableEditorStyles(model)}
     ${diagnostics}
     <script type="application/json" id="llm-ui-self-review">${reviewMetadata}</script>
     <script nonce="${nonce}">${options.hostBridgeScript ?? renderTableEditorHostAdapterScript()}</script>
-    ${renderWebviewScript(nonce, scriptLabels, options.selectedSourceCellId ?? "", model.mode)}
+    ${renderWebviewScript(nonce, scriptLabels, options.selectedSourceCellId ?? "", model.mode, options.revisionToken ?? "portable-session")}
   </main>
 </body>
 </html>`;

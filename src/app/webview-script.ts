@@ -5,7 +5,7 @@ import { renderWebviewEditingScript } from "./webview-script-editing";
 import { renderWebviewFormatReviewScript } from "./webview-script-format-review";
 import { renderWebviewSelectionScript } from "./webview-script-selection";
 
-export function renderWebviewScript(nonce: string, scriptLabels: string, selectedSourceCellId: string, mode: string): string {
+export function renderWebviewScript(nonce: string, scriptLabels: string, selectedSourceCellId: string, mode: string, revisionToken: string): string {
   return `    <script nonce="${nonce}">
       (() => {
         const injectedHost = window.__ASCIIDOC_TABLE_EDITOR_HOST__ || window.__ASCIIDOC_TABLE_HOST__;
@@ -21,6 +21,7 @@ export function renderWebviewScript(nonce: string, scriptLabels: string, selecte
           },
         });
         const labels = ${scriptLabels};
+        const initialRevisionToken = ${JSON.stringify(revisionToken)};
 ${renderWebviewDomScript()}${renderWebviewFormatReviewScript()}${renderWebviewSelectionScript()}${renderWebviewClipboardScript()}${renderWebviewEditingScript()}${renderWebviewBootstrapScript(selectedSourceCellId, mode)}      })();
     </script>`;
 }

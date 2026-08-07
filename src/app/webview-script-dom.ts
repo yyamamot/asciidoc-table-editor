@@ -16,9 +16,11 @@ export function renderWebviewDomScript(): string {
           reviewId: element.dataset.reviewTarget || element.dataset.sourceCellId || "cell-" + index,
           tagName: element.tagName,
           role: element.getAttribute("role") || "",
-          label: element.getAttribute("aria-label") || element.textContent.trim(),
+          label: element.classList.contains("cell")
+            ? (element.dataset.sourceCellId || "cell-" + index)
+            : (element.getAttribute("aria-label") || element.textContent.trim()),
           visible: Boolean(element.offsetWidth || element.offsetHeight || element.getClientRects().length),
-          disabled: element.getAttribute("aria-readonly") === "true",
+          disabled: element.getAttribute("aria-readonly") === "true" || element.getAttribute("aria-disabled") === "true" || Boolean(element.disabled),
           action: element.dataset.action,
           rect: rectFor(element),
           scrollWidth: element.scrollWidth,
@@ -81,6 +83,12 @@ export function renderWebviewDomScript(): string {
         let editingOriginalValue = "";
         let editingGridStateBeforeEdit = null;
         let statusMessageTimer = null;
+        let currentRevisionToken = initialRevisionToken;
+        let activeOperationId = null;
+        let mutationOperationSequence = 0;
+        let mutationSessionBlocked = false;
+        const mutationControlState = new Map();
+        const mutationCellReadonlyState = new Map();
         const updateField = (name, value) => {
           const field = inspectorFields[name];
           if (field) {
@@ -127,6 +135,108 @@ export function renderWebviewDomScript(): string {
           setStatusMessage(diagnostic
             ? formatStatusTemplate(labels.operationBlockedMessage, { operation, message: diagnostic.message, code: diagnostic.code })
             : formatStatusTemplate(labels.operationBlockedWithoutDetailMessage, { operation }));
+        };
+        const sourceMutationControls = () => Array.from(document.querySelectorAll([
+          "[data-source-action='true']",
+          "[data-inspector-control='contentRaw']",
+          "[data-cell-editor-action='apply']",
+          "[data-action='undo-table-edit']",
+          "[data-action='redo-table-edit']",
+          "[data-action='apply-format-table']",
+          "[data-action='apply-column-spec']",
+          "[data-action='apply-table-appearance']",
+          "[data-context-menu='cell'] button[data-action]"
+        ].join(", "))).filter((element) => "disabled" in element);
+        const setMutationBusy = (busy) => {
+          const shell = document.querySelector("[data-review-target='shell']");
+          shell?.setAttribute("aria-busy", busy ? "true" : "false");
+          if (busy) {
+            for (const control of sourceMutationControls()) {
+              if (!mutationControlState.has(control)) {
+                mutationControlState.set(control, {
+                  disabled: Boolean(control.disabled),
+                  ariaDisabled: control.getAttribute("aria-disabled")
+                });
+              }
+              control.disabled = true;
+              control.setAttribute("aria-disabled", "true");
+            }
+            for (const cell of document.querySelectorAll(".cell[data-kind='origin']")) {
+              if (!mutationCellReadonlyState.has(cell)) {
+                mutationCellReadonlyState.set(cell, cell.getAttribute("aria-readonly"));
+              }
+              cell.setAttribute("aria-readonly", "true");
+            }
+            grid?.setAttribute("aria-readonly", "true");
+            setStatusMessage(labels.operationInProgressMessage);
+            return;
+          }
+          for (const [control, state] of mutationControlState) {
+            control.disabled = state.disabled;
+            if (state.ariaDisabled === null) {
+              control.removeAttribute("aria-disabled");
+            } else {
+              control.setAttribute("aria-disabled", state.ariaDisabled);
+            }
+          }
+          mutationControlState.clear();
+          for (const [cell, readonly] of mutationCellReadonlyState) {
+            if (readonly === null) {
+              cell.removeAttribute("aria-readonly");
+            } else {
+              cell.setAttribute("aria-readonly", readonly);
+            }
+          }
+          mutationCellReadonlyState.clear();
+          if (!mutationSessionBlocked && editorMode === "edit") {
+            grid?.setAttribute("aria-readonly", "false");
+          }
+        };
+        const blockMutationSession = () => {
+          mutationSessionBlocked = true;
+          for (const control of sourceMutationControls()) {
+            control.disabled = true;
+            control.setAttribute("aria-disabled", "true");
+          }
+          for (const cell of document.querySelectorAll(".cell[data-kind='origin']")) {
+            cell.setAttribute("aria-readonly", "true");
+          }
+          grid?.setAttribute("aria-readonly", "true");
+        };
+        const isSourceMutationUnavailable = () => activeOperationId !== null || mutationSessionBlocked;
+        const isBlockingMutationFailure = (result) => {
+          const blockingCodes = new Set([
+            "writeback.apply-raced",
+            "writeback.revision-mismatch",
+            "writeback.document-replaced",
+            "writeback.table-not-found",
+            "writeback.table-ambiguous",
+            "writeback.table-changed",
+            "writeback.expected-raw-mismatch"
+          ]);
+          return Array.isArray(result?.diagnostics) &&
+            result.diagnostics.some((diagnostic) => blockingCodes.has(diagnostic?.code));
+        };
+        const acceptMutationResult = (message) => {
+          if (!activeOperationId || message.operationId !== activeOperationId) {
+            return false;
+          }
+          if (typeof message.revisionToken !== "string" || message.revisionToken.length === 0 ||
+              !Number.isInteger(message.documentVersion) || message.documentVersion < 0 ||
+              typeof message.result !== "object" || message.result === null ||
+              typeof message.result.ok !== "boolean") {
+            return false;
+          }
+          activeOperationId = null;
+          if (message.result.ok) {
+            currentRevisionToken = message.revisionToken;
+          }
+          const blocked = !message.result?.ok && isBlockingMutationFailure(message.result);
+          setMutationBusy(false);
+          if (blocked) {
+            blockMutationSession();
+          }
+          return true;
         };
         const displayContentForGridCell = (sourceContent) => {
           let output = "";
@@ -217,8 +327,17 @@ export function renderWebviewDomScript(): string {
           }
         };
         const postSourceMessage = (message, options = {}) => {
+          if (isSourceMutationUnavailable()) {
+            return false;
+          }
           persistGridState(options.gridState);
-          vscode.postMessage(message);
+          mutationOperationSequence += 1;
+          const operationId = globalThis.crypto?.randomUUID?.() ||
+            "operation-" + Date.now() + "-" + mutationOperationSequence + "-" + Math.random().toString(36).slice(2);
+          activeOperationId = operationId;
+          setMutationBusy(true);
+          vscode.postMessage({ ...message, operationId, revisionToken: currentRevisionToken });
+          return true;
         };
 `;
 }

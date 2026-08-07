@@ -123,7 +123,7 @@ export function renderWebviewSelectionScript(): string {
           const blockContent = cell.dataset.block === "true";
           const plainEditable = !readonly && !blockContent;
           const blockEditable = blockContent && cell.dataset.kind === "origin";
-          const sourceEditable = plainEditable || blockEditable;
+          const sourceEditable = (plainEditable || blockEditable) && !isSourceMutationUnavailable();
           if (editAction) {
             editAction.hidden = true;
           }
@@ -191,7 +191,7 @@ export function renderWebviewSelectionScript(): string {
             control.value = value;
           }
         };
-        const isEditableOriginCell = (cell) => Boolean(cell && cell.dataset.kind === "origin" && cell.getAttribute("aria-readonly") !== "true");
+        const isEditableOriginCell = (cell) => Boolean(cell && !isSourceMutationUnavailable() && cell.dataset.kind === "origin" && cell.getAttribute("aria-readonly") !== "true");
         const isPlainPasteTarget = (cell) => isEditableOriginCell(cell) && cell.dataset.rowSpan === "1" && cell.dataset.colSpan === "1";
         const gridCells = () => Array.from(document.querySelectorAll(".cell"));
         const editableCells = () => Array.from(document.querySelectorAll(".cell")).filter(isEditableOriginCell);

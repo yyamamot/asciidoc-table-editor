@@ -19,42 +19,8 @@ export function renderWebviewEditingScript(): string {
         };
         const setInspectorContent = (cell, value) => setCellSourceContent(cell, (cell.dataset.leading || " ") + value);
         const findOriginCellBySourceId = (sourceCellId) => Array.from(document.querySelectorAll(".cell[data-kind='origin']")).find((cell) => cell.dataset.sourceCellId === sourceCellId);
-        const applyLocalCellContentUpdate = (applied) => {
-          if (!applied || (!applied.sourceCellId && !Array.isArray(applied.replacements))) {
-            return;
-          }
-          if (applied.sourceCellId && typeof applied.contentRaw !== "string") {
-            return;
-          }
-          const cell = findOriginCellBySourceId(applied.sourceCellId || applied.replacements?.[0]?.sourceCellId);
-          if (cell && applied.sourceCellId) {
-            setCellSourceContent(cell, applied.contentRaw);
-          }
-          for (const replacement of applied.replacements || []) {
-            const target = findOriginCellBySourceId(replacement.sourceCellId);
-            if (target) {
-              setCellSourceContent(target, replacement.contentRaw);
-            }
-          }
-          if (typeof applied.tablePreviewHtml === "string" && tablePreviewPane) {
-            tablePreviewPane.innerHTML = applied.tablePreviewHtml;
-          }
-          if (typeof applied.blockCellPreviewHtml === "string" && blockPreviewPane) {
-            cell.dataset.blockPreviewHtml = applied.blockCellPreviewHtml;
-            if (selectedCell === cell) {
-              blockPreviewPane.innerHTML = applied.blockCellPreviewHtml;
-            }
-          }
-          const selectedAfterUpdate = applied.selectedSourceCellId
-            ? findOriginCellBySourceId(applied.selectedSourceCellId)
-            : cell;
-          if (selectedAfterUpdate) {
-            selectCell(selectedAfterUpdate);
-            focusCellWithoutSelectionReset(selectedAfterUpdate);
-          }
-        };
         const beginDirectEdit = (cell, initialValue) => {
-          if (!isEditableOriginCell(cell)) {
+          if (isSourceMutationUnavailable() || !isEditableOriginCell(cell)) {
             return;
           }
           if (editingCell && editingCell !== cell) {
@@ -181,7 +147,7 @@ export function renderWebviewEditingScript(): string {
           contextMenu?.setAttribute("aria-hidden", "true");
         };
         const openContextMenu = (cell, clientX, clientY) => {
-          if (!contextMenu || !cell || editorMode !== "edit") {
+          if (!contextMenu || !cell || editorMode !== "edit" || isSourceMutationUnavailable()) {
             return;
           }
           selectCell(cell);
@@ -254,6 +220,20 @@ export function renderWebviewEditingScript(): string {
         };
         window.addEventListener("message", (event) => {
           const message = event.data || {};
+          const mutationResultTypes = [
+            "row-column-edit-result",
+            "merge-cells-result",
+            "unmerge-cell-result",
+            "cell-content-update-result",
+            "block-cell-update-result",
+            "undo-redo-result",
+            "format-table-result",
+            "cell-style-update-result",
+            "table-settings-update-result"
+          ];
+          if (mutationResultTypes.includes(message.type) && !acceptMutationResult(message)) {
+            return;
+          }
           if (message.type === "row-column-edit-result") {
             showResultDiagnostic(labels.rowColumnEdit, message.result);
           } else if (message.type === "merge-cells-result") {
@@ -262,14 +242,8 @@ export function renderWebviewEditingScript(): string {
             showResultDiagnostic(labels.unmergeOperation, message.result);
           } else if (message.type === "cell-content-update-result") {
             showResultDiagnostic(labels.cellUpdate, message.result);
-            if (message.result?.ok) {
-              applyLocalCellContentUpdate(message.applied);
-            }
           } else if (message.type === "block-cell-update-result") {
             showResultDiagnostic(labels.blockCellUpdate, message.result);
-            if (message.result?.ok) {
-              applyLocalCellContentUpdate(message.applied);
-            }
           } else if (message.type === "undo-redo-result") {
             showResultDiagnostic(labels.undoRedo, message.result);
           } else if (message.type === "format-table-result") {
