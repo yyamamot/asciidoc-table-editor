@@ -118,6 +118,8 @@ export const DEFAULT_TABLE_EDITOR_LABELS: TableEditorWebviewLabels = {
     "format.nested-table": "Nested tables cannot be formatted safely.",
     "format.preview-missing": "The table format preview is no longer available.",
     "format.preview-stale": "The table format preview is stale.",
+    "format.row-role-changed": "Formatting would change the table header, body, or footer rows.",
+    "format.column-semantics-changed": "Formatting would change the table columns or merged-cell structure.",
     "format.table-delimiter-not-found": "The table delimiter required for formatting was not found.",
     "format.table-not-found": "The table to format was not found.",
     "format.unsafe-block-cell-source": "A block cell cannot be formatted without changing its source.",

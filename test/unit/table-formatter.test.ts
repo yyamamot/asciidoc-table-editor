@@ -33,8 +33,9 @@ describe("formatAsciiDocTable", () => {
     if (!result.ok) {
       throw new Error("expected formatter success");
     }
-    expect(result.source).toBe("|===\n| A     | B\n| Alpha | Long\n|===\n");
+    expect(result.source).toBe("[%header]\n|===\n| A     | B\n| Alpha | Long\n|===\n");
     expect(result.source).not.toContain("\n\n|");
+    expect(parseAsciiDocTable(result.source).rows.map((row) => row.role)).toEqual(["header", "body"]);
   });
 
   it("preserves span, style, alignment, and duplicate shorthand specs", () => {
@@ -115,11 +116,78 @@ describe("formatAsciiDocTable", () => {
     expect(result.source).toBe("[cols=2*]\n|===\n| A\n| B\n|===\n");
   });
 
-  it("adds cols to an existing table attribute line in cell-per-line mode", () => {
+  it("adds a standalone cols attribute without rewriting existing table attributes", () => {
     const result = formatAsciiDocTable(parseAsciiDocTable("[%header]\n|===\n| A | B\n|===\n"), { mode: "cell-per-line" });
 
     expect(result).toMatchObject({ ok: true });
-    expect(result.source).toBe("[cols=2*,%header]\n|===\n| A\n| B\n|===\n");
+    expect(result.source).toBe("[%header]\n[cols=2*]\n|===\n| A\n| B\n|===\n");
+  });
+
+  it("preserves custom column widths, alignment, styles, quotes, and attribute ordering", () => {
+    const source = ".Custom\r\n[%header]\r\n[cols='1<,2^m,3>a']\r\n|===\r\n| A | B | C\r\n| D | E | F\r\n|===\r\n";
+    const result = formatAsciiDocTable(parseAsciiDocTable(source), { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.source).toBe(".Custom\r\n[%header]\r\n[cols='1<,2^m,3>a']\r\n|===\r\n| A\r\n| B\r\n| C\r\n\r\n| D\r\n| E\r\n| F\r\n|===\r\n");
+    const reparsed = parseAsciiDocTable(result.source);
+    expect(reparsed.attributes.entries.find((entry) => entry.kind === "named" && entry.name === "cols")).toMatchObject({
+      raw: "cols='1<,2^m,3>a'",
+      value: "1<,2^m,3>a",
+      quote: "'"
+    });
+    expect(reparsed.rows.map((row) => row.role)).toEqual(["header", "body"]);
+  });
+
+  it.each(["table-layout", "cell-per-line"] as const)("preserves implicit header row roles in %s mode", (mode) => {
+    const source = "|===\n| Name | Value\n\n| Alpha | 1\n|===\n";
+    const before = parseAsciiDocTable(source);
+    const result = formatAsciiDocTable(before, { mode });
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      throw new Error("expected formatter success");
+    }
+    expect(parseAsciiDocTable(result.source).rows.map((row) => row.role)).toEqual(before.rows.map((row) => row.role));
+  });
+
+  it.each(["header", "noheader", "footer"] as const)("preserves the explicit %s option", (option) => {
+    const source = `[%${option}]\n|===\n| A | B\n| C | D\n|===\n`;
+    const result = formatAsciiDocTable(parseAsciiDocTable(source), { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.source).toBe(`[%${option}]\n[cols=2*]\n|===\n| A\n| B\n\n| C\n| D\n|===\n`);
+    expect(parseAsciiDocTable(result.source).attributes.options).toContain(option);
+  });
+
+  it("preserves named options, stacked attributes, title, and CRLF exactly", () => {
+    const source = '.Options\r\n[role=wide]\r\n[options="header,footer"]\r\n|===\r\n| A | B\r\n| C | D\r\n|===\r\n';
+    const result = formatAsciiDocTable(parseAsciiDocTable(source), { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: true });
+    expect(result.source).toBe('.Options\r\n[role=wide]\r\n[options="header,footer"]\r\n[cols=2*]\r\n|===\r\n| A\r\n| B\r\n\r\n| C\r\n| D\r\n|===\r\n');
+  });
+
+  it("rejects row-role drift atomically", () => {
+    const source = "|===\n| A | B\n| C | D\n|===\n";
+    const table = parseAsciiDocTable(source);
+    table.rows[0].role = "footer";
+
+    const result = formatAsciiDocTable(table);
+
+    expect(result).toMatchObject({ ok: false, source });
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toEqual(["format.row-role-changed"]);
+  });
+
+  it("rejects column semantic drift atomically", () => {
+    const source = "[cols=2*]\n|===\n| A | B\n| C | D\n|===\n";
+    const table = parseAsciiDocTable(source);
+    table.attributes.columns[0].style = "m";
+
+    const result = formatAsciiDocTable(table, { mode: "cell-per-line" });
+
+    expect(result).toMatchObject({ ok: false, source });
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toEqual(["format.column-semantics-changed"]);
   });
 
   it("keeps block cell content in cell-per-line mode", () => {
@@ -135,13 +203,7 @@ describe("formatAsciiDocTable", () => {
     ["LF", "\n"],
     ["CRLF", "\r\n"]
   ])("preserves list block source including trailing whitespace with %s", (_label, eol) => {
-    const source =
-      `[cols=2*]${eol}` +
-      `|===${eol}` +
-      `a| * item  ${eol}` +
-      `* detail\t${eol}` +
-      `| Plain${eol}` +
-      `|===${eol}`;
+    const source = `[cols=2*]${eol}` + `|===${eol}` + `a| * item  ${eol}` + `* detail\t${eol}` + `| Plain${eol}` + `|===${eol}`;
     const parsed = parseAsciiDocTable(source);
     const originalCell = parsed.rows[0].cells[0];
     const originalSlice = source.slice(originalCell.range.start.offset, originalCell.range.end.offset);
@@ -192,14 +254,7 @@ describe("formatAsciiDocTable", () => {
 
   it("preserves mixed block EOLs, body-external source, and a missing final newline", () => {
     const blockSlice = "a| * item  \n* detail\t";
-    const source =
-      ".Mixed EOL table\r\n" +
-      "[cols=2*]\n" +
-      "|===\r\n" +
-      `${blockSlice}\r\n` +
-      "| Plain\r\n" +
-      "| C | D\n" +
-      "|===";
+    const source = ".Mixed EOL table\r\n" + "[cols=2*]\n" + "|===\r\n" + `${blockSlice}\r\n` + "| Plain\r\n" + "| C | D\n" + "|===";
     const result = formatAsciiDocTable(parseAsciiDocTable(source), { mode: "cell-per-line" });
 
     expect(result).toMatchObject({ ok: true, changed: true });
@@ -211,14 +266,7 @@ describe("formatAsciiDocTable", () => {
   });
 
   it("reparses preserved block metadata and grid coordinates after cell-per-line formatting", () => {
-    const source =
-      "[cols=2*]\n" +
-      "|===\n" +
-      "a| * item  \n" +
-      "* detail\t\n" +
-      "| Plain\n" +
-      "| C | D\n" +
-      "|===\n";
+    const source = "[cols=2*]\n" + "|===\n" + "a| * item  \n" + "* detail\t\n" + "| Plain\n" + "| C | D\n" + "|===\n";
     const original = parseAsciiDocTable(source);
     const originalBlock = original.rows[0].cells[0];
     const result = formatAsciiDocTable(original, { mode: "cell-per-line" });

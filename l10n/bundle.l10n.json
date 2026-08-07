@@ -159,6 +159,8 @@
   "Imported clipboard cell spans overlap.": "Imported clipboard cell spans overlap.",
   "Nested clipboard tables are not supported.": "Nested clipboard tables are not supported.",
   "Nested tables cannot be formatted safely.": "Nested tables cannot be formatted safely.",
+  "Formatting would change the table header, body, or footer rows.": "Formatting would change the table header, body, or footer rows.",
+  "Formatting would change the table columns or merged-cell structure.": "Formatting would change the table columns or merged-cell structure.",
   "No active editor is available.": "No active editor is available.",
   "No replacement cell content was provided.": "No replacement cell content was provided.",
   "No table cells were selected for the style update.": "No table cells were selected for the style update.",

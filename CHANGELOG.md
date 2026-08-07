@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **BREAKING CHANGE:** Preserve implicit table headers and existing `cols` specifications during formatting; Cell-per-line output no longer replaces custom column widths, alignment, or styles with `[cols=N*]`, and may materialize an implicit header as `%header`.
 - Keep Table Editor write-back attached to the intended table, stop safely after conflicting external edits, and prevent rapid operations or stale responses from rolling the grid back.
 - Sanitize rendered table previews with an allowlist and restrict preview resources and links with a tighter Content Security Policy.
 - Speed up previews for tables with many block cells through batched rendering and caching.

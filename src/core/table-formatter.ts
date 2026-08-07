@@ -70,10 +70,7 @@ export function recommendedTableFormatMode(table: LosslessTable): TableFormatMod
   return "table-layout";
 }
 
-export function formatAsciiDocTable(
-  table: LosslessTable,
-  options: TableFormatOptions = {},
-): TableFormatResult {
+export function formatAsciiDocTable(table: LosslessTable, options: TableFormatOptions = {}): TableFormatResult {
   const mode = options.mode ?? "table-layout";
   const safetyDiagnostics = collectFormatSafetyDiagnostics(table);
   if (safetyDiagnostics.length > 0) {
@@ -81,14 +78,41 @@ export function formatAsciiDocTable(
       ok: false,
       mode,
       source: table.raw,
-      diagnostics: safetyDiagnostics,
+      diagnostics: safetyDiagnostics
     };
   }
 
-  if (mode === "cell-per-line") {
-    return formatCellPerLineTable(table);
+  const formatted = mode === "cell-per-line" ? formatCellPerLineTable(table) : formatTableLayout(table);
+  if (!formatted.ok) {
+    return formatted;
   }
-  return formatTableLayout(table);
+
+  let source = formatted.source;
+  let candidate = parseAsciiDocTable(source);
+  if (losesImplicitHeader(table, candidate)) {
+    source = insertStandaloneTableAttribute(candidate, "%header");
+    candidate = parseAsciiDocTable(source);
+  }
+
+  const semanticDiagnostic = formatterSemanticDiagnostic(table, candidate);
+  if (semanticDiagnostic !== undefined) {
+    return {
+      ok: false,
+      mode,
+      source: table.raw,
+      diagnostics: [semanticDiagnostic]
+    };
+  }
+
+  return {
+    ...formatted,
+    source,
+    changed: source !== table.raw,
+    summary: {
+      ...formatted.summary,
+      changedLineCount: countChangedLines(table.raw, source)
+    }
+  };
 }
 
 function formatTableLayout(table: LosslessTable): TableFormatResult {
@@ -115,7 +139,7 @@ function formatTableLayout(table: LosslessTable): TableFormatResult {
       replacements.push({
         start: row.range.start.offset,
         end: row.range.end.offset,
-        text: formatted,
+        text: formatted
       });
     }
   }
@@ -131,22 +155,22 @@ function formatTableLayout(table: LosslessTable): TableFormatResult {
       mode: "table-layout",
       changedLineCount: countChangedLines(table.raw, source),
       formattedRowCount,
-      preservedRowCount,
+      preservedRowCount
     },
-    diagnostics: [],
+    diagnostics: []
   };
 }
 
 function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
   const replacements: Replacement[] = [];
   const columnCount = logicalColumnCount(table);
-  const colsResult = ensureColumnCountAttribute(table.raw, columnCount, table.delimiter.startRaw);
+  const colsResult = ensureColumnCountAttribute(table, columnCount);
   if (!colsResult.ok) {
     return {
       ok: false,
       mode: "cell-per-line",
       source: table.raw,
-      diagnostics: colsResult.diagnostics,
+      diagnostics: colsResult.diagnostics
     };
   }
   replacements.push(...colsResult.replacements);
@@ -157,7 +181,7 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
       ok: false,
       mode: "cell-per-line",
       source: table.raw,
-      diagnostics: layoutResult.diagnostics,
+      diagnostics: layoutResult.diagnostics
     };
   }
   replacements.push(...layoutResult.replacements);
@@ -167,7 +191,7 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
       ok: false,
       mode: "cell-per-line",
       source: table.raw,
-      diagnostics: [unsafeBlockCellSourceDiagnostic()],
+      diagnostics: [unsafeBlockCellSourceDiagnostic()]
     };
   }
 
@@ -181,20 +205,16 @@ function formatCellPerLineTable(table: LosslessTable): TableFormatResult {
       mode: "cell-per-line",
       changedLineCount: countChangedLines(table.raw, source),
       formattedRowCount: table.rows.length,
-      preservedRowCount: 0,
+      preservedRowCount: 0
     },
-    diagnostics: [],
+    diagnostics: []
   };
 }
 
 function planCellPerLineLayout(
-  table: LosslessTable,
-):
-  | { readonly ok: true; readonly replacements: readonly Replacement[] }
-  | { readonly ok: false; readonly diagnostics: readonly TableDiagnostic[] } {
-  const rows = table.rows
-    .map((row) => ({ row, cells: sourceCells(row) }))
-    .filter((entry) => entry.cells.length > 0);
+  table: LosslessTable
+): { readonly ok: true; readonly replacements: readonly Replacement[] } | { readonly ok: false; readonly diagnostics: readonly TableDiagnostic[] } {
+  const rows = table.rows.map((row) => ({ row, cells: sourceCells(row) })).filter((entry) => entry.cells.length > 0);
   const firstCell = rows[0]?.cells[0];
   const lastCells = rows[rows.length - 1]?.cells;
   const lastCell = lastCells?.[lastCells.length - 1];
@@ -205,11 +225,9 @@ function planCellPerLineLayout(
         (segment) =>
           isUnsafeMovableRetainedSegment(segment.kind) &&
           segment.range.start.offset < lastCell.range.end.offset &&
-          segment.range.end.offset > firstCell.range.start.offset,
+          segment.range.end.offset > firstCell.range.start.offset
       ),
-      ...rows.flatMap(({ row }) =>
-        row.retained.filter((segment) => isUnsafeMovableRetainedSegment(segment.kind)),
-      ),
+      ...rows.flatMap(({ row }) => row.retained.filter((segment) => isUnsafeMovableRetainedSegment(segment.kind)))
     ];
     if (unsafeRetained.length > 0) {
       return {
@@ -218,9 +236,9 @@ function planCellPerLineLayout(
           {
             code: "format.unsafe-retained-content",
             severity: "error",
-            message: "Formatter is blocked because retained comment or unknown content cannot be safely moved.",
-          },
-        ],
+            message: "Formatter is blocked because retained comment or unknown content cannot be safely moved."
+          }
+        ]
       };
     }
   }
@@ -235,7 +253,7 @@ function planCellPerLineLayout(
       if (sourceSlice !== cell.raw || cell.raw !== canonicalRaw) {
         return {
           ok: false,
-          diagnostics: [unsafeBlockCellSourceDiagnostic()],
+          diagnostics: [unsafeBlockCellSourceDiagnostic()]
         };
       }
     }
@@ -252,7 +270,7 @@ function planCellPerLineLayout(
         replacements.push({
           start: cell.range.start.offset,
           end: cell.range.end.offset,
-          text: formatted,
+          text: formatted
         });
       }
     }
@@ -265,25 +283,13 @@ function planCellPerLineLayout(
   for (let index = 1; index < rows.length; index += 1) {
     const previousCells = rows[index - 1].cells;
     const currentCells = rows[index].cells;
-    replacements.push(
-      planCellBoundary(
-        table.raw,
-        previousCells[previousCells.length - 1],
-        currentCells[0],
-        2,
-      ),
-    );
+    replacements.push(planCellBoundary(table.raw, previousCells[previousCells.length - 1], currentCells[0], 2));
   }
 
   return { ok: true, replacements };
 }
 
-function planCellBoundary(
-  source: string,
-  previous: LosslessTableCell,
-  current: LosslessTableCell,
-  lineEndingCount: number,
-): Replacement {
+function planCellBoundary(source: string, previous: LosslessTableCell, current: LosslessTableCell, lineEndingCount: number): Replacement {
   const start = previous.range.end.offset;
   const end = current.range.start.offset;
   const lineEnding = resolveLineEndingAt(source, start);
@@ -319,7 +325,7 @@ function unsafeBlockCellSourceDiagnostic(): TableDiagnostic {
   return {
     code: "format.unsafe-block-cell-source",
     severity: "error",
-    message: "Formatter is blocked because a block or multiline cell does not match its canonical source slice.",
+    message: "Formatter is blocked because a block or multiline cell does not match its canonical source slice."
   };
 }
 
@@ -331,7 +337,7 @@ function collectFormatSafetyDiagnostics(table: LosslessTable): readonly TableDia
     diagnostics.push({
       code: "format.unsupported-data-table",
       severity: "error",
-      message: "Formatter supports only pipe-separated AsciiDoc tables.",
+      message: "Formatter supports only pipe-separated AsciiDoc tables."
     });
   }
 
@@ -339,7 +345,7 @@ function collectFormatSafetyDiagnostics(table: LosslessTable): readonly TableDia
     diagnostics.push({
       code: "format.nested-table",
       severity: "error",
-      message: "Formatter is blocked because this table may contain a nested table.",
+      message: "Formatter is blocked because this table may contain a nested table."
     });
   }
 
@@ -353,7 +359,7 @@ function collectFormatSafetyDiagnostics(table: LosslessTable): readonly TableDia
         diagnostics.push({
           code: "format.block-nested-table",
           severity: "error",
-          message: "Formatter is blocked because a block cell contains a nested table.",
+          message: "Formatter is blocked because a block cell contains a nested table."
         });
       }
     }
@@ -386,20 +392,11 @@ function formatColumnWidths(table: LosslessTable): readonly number[] {
 
 function shouldPreserveRowRaw(row: LosslessTableRow): boolean {
   return row.cells.some(
-    (cell) =>
-      (cell.duplicateIndex ?? 0) > 0 ||
-      cell.isBlockContent ||
-      cell.contentRaw.includes("\n") ||
-      cell.rowSpan > 1 ||
-      cell.colSpan > 1,
+    (cell) => (cell.duplicateIndex ?? 0) > 0 || cell.isBlockContent || cell.contentRaw.includes("\n") || cell.rowSpan > 1 || cell.colSpan > 1
   );
 }
 
-function formatRowAsTableLayout(
-  row: LosslessTableRow,
-  widths: readonly number[],
-  fallbackLineEnding: string,
-): string | undefined {
+function formatRowAsTableLayout(row: LosslessTableRow, widths: readonly number[], fallbackLineEnding: string): string | undefined {
   const cells = sourceCells(row);
   if (cells.length === 0) {
     return undefined;
@@ -454,20 +451,22 @@ function logicalColumnCount(table: LosslessTable): number {
   }
   return Math.max(
     table.attributes.columnCount ?? 0,
-    ...table.rows.map((row) =>
-      sourceCells(row).reduce((count, cell) => count + Math.max(1, cell.colSpan) * Math.max(1, cell.duplicateCount ?? 1), 0),
-    ),
-    1,
+    ...table.rows.map((row) => sourceCells(row).reduce((count, cell) => count + Math.max(1, cell.colSpan) * Math.max(1, cell.duplicateCount ?? 1), 0)),
+    1
   );
 }
 
 function ensureColumnCountAttribute(
-  source: string,
-  columnCount: number,
-  delimiterRaw: string,
+  table: LosslessTable,
+  columnCount: number
 ): { readonly ok: true; readonly replacements: readonly Replacement[] } | { readonly ok: false; readonly diagnostics: readonly TableDiagnostic[] } {
+  if (table.attributes.entries.some((entry) => entry.kind === "named" && entry.name === "cols")) {
+    return { ok: true, replacements: [] };
+  }
+
+  const source = table.raw;
   const lines = splitLines(source);
-  const delimiterLineIndex = lines.findIndex((line) => line.text.trim() === delimiterRaw);
+  const delimiterLineIndex = lines.findIndex((line) => line.text.trim() === table.delimiter.startRaw);
   if (delimiterLineIndex < 0) {
     return {
       ok: false,
@@ -475,49 +474,22 @@ function ensureColumnCountAttribute(
         {
           code: "format.table-delimiter-not-found",
           severity: "error",
-          message: "Formatter could not find the table delimiter.",
-        },
-      ],
+          message: "Formatter could not find the table delimiter."
+        }
+      ]
     };
   }
 
-  const attributeLine = findTableAttributeLine(lines, delimiterLineIndex);
-  if (attributeLine === undefined) {
-    const insertionOffset = lines[delimiterLineIndex].offset;
-    return {
-      ok: true,
-      replacements: [
-        {
-          start: insertionOffset,
-          end: insertionOffset,
-          text: `[cols=${columnCount}*]${resolveLineEndingAt(source, insertionOffset)}`,
-        },
-      ],
-    };
-  }
-
-  const text = attributeLine.text;
-  const content = text.slice(1, -1).trim();
-  let updated: string;
-  if (/\bcols\s*=/u.test(content)) {
-    updated = text.replace(/\bcols\s*=\s*(?:"[^"]*"|'[^']*'|[^,\]]+)/u, `cols=${columnCount}*`);
-  } else {
-    updated = `[cols=${columnCount}*${content.length > 0 ? `,${content}` : ""}]`;
-  }
-
-  if (updated === text) {
-    return { ok: true, replacements: [] };
-  }
-
+  const insertionOffset = lines[delimiterLineIndex].offset;
   return {
     ok: true,
     replacements: [
       {
-        start: attributeLine.offset,
-        end: attributeLine.offset + attributeLine.text.length,
-        text: updated,
-      },
-    ],
+        start: insertionOffset,
+        end: insertionOffset,
+        text: `[cols=${columnCount}*]${resolveLineEndingAt(source, insertionOffset)}`
+      }
+    ]
   };
 }
 
@@ -537,26 +509,105 @@ function splitLines(source: string): readonly SourceLine[] {
   return lines;
 }
 
-function findTableAttributeLine(lines: readonly SourceLine[], delimiterLineIndex: number): SourceLine | undefined {
-  for (let index = delimiterLineIndex - 1; index >= 0; index -= 1) {
-    const text = lines[index].text.trim();
-    if (text.length === 0 || text.startsWith(".")) {
-      continue;
-    }
-    if (text.startsWith("[") && text.endsWith("]")) {
-      return lines[index];
-    }
-    return undefined;
-  }
-  return undefined;
-}
-
 function applyReplacements(source: string, replacements: readonly Replacement[]): string {
   return [...replacements]
     .sort((left, right) => right.start - left.start)
     .reduce((current, replacement) => {
       return `${current.slice(0, replacement.start)}${replacement.text}${current.slice(replacement.end)}`;
     }, source);
+}
+
+function losesImplicitHeader(before: LosslessTable, after: LosslessTable): boolean {
+  const options = new Set(before.attributes.options);
+  return !options.has("header") && !options.has("noheader") && before.rows[0]?.role === "header" && after.rows[0]?.role !== "header";
+}
+
+function insertStandaloneTableAttribute(table: LosslessTable, attribute: string): string {
+  const lines = splitLines(table.raw);
+  const delimiterLine = lines.find((line) => line.text.trim() === table.delimiter.startRaw);
+  if (delimiterLine === undefined) {
+    return table.raw;
+  }
+  const insertion = `[${attribute}]${resolveLineEndingAt(table.raw, delimiterLine.offset)}`;
+  return table.raw.slice(0, delimiterLine.offset) + insertion + table.raw.slice(delimiterLine.offset);
+}
+
+function formatterSemanticDiagnostic(before: LosslessTable, after: LosslessTable): TableDiagnostic | undefined {
+  if (
+    after.errors.length > 0 ||
+    before.rows.length !== after.rows.length ||
+    !sameValues(
+      before.rows.map((row) => row.role),
+      after.rows.map((row) => row.role)
+    )
+  ) {
+    return {
+      code: "format.row-role-changed",
+      severity: "error",
+      message: "Formatter is blocked because formatting would change table row roles."
+    };
+  }
+
+  const beforeGrid = projectGridModel(before);
+  const afterGrid = projectGridModel(after);
+  const existingColsSignature = colsSourceSignature(before);
+  if (
+    afterGrid.diagnostics.length > 0 ||
+    beforeGrid.rowCount !== afterGrid.rowCount ||
+    beforeGrid.columnCount !== afterGrid.columnCount ||
+    !sameValues(normalizedColumnSemantics(before, beforeGrid.columnCount), normalizedColumnSemantics(after, afterGrid.columnCount)) ||
+    !sameValues(gridTopology(beforeGrid), gridTopology(afterGrid)) ||
+    (existingColsSignature.length > 0 && !sameValues(existingColsSignature, colsSourceSignature(after)))
+  ) {
+    return {
+      code: "format.column-semantics-changed",
+      severity: "error",
+      message: "Formatter is blocked because formatting would change column or Grid semantics."
+    };
+  }
+  return undefined;
+}
+
+function normalizedColumnSemantics(table: LosslessTable, columnCount: number): readonly object[] {
+  return Array.from({ length: columnCount }, (_, index) => {
+    const column = table.attributes.columns[index];
+    return {
+      widthRaw: column?.widthRaw,
+      horizontalAlign: column?.horizontalAlign,
+      verticalAlign: column?.verticalAlign,
+      style: column?.style
+    };
+  });
+}
+
+function gridTopology(grid: ReturnType<typeof projectGridModel>): readonly object[][] {
+  return grid.cells.map((row) =>
+    row.map((cell) =>
+      cell.kind === "covered"
+        ? { kind: cell.kind, row: cell.row, col: cell.col }
+        : {
+            kind: cell.kind,
+            row: cell.row,
+            col: cell.col,
+            rowSpan: cell.rowSpan,
+            colSpan: cell.colSpan,
+            role: cell.role,
+            style: cell.style,
+            horizontalAlign: cell.horizontalAlign,
+            verticalAlign: cell.verticalAlign
+          }
+    )
+  );
+}
+
+function colsSourceSignature(table: LosslessTable): readonly object[] {
+  return table.attributes.entries
+    .filter((entry) => entry.kind === "named" && entry.name === "cols")
+    .map((entry) => ({ raw: entry.raw, value: entry.value, quote: entry.quote }));
+}
+
+function sameValues(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function isValidReplacementPlan(source: string, replacements: readonly Replacement[]): boolean {
