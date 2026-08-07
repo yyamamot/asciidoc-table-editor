@@ -14,7 +14,7 @@ const expectedRuntime = new Map([
   ["@asciidoctor/opal-runtime", "3.0.1"],
   ["glob", "8.1.0"],
   ["minimatch", "5.1.9"],
-  ["brace-expansion", "2.1.3"]
+  ["brace-expansion", "2.1.4"]
 ]);
 for (const [packageName, expectedVersion] of expectedRuntime) {
   checkVendoredPackage(packageName, expectedVersion);
