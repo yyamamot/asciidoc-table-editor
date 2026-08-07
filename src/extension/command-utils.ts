@@ -2,10 +2,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import * as vscode from "vscode";
 import { createWebviewAppModel, renderTableEditorHtml, type WebviewAppModel } from "../app";
-import { findAsciiDocTableBlock, parseAsciiDocTable, projectGridModel, type TableDiagnostic } from "../core";
+import { parseAsciiDocTable, projectGridModel, type TableDiagnostic } from "../core";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorPreview } from "./table-editor-preview";
 import type { CellContentReplacement, OpenTableEditorTarget } from "./types";
+import type { TableEditorSessionTarget } from "./table-editor-session-target";
 
 export type OpenTableEditorCommandResult =
   | {
@@ -57,12 +58,12 @@ export function writeUiReviewSnapshotIfRequested(snapshot: unknown): void {
 export async function refreshPanelFromEditor(
   editor: vscode.TextEditor,
   panel: vscode.WebviewPanel,
-  tableStartOffset: number,
+  target: TableEditorSessionTarget,
   selectedSourceCellId?: string,
   diagnostics: readonly TableDiagnostic[] = []
 ): Promise<void> {
-  const source = editor.document.getText();
-  const tableBlock = findAsciiDocTableBlock(source, tableStartOffset);
+  const resolution = target.resolve(editor.document);
+  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
   const model = tableBlock === undefined
     ? createMissingTableFallbackModel()
     : await createRefreshedTableEditorModel(tableBlock.raw, diagnostics);
@@ -94,8 +95,9 @@ export function createMissingTableFallbackModel(): WebviewAppModel {
   });
 }
 
-export function requiresFullRefreshForPlainCellUpdate(editor: vscode.TextEditor, tableStartOffset: number, sourceCellId: string): boolean {
-  const tableBlock = findAsciiDocTableBlock(editor.document.getText(), tableStartOffset);
+export function requiresFullRefreshForPlainCellUpdate(editor: vscode.TextEditor, target: TableEditorSessionTarget, sourceCellId: string): boolean {
+  const resolution = target.resolve(editor.document);
+  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
   if (tableBlock === undefined) {
     return true;
   }
@@ -104,8 +106,9 @@ export function requiresFullRefreshForPlainCellUpdate(editor: vscode.TextEditor,
   return (cell?.duplicateCount ?? 1) > 1;
 }
 
-export function requiresFullRefreshForPlainCellContentsUpdate(editor: vscode.TextEditor, tableStartOffset: number, replacements: readonly CellContentReplacement[]): boolean {
-  const tableBlock = findAsciiDocTableBlock(editor.document.getText(), tableStartOffset);
+export function requiresFullRefreshForPlainCellContentsUpdate(editor: vscode.TextEditor, target: TableEditorSessionTarget, replacements: readonly CellContentReplacement[]): boolean {
+  const resolution = target.resolve(editor.document);
+  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
   if (tableBlock === undefined) {
     return true;
   }
@@ -114,8 +117,9 @@ export function requiresFullRefreshForPlainCellContentsUpdate(editor: vscode.Tex
   return replacements.some((replacement) => (cellsById.get(replacement.sourceCellId)?.duplicateCount ?? 1) > 1);
 }
 
-export async function renderCurrentTablePreview(editor: vscode.TextEditor, tableStartOffset: number): Promise<Awaited<ReturnType<typeof renderTableEditorPreview>> | undefined> {
-  const tableBlock = findAsciiDocTableBlock(editor.document.getText(), tableStartOffset);
+export async function renderCurrentTablePreview(editor: vscode.TextEditor, target: TableEditorSessionTarget): Promise<Awaited<ReturnType<typeof renderTableEditorPreview>> | undefined> {
+  const resolution = target.resolve(editor.document);
+  const tableBlock = resolution.status === "ready" ? resolution.tableBlock : undefined;
   if (tableBlock === undefined) {
     return undefined;
   }

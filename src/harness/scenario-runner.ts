@@ -27,6 +27,7 @@ export type ScenarioStep =
       readonly metaKey?: boolean;
     }
   | { readonly id: string; readonly action: "select-cell"; readonly sourceCellId: string }
+  | { readonly id: string; readonly action: "set-cell-draft"; readonly sourceCellId: string; readonly value: string }
   | { readonly id: string; readonly action: "button"; readonly button: string }
   | {
       readonly id: string;
@@ -295,6 +296,13 @@ function parseScenarioStep(value: unknown): ScenarioStep {
       };
     case "select-cell":
       return { id, action: "select-cell", sourceCellId: requiredString(value, "sourceCellId") };
+    case "set-cell-draft":
+      return {
+        id,
+        action: "set-cell-draft",
+        sourceCellId: requiredString(value, "sourceCellId"),
+        value: requiredString(value, "value")
+      };
     case "button":
       return { id, action: "button", button: requiredString(value, "button") };
     case "context-menu":
@@ -374,6 +382,7 @@ function targetForStep(step: ScenarioStep): string {
     case "set-editor-mode": return step.mode;
     case "keyboard": return step.key;
     case "select-cell": return step.sourceCellId;
+    case "set-cell-draft": return step.sourceCellId;
     case "button": return step.button;
     case "context-menu": return step.item ?? step.sourceCellId;
   }

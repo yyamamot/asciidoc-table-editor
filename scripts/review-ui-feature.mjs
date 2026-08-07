@@ -27,7 +27,8 @@ const scenarioAliases = new Map([
   ["unsupported-data-table", { path: "fixtures/harness/unsupported-data-table/scenario.json" }],
   ["nested-table-non-goal", { path: "fixtures/harness/nested-table-non-goal/scenario.json" }],
   ["preview-comprehensive", { path: "fixtures/harness/preview-comprehensive/scenario.json" }],
-  ["format-table-preview", { path: "fixtures/harness/format-table-preview/scenario.json" }]
+  ["format-table-preview", { path: "fixtures/harness/format-table-preview/scenario.json" }],
+  ["stale-session-conflict", { path: "fixtures/harness/stale-session-conflict/scenario.json" }]
 ]);
 
 let options;

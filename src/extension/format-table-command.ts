@@ -9,6 +9,7 @@ import { createTableEditorPanel } from "./panel";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorPreview } from "./table-editor-preview";
 import type { OpenTableEditorTarget } from "./types";
+import { createTableEditorSessionTarget } from "./table-editor-session-target";
 
 export function registerFormatTableCommand(): vscode.Disposable {
   return vscode.commands.registerCommand("asciidocTable.formatTable", async (target?: OpenTableEditorTarget): Promise<OpenTableEditorCommandResult> => {
@@ -74,11 +75,12 @@ export function registerFormatTableCommand(): vscode.Disposable {
       formatReview
     });
     const html = renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels());
-    const tableStartOffset = tableBlock.range.start.offset;
     const panel = createTableEditorPanel();
+    const sessionTarget = createTableEditorSessionTarget(editor.document, tableBlock);
+    panel.onDidDispose(() => sessionTarget.dispose());
     registerTableEditorMessageRouter(panel, {
       uiReviewSnapshot: writeUiReviewSnapshotIfRequested,
-      applyFormatTable: (message) => void applyFormatReview(editor, panel, tableStartOffset, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId)
+      applyFormatTable: (message) => void applyFormatReview(editor, panel, sessionTarget, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId)
     });
     panel.webview.html = html;
     return {

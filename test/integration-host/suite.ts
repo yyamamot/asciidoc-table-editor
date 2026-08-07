@@ -7,6 +7,7 @@ import { testAsciiDocTableFormatCodeLensShowsReview } from "./format.test";
 import { testHorizontalMergeWriteBackCommand, testHorizontalUnmergeWriteBackCommand } from "./merge.test";
 import { testRowColumnStructureEditCommands } from "./structure.test";
 import { testPlainCellContentUndoRedoUsesVSCodeStack } from "./undo-redo.test";
+import { testSessionTargetBlocksTargetChangesAndDeletionAtomically, testSessionTargetDetectsMultipleAnchorCandidates, testSessionTargetDoesNotFallBackToIdenticalTable, testSessionTargetReacquiresAfterUndoRedo, testSessionTargetSafelyRebasesChangesBeforeTable, testSessionTargetTracksUtf16MultiChangeBeforeTable, testStaleParallelSessionCannotOverwriteFirstSession, testUndoDoesNotConsumeNewerTargetExternalDocumentEdit, testUndoRedoDoesNotRecoverIndeterminateSession, testUndoRedoPreflightPreservesExternallyChangedTarget, testUndoWithoutSessionHistoryLeavesDocumentUnchanged } from "./session-target.test";
 import { testColsAttributeBatchWriteBackCommand, testCustomSeparatorWriteBackCommand, testPlainCellContentsBatchWriteBackCommand, testPlainCellContentWriteBackCommand, testUnsafePlainCellContentLeavesDocumentUnchanged, testUnsafePlainCellContentsBatchLeavesDocumentUnchanged, testUnsafePlainToBlockContentLeavesDocumentUnchanged } from "./writeback.test";
 
 export async function run(): Promise<void> {
@@ -26,6 +27,17 @@ export async function run(): Promise<void> {
   await testRowColumnStructureEditCommands();
   await testUnsupportedCsvTableFallsBack();
   await testPlainCellContentUndoRedoUsesVSCodeStack();
+  await testSessionTargetSafelyRebasesChangesBeforeTable();
+  await testSessionTargetTracksUtf16MultiChangeBeforeTable();
+  await testSessionTargetBlocksTargetChangesAndDeletionAtomically();
+  await testSessionTargetDoesNotFallBackToIdenticalTable();
+  await testStaleParallelSessionCannotOverwriteFirstSession();
+  await testSessionTargetReacquiresAfterUndoRedo();
+  await testUndoRedoPreflightPreservesExternallyChangedTarget();
+  await testUndoRedoDoesNotRecoverIndeterminateSession();
+  await testUndoWithoutSessionHistoryLeavesDocumentUnchanged();
+  await testUndoDoesNotConsumeNewerTargetExternalDocumentEdit();
+  await testSessionTargetDetectsMultipleAnchorCandidates();
   await testBlockCellSourceRevealCommand();
   await testBlockCellContentWriteBackCommandUsesVSCodeStack();
   await testUnsafeBlockCellContentLeavesDocumentUnchanged();

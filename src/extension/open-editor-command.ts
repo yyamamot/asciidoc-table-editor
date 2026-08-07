@@ -9,6 +9,7 @@ import { applyAppearanceUpdate, applyBlockCellSourceUpdate, applyCellContentsUpd
 import { createNonce, resolveTargetEditor, writeUiReviewSnapshotIfRequested, type OpenTableEditorCommandResult } from "./command-utils";
 import type { CellContentReplacement, OpenTableEditorTarget, RowColumnEditMessage } from "./types";
 import { applyImportedTablePasteToEditor } from "./table-editor-document-edits";
+import { createTableEditorSessionTarget } from "./table-editor-session-target";
 
 export function registerOpenEditorCommand(): vscode.Disposable {
   return vscode.commands.registerCommand("asciidocTable.openEditor", async (target?: OpenTableEditorTarget): Promise<OpenTableEditorCommandResult> => {
@@ -35,32 +36,33 @@ export function registerOpenEditorCommand(): vscode.Disposable {
     const preview = await renderTableEditorPreview(tableBlock.raw);
     const model = createWebviewAppModel(grid, { ...preview, tableAttributes: parsed.attributes });
     const html = renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels());
-    const tableStartOffset = tableBlock.range.start.offset;
     const panel = createTableEditorPanel();
+    const sessionTarget = createTableEditorSessionTarget(editor.document, tableBlock);
+    panel.onDidDispose(() => sessionTarget.dispose());
     let formatReview: WebviewAppModel["formatReview"] = model.formatReview;
     registerTableEditorMessageRouter(panel, {
       uiReviewSnapshot: writeUiReviewSnapshotIfRequested,
-      updateCellContent: (message) => void applyCellContentUpdate(editor, panel, tableStartOffset, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }),
-      updateCellContents: (message) => void applyCellContentsUpdate(editor, panel, tableStartOffset, message as { replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
-      pasteRectangularTable: (message) => void applyRectangularPaste(editor, panel, tableStartOffset, message as { startSourceCellId: string; rows: readonly (readonly string[])[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
-      pasteImportedTable: (message) => void applyImportedPaste(editor, panel, tableStartOffset, message as Parameters<typeof applyImportedTablePasteToEditor>[2] & { selectedSourceCellId?: string }),
-      updateBlockCellSource: (message) => void applyBlockCellSourceUpdate(editor, panel, tableStartOffset, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }),
-      replaceCellWithBlockSource: (message) => void applyPlainCellBlockSourceReplace(editor, panel, tableStartOffset, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
-      mergeCells: (message) => void applyMergeCells(editor, panel, tableStartOffset, message as { sourceCellIds: string[]; selectedSourceCellId?: string }),
-      unmergeCell: (message) => void applyUnmergeCell(editor, panel, tableStartOffset, message as { sourceCellId: string; selectedSourceCellId?: string }),
-      rowColumnEdit: (message) => void applyRowColumnEdit(editor, panel, tableStartOffset, message as RowColumnEditMessage),
-      revealSourceCell: (message) => void applyRevealSourceCell(editor, panel, tableStartOffset, message as { sourceCellId: string; selectedSourceCellId?: string }),
-      undoRedo: (message) => void applyUndoRedo(editor, panel, tableStartOffset, message as { type: "request-undo" | "request-redo"; selectedSourceCellId?: string }),
-      requestFormatTable: (message) => void openFormatReviewInPanel(editor, panel, tableStartOffset, (message as { selectedSourceCellId?: string }).selectedSourceCellId).then((nextFormatReview) => {
+      updateCellContent: (message) => void applyCellContentUpdate(editor, panel, sessionTarget, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }),
+      updateCellContents: (message) => void applyCellContentsUpdate(editor, panel, sessionTarget, message as { replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
+      pasteRectangularTable: (message) => void applyRectangularPaste(editor, panel, sessionTarget, message as { startSourceCellId: string; rows: readonly (readonly string[])[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
+      pasteImportedTable: (message) => void applyImportedPaste(editor, panel, sessionTarget, message as Parameters<typeof applyImportedTablePasteToEditor>[2] & { selectedSourceCellId?: string }),
+      updateBlockCellSource: (message) => void applyBlockCellSourceUpdate(editor, panel, sessionTarget, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string }),
+      replaceCellWithBlockSource: (message) => void applyPlainCellBlockSourceReplace(editor, panel, sessionTarget, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] }),
+      mergeCells: (message) => void applyMergeCells(editor, panel, sessionTarget, message as { sourceCellIds: string[]; selectedSourceCellId?: string }),
+      unmergeCell: (message) => void applyUnmergeCell(editor, panel, sessionTarget, message as { sourceCellId: string; selectedSourceCellId?: string }),
+      rowColumnEdit: (message) => void applyRowColumnEdit(editor, panel, sessionTarget, message as RowColumnEditMessage),
+      revealSourceCell: (message) => void applyRevealSourceCell(editor, panel, sessionTarget, message as { sourceCellId: string; selectedSourceCellId?: string }),
+      undoRedo: (message) => void applyUndoRedo(editor, panel, sessionTarget, message as { type: "request-undo" | "request-redo"; selectedSourceCellId?: string }),
+      requestFormatTable: (message) => void openFormatReviewInPanel(editor, panel, sessionTarget, (message as { selectedSourceCellId?: string }).selectedSourceCellId).then((nextFormatReview) => {
         if (nextFormatReview !== undefined) {
           formatReview = nextFormatReview;
         }
       }),
-      applyFormatTable: (message) => void applyFormatReview(editor, panel, tableStartOffset, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId),
-      updateCellStyle: (message) => void applyCellStyleUpdate(editor, panel, tableStartOffset, message as { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }),
-      updateHeaderFooter: (message) => void applyHeaderFooterUpdate(editor, panel, tableStartOffset, message as { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }),
-      updateColumnSpec: (message) => void applyColumnSpecUpdate(editor, panel, tableStartOffset, message as { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }),
-      updateTableAppearance: (message) => void applyAppearanceUpdate(editor, panel, tableStartOffset, message as { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string })
+      applyFormatTable: (message) => void applyFormatReview(editor, panel, sessionTarget, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId),
+      updateCellStyle: (message) => void applyCellStyleUpdate(editor, panel, sessionTarget, message as { sourceCellIds: readonly string[]; style?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; selectedSourceCellId?: string }),
+      updateHeaderFooter: (message) => void applyHeaderFooterUpdate(editor, panel, sessionTarget, message as { header?: boolean; footer?: boolean; noheader?: boolean; selectedSourceCellId?: string }),
+      updateColumnSpec: (message) => void applyColumnSpecUpdate(editor, panel, sessionTarget, message as { columnIndex: number; widthRaw?: string; horizontalAlign?: "left" | "center" | "right"; verticalAlign?: "top" | "middle" | "bottom"; style?: string; selectedSourceCellId?: string }),
+      updateTableAppearance: (message) => void applyAppearanceUpdate(editor, panel, sessionTarget, message as { title?: string; id?: string; role?: string; width?: string; autowidth?: boolean; frame?: string; grid?: string; stripes?: string; selectedSourceCellId?: string })
     });
     panel.webview.html = html;
     return {

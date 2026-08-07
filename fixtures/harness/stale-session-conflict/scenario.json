@@ -1,0 +1,14 @@
+{
+  "id": "stale-session-conflict",
+  "fixture": "fixtures/lossless/minimal-basic/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "set-target-draft", "action": "set-cell-draft", "sourceCellId": "cell:0:1", "value": "Bee draft" },
+    { "id": "show-stale-conflict", "action": "command", "command": "asciidocTable.test.showStaleSessionConflict" }
+  ],
+  "assertions": [
+    { "id": "stale-session-draft-remains-visible", "type": "ui-review" }
+  ]
+}

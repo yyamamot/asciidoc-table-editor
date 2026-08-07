@@ -18,7 +18,7 @@ const scenarioAliases = new Map([
     "table-spec-header-footer", "table-spec-column-cell-spec", "official-table-syntax-compat", "table-attribute-preview",
     "block-cell-boundary", "clipboard-auto-expand-paste", "clipboard-merged-cell-paste", "block-cell-paste", "duplicate-cells",
     "clipboard-rich-content-diagnostics", "unsupported-data-table", "nested-table-non-goal", "preview-comprehensive",
-    "format-table-preview"
+    "format-table-preview", "stale-session-conflict"
   ].map((id) => [id, `fixtures/harness/${id}/scenario.json`]),
   ["large-table-scroll", "fixtures/harness/large-table/scenario.json"]
 ]);
@@ -295,6 +295,19 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
           requireHarness(state, step, scenarioRunner).modeButton(state.editorMode).click();
           return { target: step.command, details: { adapter: "webview-integration-harness", domEvent: "click", editorMode: actualEditorMode(state.harness) } };
         }
+        if (step.command === "asciidocTable.test.showStaleSessionConflict") {
+          const diagnostic = {
+            code: "writeback.table-changed",
+            severity: "error",
+            message: "Target AsciiDoc table block changed outside the editor"
+          };
+          requireHarness(state, step, scenarioRunner).dispatchExtensionMessage({
+            type: "cell-content-update-result",
+            result: { ok: false, diagnostics: [diagnostic] }
+          });
+          state.diagnostics = [diagnostic];
+          return { target: step.command, details: { adapter: "simulated-host", postedMessage: "cell-content-update-result", diagnosticCode: diagnostic.code } };
+        }
         throw new scenarioRunner.ScenarioBlockedError(`Unsupported Host command: ${step.command}`, "unsupported-host-command");
       }
       if (!state.editorOpened) {
@@ -337,6 +350,15 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
       if (step.action === "select-cell") {
         requireHarness(state, step, scenarioRunner).cell(step.sourceCellId).focus();
         return { target: step.sourceCellId, details: { domEvent: "focus", activeSourceCellId: activeSourceCellId(state.harness) } };
+      }
+      if (step.action === "set-cell-draft") {
+        const harness = requireHarness(state, step, scenarioRunner);
+        harness.cell(step.sourceCellId).focus();
+        const editor = harness.textarea("contentRaw");
+        editor.value = step.value;
+        editor.dispatchEvent(new harness.window.Event("input", { bubbles: true }));
+        state.expectedDraft = step.value;
+        return { target: step.sourceCellId, details: { domEvent: "focus+input", draftLength: step.value.length } };
       }
       if (step.action === "button") {
         const harness = requireHarness(state, step, scenarioRunner);
@@ -582,6 +604,15 @@ function evaluateDomAssertion(id, state, core) {
       return result(state.source.includes("*Rich*") && state.source.includes("_Text_"), "Rich clipboard markup was mapped through the actual paste/write-back path.");
     case "format-review-visible":
       return result(Boolean(document.querySelector("[data-review-target='format-review']:not([hidden])")), "Format review is visible after the format command.");
+    case "stale-session-draft-remains-visible": {
+      const diagnosticText = document.querySelector("[data-review-target='diagnostics']")?.textContent ?? "";
+      const draft = document.querySelector("textarea[data-cell-editor-control='contentRaw']")?.value;
+      return result(
+        diagnosticText.includes("writeback.table-changed") && draft === state.expectedDraft,
+        "A stale-session conflict is visible without replacing the unsent cell draft.",
+        `diagnostic=${diagnosticText.includes("writeback.table-changed")}, draftRetained=${draft === state.expectedDraft}`
+      );
+    }
     default:
       return undefined;
   }
