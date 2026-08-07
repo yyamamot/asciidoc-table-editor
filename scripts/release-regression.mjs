@@ -20,6 +20,7 @@ const requiredCommands = [
   ["pnpm", ["run", "test:package"], "VSIX/package smoke"],
   ["pnpm", ["run", "check:asciidoctor-compat"], "Asciidoctor compatibility"],
   ["pnpm", ["run", "perf:large-table"], "large table performance"],
+  ["pnpm", ["run", "perf:preview-block-cells"], "Preview block-cell performance"],
   ["pnpm", ["run", "perf:codelens"], "CodeLens table detection performance"],
   ["pnpm", ["run", "review:ui:deterministic"], "deterministic UI review matrix", deterministicReviewEnv]
 ];
@@ -180,7 +181,7 @@ function printUsage(exitCode) {
     "Usage: pnpm run release:regression -- [--visual] [--require-model-review]",
     "",
     "Runs the release candidate regression gates:",
-    "  verify, test:package, check:asciidoctor-compat, perf:large-table, perf:codelens, review:ui:deterministic",
+    "  verify, test:package, check:asciidoctor-compat, perf:large-table, perf:preview-block-cells, perf:codelens, review:ui:deterministic",
     "",
     "Options:",
     "  --visual               also run Extension Development Host screenshot scenarios for table-grid and preview-comprehensive",

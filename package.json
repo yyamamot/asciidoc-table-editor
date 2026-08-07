@@ -102,6 +102,7 @@
     "test:integration:host:matrix": "node ./scripts/run-integration-host.mjs --target matrix",
     "test:nightly:visual": "node ./scripts/nightly-visual.mjs",
     "perf:large-table": "node ./scripts/perf-large-table.mjs",
+    "perf:preview-block-cells": "node ./scripts/perf-preview-block-cells.mjs",
     "perf:codelens": "node ./scripts/perf-codelens.mjs",
     "review:ui:deterministic": "node ./scripts/review-ui-llm.mjs",
     "review:ui:deterministic:scenario": "node ./scripts/review-ui-llm.mjs --single",

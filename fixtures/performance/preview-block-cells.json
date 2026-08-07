@@ -1,0 +1,6 @@
+{
+  "cases": [
+    { "id": "50-block-cells", "blockCellCount": 50 },
+    { "id": "100-block-cells", "blockCellCount": 100 }
+  ]
+}

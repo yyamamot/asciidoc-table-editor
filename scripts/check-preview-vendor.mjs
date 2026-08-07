@@ -30,7 +30,7 @@ function renderWithWorker(source) {
   return new Promise((resolve, reject) => {
     const worker = new Worker(workerPath, {
       workerData: {
-        source,
+        sources: [source],
         vendorNodeModulesPath
       }
     });
@@ -42,11 +42,12 @@ function renderWithWorker(source) {
     worker.once("message", (message) => {
       clearTimeout(timeout);
       void worker.terminate();
-      if (message?.ok === true && typeof message.html === "string") {
-        resolve(message.html);
+      const result = Array.isArray(message?.results) ? message.results[0] : undefined;
+      if (result?.index === 0 && result.ok === true && typeof result.html === "string") {
+        resolve(result.html);
         return;
       }
-      reject(new Error(message?.message ?? "Preview worker smoke failed."));
+      reject(new Error(result?.message ?? "Preview worker smoke failed."));
     });
     worker.once("error", (error) => {
       clearTimeout(timeout);

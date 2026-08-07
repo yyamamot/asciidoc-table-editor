@@ -3,7 +3,7 @@ const { createRequire } = require("node:module");
 const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
 
-function renderPreview() {
+function createProcessor() {
   const packageJsonPath = join(workerData.vendorNodeModulesPath, "@asciidoctor", "core", "package.json");
   const requireFromVendor = createRequire(packageJsonPath);
   const manifest = JSON.parse(readFileSync(packageJsonPath, "utf8"));
@@ -12,8 +12,11 @@ function renderPreview() {
   }
 
   const factory = requireFromVendor("@asciidoctor/core");
-  const processor = factory();
-  return String(processor.convert(workerData.source, {
+  return factory();
+}
+
+function renderPreview(processor, source) {
+  return String(processor.convert(source, {
     safe: "safe",
     header_footer: false,
     attributes: {
@@ -23,13 +26,23 @@ function renderPreview() {
 }
 
 try {
+  const processor = createProcessor();
+  const sources = Array.isArray(workerData.sources) ? workerData.sources : [];
   parentPort.postMessage({
-    ok: true,
-    html: renderPreview()
+    results: sources.map((source, index) => {
+      try {
+        return { index, ok: true, html: renderPreview(processor, source) };
+      } catch (error) {
+        return { index, ok: false, message: error instanceof Error ? error.message : String(error) };
+      }
+    })
   });
 } catch (error) {
   parentPort.postMessage({
-    ok: false,
-    message: error instanceof Error ? error.message : String(error)
+    results: (Array.isArray(workerData.sources) ? workerData.sources : []).map((_source, index) => ({
+      index,
+      ok: false,
+      message: error instanceof Error ? error.message : String(error)
+    }))
   });
 }
