@@ -2,6 +2,7 @@ import type * as vscode from "vscode";
 import {
   isApplyFormatTableMessage,
   hasTableEditorOperationEnvelope,
+  isTableEditorMessageWithinByteQuota,
   isMergeCellsMessage,
   isPasteImportedTableMessage,
   isPasteRectangularTableMessage,
@@ -18,12 +19,16 @@ import {
   isUpdateCellContentsMessage,
   isUpdateColumnSpecMessage,
   isUpdateHeaderFooterMessage,
-  isUpdateTableAppearanceMessage
+  isUpdateTableAppearanceMessage,
+  mutationResultTypeForMessage,
+  type InvalidTableEditorMutationMessage,
+  type TableEditorMutationResultType
 } from "./table-editor-messages";
 import { operationIdOf, TableEditorMutationQueue } from "./table-editor-mutation-queue";
 
 export interface TableEditorMessageHandlers {
   readonly uiReviewSnapshot?: (snapshot: unknown) => void;
+  readonly invalidMessage?: (message: InvalidTableEditorMutationMessage, resultType: TableEditorMutationResultType) => void | Promise<void>;
   readonly mutationError?: (message: unknown, error: unknown) => void | Promise<void>;
   readonly updateCellContent?: (message: unknown) => void | Promise<void>;
   readonly updateCellContents?: (message: unknown) => void | Promise<void>;
@@ -49,8 +54,33 @@ export function registerTableEditorMessageRouter(
   handlers: TableEditorMessageHandlers
 ): vscode.Disposable {
   const queue = new TableEditorMutationQueue();
+  const rejectInvalid = (message: unknown): void => {
+    const resultType = mutationResultTypeForMessage(message);
+    const type = (message as { type?: unknown } | undefined)?.type;
+    const operationId = operationIdOf(message);
+    if (resultType === undefined || typeof type !== "string" || operationId === undefined) return;
+    const revisionToken = typeof (message as { revisionToken?: unknown }).revisionToken === "string" &&
+      (message as { revisionToken: string }).revisionToken.length > 0
+      ? (message as { revisionToken: string }).revisionToken
+      : undefined;
+    const invalidMessage: InvalidTableEditorMutationMessage = {
+      type,
+      operationId,
+      ...(revisionToken === undefined ? {} : { revisionToken })
+    };
+    void queue.enqueue(invalidMessage.operationId, async () => {
+      try {
+        await handlers.invalidMessage?.(invalidMessage, resultType);
+      } catch (error: unknown) {
+        await handlers.mutationError?.(invalidMessage, error);
+      }
+    }).catch(() => undefined);
+  };
   const enqueue = (message: unknown, handler: ((message: unknown) => void | Promise<void>) | undefined): void => {
-    if (handler === undefined || !hasTableEditorOperationEnvelope(message)) return;
+    if (handler === undefined || !hasTableEditorOperationEnvelope(message)) {
+      rejectInvalid(message);
+      return;
+    }
     const operationId = operationIdOf(message);
     if (operationId === undefined) return;
     void queue.enqueue(operationId, async () => {
@@ -62,6 +92,10 @@ export function registerTableEditorMessageRouter(
     }).catch(() => undefined);
   };
   const messageSubscription = panel.webview.onDidReceiveMessage((message: unknown) => {
+    if (!isTableEditorMessageWithinByteQuota(message)) {
+      rejectInvalid(message);
+      return;
+    }
     if (isUiReviewSnapshotMessage(message)) {
       handlers.uiReviewSnapshot?.(message.snapshot);
       return;
@@ -132,7 +166,9 @@ export function registerTableEditorMessageRouter(
     }
     if (isUpdateTableAppearanceMessage(message)) {
       enqueue(message, handlers.updateTableAppearance);
+      return;
     }
+    rejectInvalid(message);
   });
   const panelSubscription = panel.onDidDispose(() => queue.dispose());
   return {

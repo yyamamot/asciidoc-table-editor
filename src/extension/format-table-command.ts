@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { createWebviewAppModel, renderTableEditorHtml } from "../app";
 import { findAsciiDocTableBlock, formatAsciiDocTable, parseAsciiDocTable, projectGridModel, recommendedTableFormatMode, type TableFormatMode, type TableFormatResult } from "../core";
-import { applyFormatReview, reportMutationHandlerFailure, type MutationRequestMetadata } from "./command-webview-handlers";
+import { applyFormatReview, reportInvalidTableEditorMessage, reportMutationHandlerFailure, type MutationRequestMetadata } from "./command-webview-handlers";
 import { createNonce, resolveTargetEditor, writeUiReviewSnapshotIfRequested, type OpenTableEditorCommandResult } from "./command-utils";
 import { createFormatReviewModel, formatEnabled } from "./format-command";
 import { registerTableEditorMessageRouter } from "./message-router";
@@ -80,6 +80,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
     panel.onDidDispose(() => sessionTarget.dispose());
     registerTableEditorMessageRouter(panel, {
       uiReviewSnapshot: writeUiReviewSnapshotIfRequested,
+      invalidMessage: (message, resultType) => reportInvalidTableEditorMessage(editor, panel, sessionTarget, message, resultType),
       mutationError: (message, error) => reportMutationHandlerFailure(editor, panel, sessionTarget, message, error),
       applyFormatTable: (message) => applyFormatReview(editor, panel, sessionTarget, formatReview, (message as { mode?: TableFormatMode }).mode, (message as { selectedSourceCellId?: string }).selectedSourceCellId, message as MutationRequestMetadata)
     });

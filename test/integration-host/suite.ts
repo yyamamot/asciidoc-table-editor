@@ -5,6 +5,7 @@ import { testAsciiDocTableCodeLensIgnoresOpaqueDelimitedBlocks, testAsciiDocTabl
 import { testUnsupportedCsvTableFallsBack } from "./fallback.test";
 import { testAsciiDocTableFormatCodeLensShowsReview } from "./format.test";
 import { testHorizontalMergeWriteBackCommand, testHorizontalUnmergeWriteBackCommand } from "./merge.test";
+import { testInvalidMessageResultMetadataDiagnosticsAndPrivacy, testInvalidMessagesShareMutationQueueReservationAndFifo, testMessageRouterAcceptsValidMaximumPayloads, testMessageRouterRejectsEmptyAndDuplicateMutationCollections, testMessageRouterRejectsInvalidNumbersAndImportedGridGeometry, testMessageRouterRejectsQuotaAndDimensionOverflow, testMessageValidationFuzzNeverInvokesHandler, testRouterDoesNotEchoPrivateDiagnosticsAndRespondsToInvalidRevisionEnvelopes, testRouterFuzzRejectsUnknownShapesWithoutInvokingHandlers, testRouterRejectsUnknownKeysAndMissingHandlers } from "./message-validation.test";
 import { testDisposedMutationQueueDropsWaitingOperations, testMessageRouterReportsHandlerFailureAndContinuesQueue, testMessageRouterSerializesPanelMutations, testMutationQueueRetainsPendingOperationIdsPastCompletedHistoryLimit, testPanelMutationQueueRunsFIFOAndDiscardsStaleRevision, testQueueWaitsForHtmlRefreshBeforeStartingNextTask, testQueuedPasteCompletesBeforeStaleUndoIsDiscarded } from "./mutation-queue.test";
 import { testRowColumnStructureEditCommands } from "./structure.test";
 import { testPlainCellContentUndoRedoUsesVSCodeStack } from "./undo-redo.test";
@@ -35,6 +36,16 @@ export async function run(): Promise<void> {
   await testMessageRouterReportsHandlerFailureAndContinuesQueue();
   await testQueuedPasteCompletesBeforeStaleUndoIsDiscarded();
   await testQueueWaitsForHtmlRefreshBeforeStartingNextTask();
+  await testMessageRouterRejectsInvalidNumbersAndImportedGridGeometry();
+  await testMessageRouterRejectsQuotaAndDimensionOverflow();
+  await testMessageRouterRejectsEmptyAndDuplicateMutationCollections();
+  await testMessageRouterAcceptsValidMaximumPayloads();
+  await testMessageValidationFuzzNeverInvokesHandler();
+  await testInvalidMessagesShareMutationQueueReservationAndFifo();
+  await testInvalidMessageResultMetadataDiagnosticsAndPrivacy();
+  await testRouterDoesNotEchoPrivateDiagnosticsAndRespondsToInvalidRevisionEnvelopes();
+  await testRouterRejectsUnknownKeysAndMissingHandlers();
+  await testRouterFuzzRejectsUnknownShapesWithoutInvokingHandlers();
   await testSessionTargetSafelyRebasesChangesBeforeTable();
   await testSessionTargetTracksUtf16MultiChangeBeforeTable();
   await testSessionTargetBlocksTargetChangesAndDeletionAtomically();

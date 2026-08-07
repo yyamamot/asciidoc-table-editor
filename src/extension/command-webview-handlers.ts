@@ -9,6 +9,7 @@ import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorHtml } from "../app";
 import { createNonce, refreshPanelFromEditor } from "./command-utils";
 import type { TableEditorSessionTarget } from "./table-editor-session-target";
+import type { InvalidTableEditorMutationMessage, TableEditorMutationResultType } from "./table-editor-messages";
 
 export type MutationRequestMetadata = {
   readonly operationId?: string;
@@ -16,6 +17,29 @@ export type MutationRequestMetadata = {
 };
 
 type MutationContext = { readonly operationId: string };
+
+export async function reportInvalidTableEditorMessage(
+  editor: vscode.TextEditor,
+  panel: vscode.WebviewPanel,
+  target: TableEditorSessionTarget,
+  message: InvalidTableEditorMutationMessage,
+  resultType: TableEditorMutationResultType
+): Promise<void> {
+  const resolution = target.resolve(editor.document, message.revisionToken ?? target.revisionToken);
+  await postMutationMessage(editor, panel, target, { operationId: message.operationId }, {
+    type: resultType,
+    result: resolution.status === "ready"
+      ? {
+          ok: false,
+          diagnostics: [{
+            code: "webview.message.invalid",
+            severity: "error",
+            message: vscode.l10n.t("The Table Editor rejected an invalid or oversized message.")
+          }]
+        }
+      : sessionTargetFailureResult(resolution)
+  });
+}
 
 export async function reportMutationHandlerFailure(
   editor: vscode.TextEditor,
@@ -68,10 +92,11 @@ export async function applyCellContentsUpdate(
 ): Promise<void> {
   const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
   if (mutation === undefined) return;
+  const diagnostics = canonicalPasteDiagnostics(message.diagnostics);
   const result = await applyPlainCellContentsToEditor(editor, target, message.replacements);
-  const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
+  const resultWithDiagnostics = mergeResultDiagnostics(result, diagnostics);
   if (result.ok) {
-    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.replacements.at(-1)?.sourceCellId, message.diagnostics);
+    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.replacements.at(-1)?.sourceCellId, diagnostics);
     return;
   }
   await postMutationMessage(editor, panel, target, mutation, {
@@ -88,13 +113,14 @@ export async function applyRectangularPaste(
 ): Promise<void> {
   const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
   if (mutation === undefined) return;
+  const diagnostics = canonicalPasteDiagnostics(message.diagnostics);
   const result = await applyRectangularPasteToEditor(editor, target, {
     startSourceCellId: message.startSourceCellId,
     rows: message.rows
   });
-  const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
+  const resultWithDiagnostics = mergeResultDiagnostics(result, diagnostics);
   if (result.ok) {
-    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, message.diagnostics);
+    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, diagnostics);
     return;
   }
   await postMutationMessage(editor, panel, target, mutation, { type: "cell-content-update-result", result: resultWithDiagnostics });
@@ -108,10 +134,16 @@ export async function applyImportedPaste(
 ): Promise<void> {
   const mutation = await beginMutation(editor, panel, target, message, "cell-content-update-result");
   if (mutation === undefined) return;
-  const result = await applyImportedTablePasteToEditor(editor, target, message);
-  const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
+  const diagnostics = canonicalPasteDiagnostics(message.diagnostics);
+  const result = await applyImportedTablePasteToEditor(editor, target, {
+    startSourceCellId: message.startSourceCellId,
+    rowCount: message.rowCount,
+    columnCount: message.columnCount,
+    cells: message.cells
+  });
+  const resultWithDiagnostics = mergeResultDiagnostics(result, diagnostics);
   if (result.ok) {
-    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, message.diagnostics);
+    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.startSourceCellId, diagnostics);
     return;
   }
   await postMutationMessage(editor, panel, target, mutation, { type: "cell-content-update-result", result: resultWithDiagnostics });
@@ -147,13 +179,14 @@ export async function applyPlainCellBlockSourceReplace(
 ): Promise<void> {
   const mutation = await beginMutation(editor, panel, target, message, "block-cell-update-result");
   if (mutation === undefined) return;
+  const diagnostics = canonicalPasteDiagnostics(message.diagnostics);
   const result = await applyPlainCellBlockContentToEditor(editor, target, {
     sourceCellId: message.sourceCellId,
     contentRaw: message.contentRaw
   });
-  const resultWithDiagnostics = mergeResultDiagnostics(result, message.diagnostics);
+  const resultWithDiagnostics = mergeResultDiagnostics(result, diagnostics);
   if (result.ok) {
-    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId, message.diagnostics);
+    await refreshPanelFromEditor(editor, panel, target, message.selectedSourceCellId ?? message.sourceCellId, diagnostics);
     return;
   }
   await postMutationMessage(editor, panel, target, mutation, { type: "block-cell-update-result", result: resultWithDiagnostics });
@@ -430,6 +463,19 @@ function mergeResultDiagnostics<T extends CellContentUpdateResult>(result: T, di
     ...result,
     diagnostics: [...diagnostics, ...result.diagnostics]
   };
+}
+
+function canonicalPasteDiagnostics(diagnostics: readonly TableDiagnostic[] | undefined): readonly TableDiagnostic[] | undefined {
+  if (!diagnostics?.some((diagnostic) =>
+    diagnostic.code === "paste.rich-content-dropped" && diagnostic.severity === "warning"
+  )) {
+    return undefined;
+  }
+  return [{
+    code: "paste.rich-content-dropped",
+    severity: "warning",
+    message: vscode.l10n.t("Pasted unsupported rich clipboard content with limited formatting.")
+  }];
 }
 
 async function beginMutation(

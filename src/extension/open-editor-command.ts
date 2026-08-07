@@ -5,7 +5,7 @@ import { createTableEditorPanel } from "./panel";
 import { registerTableEditorMessageRouter } from "./message-router";
 import { createTableEditorLabels } from "./table-editor-labels";
 import { renderTableEditorPreview } from "./table-editor-preview";
-import { applyAppearanceUpdate, applyBlockCellSourceUpdate, applyCellContentsUpdate, applyCellContentUpdate, applyCellStyleUpdate, applyColumnSpecUpdate, applyFormatReview, applyHeaderFooterUpdate, applyImportedPaste, applyMergeCells, applyPlainCellBlockSourceReplace, applyRectangularPaste, applyRevealSourceCell, applyRowColumnEdit, applyUndoRedo, applyUnmergeCell, openFormatReviewInPanel, reportMutationHandlerFailure, type MutationRequestMetadata } from "./command-webview-handlers";
+import { applyAppearanceUpdate, applyBlockCellSourceUpdate, applyCellContentsUpdate, applyCellContentUpdate, applyCellStyleUpdate, applyColumnSpecUpdate, applyFormatReview, applyHeaderFooterUpdate, applyImportedPaste, applyMergeCells, applyPlainCellBlockSourceReplace, applyRectangularPaste, applyRevealSourceCell, applyRowColumnEdit, applyUndoRedo, applyUnmergeCell, openFormatReviewInPanel, reportInvalidTableEditorMessage, reportMutationHandlerFailure, type MutationRequestMetadata } from "./command-webview-handlers";
 import { createNonce, resolveTargetEditor, writeUiReviewSnapshotIfRequested, type OpenTableEditorCommandResult } from "./command-utils";
 import type { CellContentReplacement, OpenTableEditorTarget, RowColumnEditMessage } from "./types";
 import { applyImportedTablePasteToEditor } from "./table-editor-document-edits";
@@ -42,6 +42,7 @@ export function registerOpenEditorCommand(): vscode.Disposable {
     let formatReview: WebviewAppModel["formatReview"] = model.formatReview;
     registerTableEditorMessageRouter(panel, {
       uiReviewSnapshot: writeUiReviewSnapshotIfRequested,
+      invalidMessage: (message, resultType) => reportInvalidTableEditorMessage(editor, panel, sessionTarget, message, resultType),
       mutationError: (message, error) => reportMutationHandlerFailure(editor, panel, sessionTarget, message, error),
       updateCellContent: (message) => applyCellContentUpdate(editor, panel, sessionTarget, message as { sourceCellId: string; contentRaw: string; selectedSourceCellId?: string } & MutationRequestMetadata),
       updateCellContents: (message) => applyCellContentsUpdate(editor, panel, sessionTarget, message as { replacements: CellContentReplacement[]; selectedSourceCellId?: string; diagnostics?: readonly TableDiagnostic[] } & MutationRequestMetadata),
