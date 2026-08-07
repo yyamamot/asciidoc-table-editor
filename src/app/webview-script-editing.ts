@@ -7,6 +7,7 @@ export function renderWebviewEditingScript(): string {
           cell.dataset.content = contentRaw.trim();
           cell.dataset.editContent = editContent;
           cell.title = contentRaw.trim();
+          updateCellAccessibleName(cell);
           if (editingCell !== cell) {
             cell.textContent = displayContentForGridCell(sourceContent);
           }
@@ -142,23 +143,44 @@ export function renderWebviewEditingScript(): string {
             selectedSourceCellId: selectedSourceCellId()
           });
         };
-        const closeContextMenu = () => {
+        let contextMenuReturnFocus = null;
+        const contextMenuItems = () => Array.from(contextMenu?.querySelectorAll("[role='menuitem']") || [])
+          .filter((item) => !item.disabled && item.getAttribute("aria-disabled") !== "true");
+        const focusContextMenuItem = (item) => {
+          for (const current of contextMenuItems()) {
+            current.setAttribute("tabindex", current === item ? "0" : "-1");
+          }
+          item?.focus();
+        };
+        const closeContextMenu = (restoreFocus = false) => {
           contextMenu?.classList.remove("is-open");
           contextMenu?.setAttribute("aria-hidden", "true");
+          for (const item of contextMenuItems()) {
+            item.setAttribute("tabindex", "-1");
+          }
+          if (restoreFocus && contextMenuReturnFocus?.isConnected) {
+            focusCellWithoutSelectionReset(contextMenuReturnFocus);
+          }
+          contextMenuReturnFocus = null;
         };
         const openContextMenu = (cell, clientX, clientY) => {
           if (!contextMenu || !cell || editorMode !== "edit" || isSourceMutationUnavailable()) {
             return;
           }
           selectCell(cell);
+          contextMenuReturnFocus = cell;
+          const rect = cell.getBoundingClientRect();
           const width = contextMenu.offsetWidth || 190;
           const height = contextMenu.offsetHeight || 200;
-          const left = Math.max(4, Math.min(clientX, window.innerWidth - width - 4));
-          const top = Math.max(4, Math.min(clientY, window.innerHeight - height - 4));
+          const anchorX = Number.isFinite(clientX) ? clientX : rect.left;
+          const anchorY = Number.isFinite(clientY) ? clientY : rect.bottom;
+          const left = Math.max(4, Math.min(anchorX, window.innerWidth - width - 4));
+          const top = Math.max(4, Math.min(anchorY, window.innerHeight - height - 4));
           contextMenu.style.left = left + "px";
           contextMenu.style.top = top + "px";
           contextMenu.classList.add("is-open");
           contextMenu.setAttribute("aria-hidden", "false");
+          focusContextMenuItem(contextMenuItems()[0]);
         };
         const requestUndoRedo = (type) => {
           postSourceMessage({
@@ -309,7 +331,7 @@ export function renderWebviewEditingScript(): string {
           if (!(button instanceof HTMLButtonElement)) {
             return;
           }
-          closeContextMenu();
+          closeContextMenu(true);
           const action = button.dataset.action || "";
           if (action === "insert-row-before") {
             requestRowColumnEdit("request-insert-row-before");
@@ -382,6 +404,37 @@ export function renderWebviewEditingScript(): string {
           if (event.target === contentEditor) {
             return;
           }
+          if (contextMenu?.classList.contains("is-open")) {
+            const items = contextMenuItems();
+            const currentIndex = items.indexOf(document.activeElement);
+            const target = event.key === "ArrowDown"
+              ? items[(currentIndex + 1 + items.length) % items.length]
+              : event.key === "ArrowUp"
+                ? items[(currentIndex - 1 + items.length) % items.length]
+                : event.key === "Home"
+                  ? items[0]
+                  : event.key === "End"
+                    ? items[items.length - 1]
+                    : null;
+            if (target) {
+              event.preventDefault();
+              event.stopPropagation();
+              focusContextMenuItem(target);
+              return;
+            }
+            if (event.key === "Escape") {
+              event.preventDefault();
+              event.stopPropagation();
+              closeContextMenu(true);
+              return;
+            }
+            if ((event.key === "Enter" || event.key === " ") && document.activeElement?.getAttribute("role") === "menuitem") {
+              event.preventDefault();
+              event.stopPropagation();
+              document.activeElement.click();
+              return;
+            }
+          }
           if (editingCell) {
             if (event.key === "Escape") {
               event.preventDefault();
@@ -402,8 +455,15 @@ export function renderWebviewEditingScript(): string {
             });
             return;
           }
-          if (event.key === "Escape") {
-            closeContextMenu();
+          const contextMenuKey = event.key === "ContextMenu" || (event.shiftKey && event.key === "F10");
+          const focusedContextCell = event.target instanceof HTMLElement
+            ? event.target.closest(".cell[data-kind='origin']")
+            : null;
+          if (focusedContextCell && contextMenuKey && !event.metaKey && !event.ctrlKey && !event.altKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            openContextMenu(focusedContextCell, undefined, undefined);
+            return;
           }
           const printableKey = event.key.length === 1 && !event.metaKey && !event.ctrlKey && !event.altKey;
           const navigationKeys = new Map([
@@ -412,13 +472,11 @@ export function renderWebviewEditingScript(): string {
             ["ArrowUp", "up"],
             ["ArrowDown", "down"]
           ]);
-          const navigationDirection = event.key === "Tab"
-            ? event.shiftKey ? "previous" : "next"
-            : navigationKeys.get(event.key);
+          const navigationDirection = navigationKeys.get(event.key);
           if (selectedCell && navigationDirection && !event.metaKey && !event.ctrlKey && !event.altKey) {
             event.preventDefault();
             event.stopPropagation();
-            moveSelection(navigationDirection, event.shiftKey && event.key !== "Tab");
+            moveSelection(navigationDirection, event.shiftKey);
             return;
           }
           if (selectedCell && (event.key === "Delete" || event.key === "Backspace") && !event.metaKey && !event.ctrlKey && !event.altKey) {

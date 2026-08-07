@@ -28,6 +28,9 @@ importers:
       '@vscode/vsce':
         specifier: 3.9.1
         version: 3.9.1
+      axe-core:
+        specifier: 4.12.1
+        version: 4.12.1
       esbuild:
         specifier: 0.27.7
         version: 0.27.7
@@ -642,6 +645,10 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  axe-core@4.12.1:
+    resolution: {integrity: sha512-s7iGf5GaVMxEG0ENN9x+xTr7GFZCb1ZP/1uATUpCEK2X78nDB3RwbtFCo9pGAf9ru+VwoQ464DkaLEeRM08wJA==}
+    engines: {node: '>=4'}
 
   azure-devops-node-api@12.5.0:
     resolution: {integrity: sha512-R5eFskGvOm3U/GzeAuxRkUsAl0hrAwGgWn6zAd2KrZmrEhWZVqLew4OOupbQlXUuojUzpGtq62SmdhJ06N88og==}
@@ -2433,6 +2440,8 @@ snapshots:
   astral-regex@2.0.0: {}
 
   asynckit@0.4.0: {}
+
+  axe-core@4.12.1: {}
 
   azure-devops-node-api@12.5.0:
     dependencies:

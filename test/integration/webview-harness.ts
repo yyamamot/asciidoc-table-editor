@@ -239,7 +239,8 @@ export async function createHarness(
       return window.document.querySelector("[data-review-target='diagnostics']")?.textContent ?? "";
     },
     keydown(key: string, init: KeyboardEventInit = {}): void {
-      (window.document as unknown as { dispatchEvent(event: unknown): boolean }).dispatchEvent(
+      const target = window.document.activeElement ?? window.document;
+      (target as unknown as { dispatchEvent(event: unknown): boolean }).dispatchEvent(
         new window.KeyboardEvent("keydown", { bubbles: true, cancelable: true, key, ...(init as Record<string, unknown>) })
       );
     },

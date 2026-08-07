@@ -7,6 +7,20 @@ export function renderGridStyles(model: { columnCount: number }): string {
   border-top: 1px solid var(--grid-border);
   border-left: 1px solid var(--grid-border);
 }
+.grid-row {
+  display: contents;
+}
+.grid-selection-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 .cell {
   position: relative;
   min-height: 34px;

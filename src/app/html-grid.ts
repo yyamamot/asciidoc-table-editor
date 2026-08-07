@@ -10,18 +10,25 @@ export function renderGrid(model: WebviewAppModel, options: RenderTableEditorOpt
   const originCells = model.cells
     .flat()
     .filter((cell): cell is Extract<GridCell, { kind: "origin" }> => cell !== undefined && cell.kind === "origin");
+  const activeSourceCellId = originCells.some((cell) => cell.sourceCellId === options.selectedSourceCellId)
+    ? options.selectedSourceCellId
+    : originCells[0]?.sourceCellId;
   const layoutCss = originCells
     .map(
       (cell, index) =>
         `.cell-layout-${index}{grid-row:${cell.row + 1} / span ${cell.rowSpan};grid-column:${cell.col + 1} / span ${cell.colSpan};}`
     )
     .join("\n");
-  const cells = model.cells
-    .flat()
-    .filter((cell): cell is Extract<GridCell, { kind: "origin" }> => cell !== undefined && cell.kind === "origin")
-    .map((cell, index) => renderCell(cell, model.columns[cell.col], renderOptions, labels, `cell-layout-${index}`))
-    .join("");
-  return `<style nonce="${escapeHtml(nonce)}">${layoutCss}</style><div class="grid" role="grid" data-review-target="table-grid" aria-label="${escapeHtml(labels.tableGrid)}" aria-rowcount="${model.rowCount}" aria-colcount="${model.columnCount}">${cells}</div>`;
+  const cellsByRow = new Map<number, string[]>();
+  originCells.forEach((cell, index) => {
+    const rowCells = cellsByRow.get(cell.row) ?? [];
+    rowCells.push(renderCell(cell, model.columns[cell.col], renderOptions, labels, `cell-layout-${index}`, cell.sourceCellId === activeSourceCellId));
+    cellsByRow.set(cell.row, rowCells);
+  });
+  const rows = Array.from({ length: model.rowCount }, (_, row) =>
+    `<div class="grid-row" role="row" data-grid-row="${row}" aria-rowindex="${row + 1}">${(cellsByRow.get(row) ?? []).join("")}</div>`
+  ).join("");
+  return `<style nonce="${escapeHtml(nonce)}">${layoutCss}</style><div class="grid" role="grid" data-review-target="table-grid" aria-label="${escapeHtml(labels.tableGrid)}" aria-rowcount="${model.rowCount}" aria-colcount="${model.columnCount}">${rows}</div><div class="grid-selection-status" data-grid-selection-status aria-live="polite" aria-atomic="true"></div>`;
 }
 
 function renderCell(
@@ -29,7 +36,8 @@ function renderCell(
   columnSpec: WebviewAppModel["columns"][number] | undefined,
   options: RenderTableEditorOptions,
   labels: TableEditorWebviewLabels,
-  layoutClass: string
+  layoutClass: string,
+  active: boolean
 ): string {
   const selected = options.selectedSourceCellId === cell.sourceCellId;
   const selectionClass = selected ? " is-selected" : "";
@@ -39,11 +47,13 @@ function renderCell(
   const editContent = cell.contentRaw.slice(leading.length);
   const sourceContent = cell.contentRaw.trimStart();
   const displayContent = displayContentForGridCell(sourceContent);
+  const state = cell.editable ? labels.editable : labels.readonly;
+  const accessibleName = `${labels.row} ${cell.row + 1}, ${labels.column} ${cell.col + 1}, ${labels.span} ${cell.rowSpan} x ${cell.colSpan}, ${state}, ${displayContent}`;
   const blockBadge = cell.blockContent
     ? `<span class="cell-badge cell-badge-block" title="${escapeHtml(labels.blockCell)}" aria-label="${escapeHtml(labels.blockCell)}">&lt;/&gt;</span>`
     : "";
 
-  return `<div class="cell ${layoutClass}${selectionClass}" role="gridcell" tabindex="0" data-kind="origin" data-source-cell-id="${escapeHtml(
+  return `<div class="cell ${layoutClass}${selectionClass}" role="gridcell" tabindex="${active ? "0" : "-1"}" aria-label="${escapeHtml(accessibleName)}" data-kind="origin" data-source-cell-id="${escapeHtml(
     cell.sourceCellId
   )}" title="${escapeHtml(
     cell.contentRaw.trim()

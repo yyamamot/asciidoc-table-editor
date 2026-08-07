@@ -29,17 +29,17 @@ export function renderInspector(model: WebviewAppModel, labels: TableEditorWebvi
 
 export function renderContextMenu(labels: TableEditorWebviewLabels): string {
   return `<div class="context-menu" data-context-menu="cell" data-review-target="cell-context-menu" role="menu" aria-label="${escapeHtml(labels.cellContextMenu)}" aria-hidden="true">
-    <button type="button" role="menuitem" data-action="insert-row-before">${escapeHtml(labels.insertRowAbove)}</button>
-    <button type="button" role="menuitem" data-action="insert-row-after">${escapeHtml(labels.insertRowBelow)}</button>
-    <button type="button" role="menuitem" data-action="insert-column-before">${escapeHtml(labels.insertColumnLeft)}</button>
-    <button type="button" role="menuitem" data-action="insert-column-after">${escapeHtml(labels.insertColumnRight)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="insert-row-before">${escapeHtml(labels.insertRowAbove)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="insert-row-after">${escapeHtml(labels.insertRowBelow)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="insert-column-before">${escapeHtml(labels.insertColumnLeft)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="insert-column-after">${escapeHtml(labels.insertColumnRight)}</button>
     <div class="separator" role="separator"></div>
-    <button type="button" role="menuitem" data-action="delete-row">${escapeHtml(labels.removeRow)}</button>
-    <button type="button" role="menuitem" data-action="delete-column">${escapeHtml(labels.removeColumn)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="delete-row">${escapeHtml(labels.removeRow)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="delete-column">${escapeHtml(labels.removeColumn)}</button>
     <div class="separator" role="separator"></div>
-    <button type="button" role="menuitem" data-action="mark-header">${escapeHtml(labels.markHeader)}</button>
-    <button type="button" role="menuitem" data-action="mark-noheader">${escapeHtml(labels.markNoHeader)}</button>
-    <button type="button" role="menuitem" data-action="toggle-footer">${escapeHtml(labels.toggleFooter)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="mark-header">${escapeHtml(labels.markHeader)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="mark-noheader">${escapeHtml(labels.markNoHeader)}</button>
+    <button type="button" role="menuitem" tabindex="-1" data-action="toggle-footer">${escapeHtml(labels.toggleFooter)}</button>
   </div>`;
 }
 

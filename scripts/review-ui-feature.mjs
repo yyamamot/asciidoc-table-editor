@@ -6,6 +6,7 @@ const root = resolve(new URL("..", import.meta.url).pathname);
 const scenarioAliases = new Map([
   ["smoke", { path: "fixtures/harness/table-grid-smoke/scenario.json" }],
   ["table-grid", { path: "fixtures/harness/table-grid-smoke/scenario.json" }],
+  ["grid-keyboard-accessibility", { path: "fixtures/harness/grid-keyboard-accessibility/scenario.json" }],
   ["fallback", { path: "fixtures/harness/fallback/scenario.json" }],
   ["merge-cells", { path: "fixtures/harness/merge-cells/scenario.json" }],
   ["unmerge-cells", { path: "fixtures/harness/unmerge-cells/scenario.json" }],

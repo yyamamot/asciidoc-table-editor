@@ -85,6 +85,40 @@ export function renderWebviewSelectionScript(): string {
             cell.classList.add("is-range-selected");
           }
         };
+        const updateRangeAnnouncement = () => {
+          const status = document.querySelector("[data-grid-selection-status]");
+          if (!status) {
+            return;
+          }
+          const rangeCells = selectedRangeCells();
+          if (rangeCells.length === 0 || !rangeAnchorCell || !selectedCell) {
+            status.textContent = "";
+            return;
+          }
+          const bounds = rangeBounds(rangeAnchorCell, selectedCell);
+          const anchorRow = Number(rangeAnchorCell.dataset.row || "0") + 1;
+          const anchorCol = Number(rangeAnchorCell.dataset.col || "0") + 1;
+          const activeRow = Number(selectedCell.dataset.row || "0") + 1;
+          const activeCol = Number(selectedCell.dataset.col || "0") + 1;
+          status.textContent = labels.row + " " + anchorRow + ", " + labels.column + " " + anchorCol + " - " +
+            labels.row + " " + activeRow + ", " + labels.column + " " + activeCol + ", " +
+            (bounds.bottom - bounds.top + 1) + " " + labels.rowsLabel + " x " +
+            (bounds.right - bounds.left + 1) + " " + labels.columnsLabel;
+        };
+        const cellAccessibleName = (cell) => {
+          const readonly = cell.getAttribute("aria-readonly") === "true";
+          const content = displayContentForGridCell((cell.dataset.content || "").trimStart());
+          return labels.row + " " + (Number(cell.dataset.row || "0") + 1) + ", " +
+            labels.column + " " + (Number(cell.dataset.col || "0") + 1) + ", " +
+            labels.span + " " + (cell.dataset.rowSpan || "1") + " x " + (cell.dataset.colSpan || "1") + ", " +
+            (readonly ? labels.readonly : labels.editable) + ", " + content;
+        };
+        const updateCellAccessibleName = (cell) => cell.setAttribute("aria-label", cellAccessibleName(cell));
+        const setRovingGridCell = (cell) => {
+          for (const current of document.querySelectorAll(".cell[data-kind='origin']")) {
+            current.setAttribute("tabindex", current === cell ? "0" : "-1");
+          }
+        };
         const focusCellWithoutSelectionReset = (cell) => {
           suppressNextFocusSelection = true;
           cell.focus();
@@ -104,6 +138,7 @@ export function renderWebviewSelectionScript(): string {
             rangeAnchorCell = selectedCell || cell;
           }
           selectedCell = cell;
+          setRovingGridCell(cell);
           for (const current of document.querySelectorAll(".cell.is-selected")) {
             current.classList.remove("is-selected");
             current.setAttribute("aria-selected", "false");
@@ -152,6 +187,7 @@ export function renderWebviewSelectionScript(): string {
           if (extendRange) {
             renderRangeSelection();
           }
+          updateRangeAnnouncement();
         };
         const beginMouseRangeSelection = (cell, event) => {
           if (editorMode !== "edit" || event.button !== 0 || event.shiftKey || event.metaKey || event.ctrlKey || event.altKey || editingCell) {

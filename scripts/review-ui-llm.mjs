@@ -22,6 +22,7 @@ const screenshotsRoot = join(reviewRoot, "screenshots");
 const scenarioAliases = new Map([
   ["smoke", "fixtures/harness/table-grid-smoke/scenario.json"],
   ["table-grid", "fixtures/harness/table-grid-smoke/scenario.json"],
+  ["grid-keyboard-accessibility", "fixtures/harness/grid-keyboard-accessibility/scenario.json"],
   ...[
     "fallback", "merge-cells", "unmerge-cells", "block-cell-readonly", "diagnostics", "ja-responsive", "large-table",
     "table-spec-header-footer", "table-spec-column-cell-spec", "official-table-syntax-compat", "table-attribute-preview",
@@ -490,7 +491,20 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
         const beforeMessageCount = harness.messages.length;
         harness.keydown(step.key, modifierDetails(step));
         const mutation = await applyPostedMutationIfPresent(state, beforeMessageCount, webviewHarness, scenarioRunner, step);
-        return { target: step.key, details: { domEvent: "keydown", modifiers: modifierDetails(step), ...mutation } };
+        const document = state.harness.window.document;
+        return {
+          target: step.key,
+          details: {
+            domEvent: "keydown",
+            modifiers: modifierDetails(step),
+            activeSourceCellId: activeSourceCellId(state.harness),
+            activeRole: document.activeElement?.getAttribute("role") || "",
+            menuOpen: Boolean(document.querySelector("[data-context-menu='cell'].is-open")),
+            rangeAnnouncement: document.querySelector("[data-grid-selection-status]")?.textContent || "",
+            tabStopCount: document.querySelectorAll(".cell[data-kind='origin'][tabindex='0']").length,
+            ...mutation
+          }
+        };
       }
       if (step.action === "select-cell") {
         requireHarness(state, step, scenarioRunner).cell(step.sourceCellId).focus();
@@ -771,6 +785,23 @@ function evaluateDomAssertion(id, state, core) {
       return result(/[ぁ-んァ-ヶ一-龠]/u.test(document.body.textContent ?? ""), "Japanese fixture text is present in the DOM.");
     case "large-grid-visible":
       return result(Number(grid?.getAttribute("aria-rowcount") ?? 0) >= 20, "The large-table grid exposes its full row count.", `rowCount=${grid?.getAttribute("aria-rowcount")}`);
+    case "grid-keyboard-accessibility": {
+      const rows = Array.from(grid?.querySelectorAll(":scope > [role='row']") ?? []);
+      const tabStops = cells.filter((cell) => cell.getAttribute("tabindex") === "0");
+      const menu = document.querySelector("[data-context-menu='cell']");
+      const menuItems = Array.from(menu?.querySelectorAll("[role='menuitem']") ?? []);
+      const rangeAnnouncement = document.querySelector("[data-grid-selection-status]")?.textContent ?? "";
+      const namedCells = cells.every((cell) => (cell.getAttribute("aria-label") ?? "").trim().length > 0);
+      const passed = rows.length === Number(grid?.getAttribute("aria-rowcount") ?? -1) &&
+        tabStops.length === 1 && namedCells &&
+        menu?.getAttribute("aria-hidden") === "true" && menuItems.every((item) => item.getAttribute("tabindex") === "-1") &&
+        /row 1, column 1 - row 2, column 2, 2 rows x 2 columns/u.test(rangeAnnouncement);
+      return result(
+        passed,
+        "Grid rows, roving tabindex, keyboard menu closure, cell names, and bounded range announcement satisfy the accessibility contract.",
+        `rows=${rows.length}, tabStops=${tabStops.length}, namedCells=${namedCells}, menuHidden=${menu?.getAttribute("aria-hidden")}, range=${rangeAnnouncement}`
+      );
+    }
     case "header-footer-roles-visible":
       return result(Boolean(document.querySelector(".cell[data-row-role='header']") && document.querySelector(".cell[data-row-role='footer']")), "Header and footer row roles are represented in DOM metadata.");
     case "column-cell-spec-metadata-visible":

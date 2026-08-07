@@ -1,0 +1,19 @@
+{
+  "id": "grid-keyboard-accessibility",
+  "fixture": "fixtures/lossless/large-table/source.adoc",
+  "expectedMode": "structured",
+  "steps": [
+    { "id": "open-fixture", "action": "open" },
+    { "id": "open-editor", "action": "command", "command": "asciidocTable.openEditor" },
+    { "id": "focus-first-cell", "action": "select-cell", "sourceCellId": "cell:0:0" },
+    { "id": "open-menu-from-keyboard", "action": "keyboard", "key": "ContextMenu" },
+    { "id": "move-menu-focus", "action": "keyboard", "key": "ArrowDown" },
+    { "id": "move-menu-focus-to-end", "action": "keyboard", "key": "End" },
+    { "id": "close-menu-and-restore-focus", "action": "keyboard", "key": "Escape" },
+    { "id": "extend-range-right", "action": "keyboard", "key": "ArrowRight", "shiftKey": true },
+    { "id": "extend-range-down", "action": "keyboard", "key": "ArrowDown", "shiftKey": true }
+  ],
+  "assertions": [
+    { "id": "grid-keyboard-accessibility", "type": "ui-review" }
+  ]
+}
