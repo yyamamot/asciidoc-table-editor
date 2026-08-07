@@ -1,0 +1,44 @@
+[
+  {
+    "id": "active-elements",
+    "input": "<p>before</p><script>alert(1)</script><style>body{display:none}</style><iframe src=\"https://example.com\"></iframe><object data=\"x\"></object><embed src=\"x\"><p>after</p>",
+    "absent": ["script", "alert(1)", "style", "iframe", "object", "embed"],
+    "present": ["<p>before</p>", "<p>after</p>"]
+  },
+  {
+    "id": "form-svg-math",
+    "input": "<form action=\"https://example.com\"><input autofocus onfocus=\"alert(1)\"><button formaction=\"javascript:alert(1)\">go</button></form><svg><a xlink:href=\"javascript:alert(1)\">x</a></svg><math><mtext>m</mtext></math><p>safe</p>",
+    "absent": ["form", "input", "button", "formaction", "svg", "xlink", "math", "javascript"],
+    "present": ["<p>safe</p>"]
+  },
+  {
+    "id": "base-meta-refresh-and-link",
+    "input": "<base href=\"https://example.com/\"><meta http-equiv=\"refresh\" content=\"0;url=javascript:alert(1)\"><link rel=\"stylesheet\" href=\"https://example.com/x.css\"><p>safe after metadata</p>",
+    "absent": ["<base", "<meta", "http-equiv", "javascript", "<link", "x.css"],
+    "present": ["<p>safe after metadata</p>"]
+  },
+  {
+    "id": "encoded-schemes-and-relative-urls",
+    "input": "<a href=\"jav&#x61;script&#58;alert(1)\">numeric</a><a href=\"java&Tab;script:alert(1)\">tab</a><a href=\"data:text/html,x\">data</a><a href=\"//example.com/x\">protocol-relative</a><a href=\"/relative\">relative</a>",
+    "absent": ["href=", "javascript", "data:text", "//example.com", "/relative"],
+    "present": [">numeric</a>", ">relative</a>"]
+  },
+  {
+    "id": "malformed-mutation-xss",
+    "input": "<div class=\"tableblock\"><scr<script>ipt>alert(1)</scr</script>ipt><svg><p><style><img src=x onerror=alert(2)></style></p></svg><p onclick=\"alert(3)\">safe</p></div>",
+    "absent": ["<script", "<svg", "<style", "<img", "onerror", "onclick"],
+    "present": ["<div class=\"tableblock\">", "<p>safe</p>"]
+  },
+  {
+    "id": "self-closing-active-elements",
+    "input": "<script src=\"https://example.com/x.js\"/><svg onload=\"alert(1)\"/><p>safe after self closing</p>",
+    "absent": ["script", "svg", "onload", "x.js"],
+    "present": ["<p>safe after self closing</p>"]
+  },
+  {
+    "id": "unclosed-active-element",
+    "input": "<p>safe before</p><script>alert(1)<p>must be suppressed</p>",
+    "absent": ["script", "alert(1)", "must be suppressed"],
+    "present": ["<p>safe before</p>"]
+  }
+]

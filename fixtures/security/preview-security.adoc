@@ -1,0 +1,10 @@
+|===
+a|
+++++
+<script>alert("preview-security")</script>
+<form action="https://example.com"><button formaction="javascript:alert(1)">unsafe</button></form>
+<svg><a xlink:href="javascript:alert(1)">unsafe svg</a></svg>
+<a href="https://example.com/safe">safe link</a>
+++++
+| Safe cell
+|===

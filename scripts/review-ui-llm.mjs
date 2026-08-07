@@ -26,7 +26,7 @@ const scenarioAliases = new Map([
     "fallback", "merge-cells", "unmerge-cells", "block-cell-readonly", "diagnostics", "ja-responsive", "large-table",
     "table-spec-header-footer", "table-spec-column-cell-spec", "official-table-syntax-compat", "table-attribute-preview",
     "block-cell-boundary", "clipboard-auto-expand-paste", "clipboard-merged-cell-paste", "block-cell-paste", "duplicate-cells",
-    "clipboard-rich-content-diagnostics", "unsupported-data-table", "nested-table-non-goal", "preview-comprehensive",
+    "clipboard-rich-content-diagnostics", "unsupported-data-table", "nested-table-non-goal", "preview-comprehensive", "preview-security",
     "format-table-preview", "stale-session-conflict", "rapid-mutation-order"
   ].map((id) => [id, `fixtures/harness/${id}/scenario.json`]),
   ["large-table-scroll", "fixtures/harness/large-table/scenario.json"]
@@ -109,7 +109,7 @@ async function main() {
     modelAssertionIds.push(...scenarioSpec.assertions
       .filter((assertion) => assertion.type === "vlm-review")
       .map((assertion) => assertion.id));
-    const state = createScenarioState(scenarioSpec, loaded.path);
+    const state = createScenarioState(scenarioSpec, loaded.path, app);
     const execution = await scenarioRunner.runUiReviewScenario(
       scenarioSpec,
       runId,
@@ -297,13 +297,16 @@ function createBlockedScenarioResult(id, scenarioRoot, loaded, currentRunId) {
   };
 }
 
-function createScenarioState(scenario, scenarioPath) {
+function createScenarioState(scenario, scenarioPath, app) {
   const fixturePath = resolve(root, scenario.fixture);
   if (!existsSync(fixturePath)) {
     throw new Error(`Scenario fixture was not found for ${scenarioPath}: ${fixturePath}`);
   }
+  const source = readFileSync(fixturePath, "utf8");
+  const previewHtml = scenario.id === "preview-security" ? app.sanitizePreviewHtml(extractPreviewSecurityHtml(source)) : undefined;
   return {
-    source: readFileSync(fixturePath, "utf8"),
+    source,
+    previewHtml,
     fixturePath,
     fixtureOpened: false,
     editorOpened: false,
@@ -551,11 +554,17 @@ function createScenarioAdapter(state, core, scenarioRunner, webviewHarness) {
 async function refreshHarness(state, webviewHarness, selectedSourceCellId, revisionToken) {
   state.harness?.window?.close();
   const formatReview = state.formatResult?.ok ? formatReviewModel(state.source, state.formatResult) : undefined;
-  state.harness = await webviewHarness.createHarness(state.source, selectedSourceCellId, undefined, {
+  state.harness = await webviewHarness.createHarness(state.source, selectedSourceCellId, state.previewHtml, {
     diagnostics: state.diagnostics,
     ...(revisionToken ? { revisionToken } : {}),
     ...(formatReview ? { formatReview } : {})
   });
+}
+
+function extractPreviewSecurityHtml(source) {
+  const match = source.match(/\n\+\+\+\+\r?\n([\s\S]*?)\r?\n\+\+\+\+(?:\r?\n|$)/u);
+  if (!match) throw new Error("preview-security fixture must contain a passthrough block.");
+  return match[1];
 }
 
 function requireHarness(state, step, scenarioRunner) {
@@ -749,6 +758,15 @@ function evaluateDomAssertion(id, state, core) {
       return result(Boolean(preview && !preview.closest("[hidden]")), "Preview pane is visible after the scenario action.");
     case "preview-hides-source-actions":
       return result(sourceActions.every((element) => element.hasAttribute("hidden") || element.closest("[hidden]") !== null), "Preview mode hides every structured source-changing action.");
+    case "preview-security-active-content-removed": {
+      const activeContent = preview?.querySelector("script, style, form, iframe, object, embed, svg, math, base, meta, link, [src], [action], [formaction], [xlink\\:href], [onload], [onerror], [onclick]");
+      const safeLink = preview?.querySelector('a[href="https://example.com/safe"]');
+      return result(
+        !activeContent && Boolean(safeLink),
+        "Preview DOM contains the safe absolute link and no active content or active-content attributes.",
+        `activeContent=${activeContent?.tagName ?? "none"}, safeLink=${Boolean(safeLink)}`
+      );
+    }
     case "ja-text-visible":
       return result(/[ぁ-んァ-ヶ一-龠]/u.test(document.body.textContent ?? ""), "Japanese fixture text is present in the DOM.");
     case "large-grid-visible":
