@@ -87,8 +87,11 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:toolchain": "node ./scripts/check-toolchain.mjs",
-    "lint": "node -e \"console.log('lint stub: no linter configured yet')\"",
-    "format": "node -e \"console.log('format stub: no formatter configured yet')\"",
+    "check:quality-baseline": "node ./scripts/check-quality-baselines.mjs",
+    "lint": "eslint . --suppressions-location eslint-suppressions.json",
+    "format": "node ./scripts/check-format-baseline.mjs --write",
+    "format:check": "node ./scripts/check-format-baseline.mjs --check",
+    "format:baseline": "node ./scripts/check-format-baseline.mjs --update-baseline",
     "build": "node ./scripts/build.mjs",
     "build:test": "tsc -p tsconfig.json",
     "dev:vscode": "node ./scripts/open-clean-vscode.mjs",
@@ -100,6 +103,9 @@
     "test:integration": "vitest run --dir test/integration",
     "test:integration:host": "node ./scripts/run-integration-host.mjs",
     "test:integration:host:matrix": "node ./scripts/run-integration-host.mjs --target matrix",
+    "test:coverage:core-app": "node ./scripts/run-core-app-coverage.mjs",
+    "test:coverage:extension": "node ./scripts/run-extension-coverage.mjs",
+    "test:coverage": "node ./scripts/run-coverage.mjs",
     "test:nightly:visual": "node ./scripts/nightly-visual.mjs",
     "perf:large-table": "node ./scripts/perf-large-table.mjs",
     "perf:preview-block-cells": "node ./scripts/perf-preview-block-cells.mjs",
@@ -114,7 +120,7 @@
     "release:regression": "node ./scripts/release-regression.mjs",
     "check:l10n": "node ./scripts/check-l10n.mjs",
     "check:asciidoctor-compat": "node ./scripts/check-asciidoctor-compat.mjs",
-    "check": "pnpm run check:toolchain && pnpm run typecheck && pnpm run lint && pnpm run test:unit",
+    "check": "pnpm run check:toolchain && pnpm run check:quality-baseline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
     "verify": "pnpm run build && pnpm run check:l10n && pnpm run check && pnpm run test:integration && pnpm run test:integration:host"
   },
   "files": [
@@ -133,14 +139,21 @@
     "@asciidoctor/core": "3.0.4"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@types/node": "24.12.3",
     "@types/vscode": "1.105.0",
+    "@vitest/coverage-v8": "3.2.4",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.9.1",
     "axe-core": "4.12.1",
+    "c8": "12.0.0",
     "esbuild": "0.27.7",
+    "eslint": "10.8.0",
+    "globals": "17.8.0",
     "happy-dom": "20.9.0",
+    "prettier": "3.9.6",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.65.0",
     "vitest": "3.2.4"
   },
   "pnpm": {
