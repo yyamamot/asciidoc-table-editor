@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Keep Table Editor write-back attached to the intended table, stop safely after conflicting external edits, and prevent rapid operations or stale responses from rolling the grid back.
+- Sanitize rendered table previews with an allowlist and restrict preview resources and links with a tighter Content Security Policy.
+- Speed up previews for tables with many block cells through batched rendering and caching.
+- Improve Grid and structure-menu keyboard navigation, restore focus after menu actions, and announce merged cells and selected ranges to screen readers.
+- Apply the active VS Code locale to the Table Editor and provide consistent English and Japanese diagnostic messages.
 - Fix Column spec and Table appearance panels so existing source values are loaded into the controls.
 - Require Node.js 24 for development and CI, and validate the Extension Host against fixed minimum and current VS Code versions.
 - Honor explicit `cols` column counts when diagnosing ragged rows without synthesizing missing cells.
