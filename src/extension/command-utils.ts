@@ -67,7 +67,7 @@ export async function refreshPanelFromEditor(
   const model = tableBlock === undefined
     ? createMissingTableFallbackModel()
     : await createRefreshedTableEditorModel(tableBlock.raw, diagnostics);
-  panel.webview.html = renderTableEditorHtml(model, createNonce(), { selectedSourceCellId, revisionToken: target.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
+  panel.webview.html = renderTableEditorHtml(model, createNonce(), { selectedSourceCellId, revisionToken: target.revisionToken, locale: vscode.env.language } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
 }
 
 export async function createRefreshedTableEditorModel(tableSource: string, diagnostics: readonly TableDiagnostic[] = []): Promise<WebviewAppModel> {

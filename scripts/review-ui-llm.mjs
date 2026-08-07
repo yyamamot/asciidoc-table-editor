@@ -312,6 +312,7 @@ function createScenarioState(scenario, scenarioPath, app) {
     fixtureOpened: false,
     editorOpened: false,
     editorMode: "edit",
+    locale: scenario.id === "ja-responsive" ? "ja-JP" : undefined,
     formatResult: undefined,
     diagnostics: [],
     rapidMutation: scenario.id === "rapid-mutation-order" ? {
@@ -570,6 +571,7 @@ async function refreshHarness(state, webviewHarness, selectedSourceCellId, revis
   const formatReview = state.formatResult?.ok ? formatReviewModel(state.source, state.formatResult) : undefined;
   state.harness = await webviewHarness.createHarness(state.source, selectedSourceCellId, state.previewHtml, {
     diagnostics: state.diagnostics,
+    ...(state.locale ? { locale: state.locale } : {}),
     ...(revisionToken ? { revisionToken } : {}),
     ...(formatReview ? { formatReview } : {})
   });
@@ -782,7 +784,11 @@ function evaluateDomAssertion(id, state, core) {
       );
     }
     case "ja-text-visible":
-      return result(/[ぁ-んァ-ヶ一-龠]/u.test(document.body.textContent ?? ""), "Japanese fixture text is present in the DOM.");
+      return result(
+        /[ぁ-んァ-ヶ一-龠]/u.test(document.body.textContent ?? "") && document.documentElement.lang === "ja",
+        "Japanese fixture text is present and the effective Webview language is ja.",
+        `lang=${document.documentElement.lang}`
+      );
     case "large-grid-visible":
       return result(Number(grid?.getAttribute("aria-rowcount") ?? 0) >= 20, "The large-table grid exposes its full row count.", `rowCount=${grid?.getAttribute("aria-rowcount")}`);
     case "grid-keyboard-accessibility": {

@@ -36,7 +36,7 @@ export function registerOpenEditorCommand(): vscode.Disposable {
     const preview = await renderTableEditorPreview(tableBlock.raw);
     const model = createWebviewAppModel(grid, { ...preview, tableAttributes: parsed.attributes });
     const sessionTarget = createTableEditorSessionTarget(editor.document, tableBlock);
-    const html = renderTableEditorHtml(model, createNonce(), { revisionToken: sessionTarget.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
+    const html = renderTableEditorHtml(model, createNonce(), { revisionToken: sessionTarget.revisionToken, locale: vscode.env.language } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
     const panel = createTableEditorPanel();
     panel.onDidDispose(() => sessionTarget.dispose());
     let formatReview: WebviewAppModel["formatReview"] = model.formatReview;

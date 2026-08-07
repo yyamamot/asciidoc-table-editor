@@ -376,7 +376,7 @@ export async function openFormatReviewInPanel(
     });
     return undefined;
   }
-  panel.webview.html = renderTableEditorHtml(preview.model, createNonce(), { selectedSourceCellId: message.selectedSourceCellId, revisionToken: target.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
+  panel.webview.html = renderTableEditorHtml(preview.model, createNonce(), { selectedSourceCellId: message.selectedSourceCellId, revisionToken: target.revisionToken, locale: vscode.env.language } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
   panel.reveal(vscode.ViewColumn.Beside, true);
   return preview.formatReview;
 }

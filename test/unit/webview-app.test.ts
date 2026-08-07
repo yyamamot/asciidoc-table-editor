@@ -4,6 +4,18 @@ import { parseAsciiDocTable, projectGridModel } from "../../src/core";
 import { createUiReviewSnapshotFromWebviewModel } from "../../src/harness";
 
 describe("webview table editor shell", () => {
+  it("normalizes Japanese locale tags and falls back every other value to English", () => {
+    const model = createWebviewAppModel(projectGridModel(parseAsciiDocTable("|===\n| A\n|===\n")));
+
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "ja" })).toContain('<html lang="ja">');
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "ja-JP" })).toContain('<html lang="ja">');
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "JA-jp" })).toContain('<html lang="ja">');
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "en-US" })).toContain('<html lang="en">');
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "fr" })).toContain('<html lang="en">');
+    expect(renderTableEditorHtml(model, "testNonce", { locale: "ja_@@" })).toContain('<html lang="en">');
+    expect(renderTableEditorHtml(model, "testNonce")).toContain('<html lang="en">');
+  });
+
   it("creates compact grid display text for AsciiDoc links", () => {
     expect(displayContentForGridCell("https://example.com[Example]")).toBe("Example");
     expect(displayContentForGridCell("https://example.com")).toBe("https://example.com");
@@ -163,7 +175,11 @@ describe("webview table editor shell", () => {
           changedLineCount: 1,
           formattedRowCount: 1,
           preservedRowCount: 0,
-          diagnostics: []
+          diagnostics: [{
+            code: "format.unsafe-retained-content",
+            severity: "warning",
+            message: "CORE_SECRET_FORMAT_DETAIL"
+          }]
         }]
       }
     }), "testNonce");
@@ -178,6 +194,8 @@ describe("webview table editor shell", () => {
     expect(html).toContain("Format Review");
     expect(html).toContain("Table layout");
     expect(html).toContain("Changed lines");
+    expect(html).toContain("format.unsafe-retained-content: Retained table content cannot be formatted safely.");
+    expect(html).not.toContain("CORE_SECRET_FORMAT_DETAIL");
     expect(html).toContain("adoc-hl-cell");
     expect(html).toContain("format-review-line is-changed");
     expect(html).not.toContain("</span>\n<span class=\"format-review-line");

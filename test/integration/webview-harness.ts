@@ -1,5 +1,5 @@
 import { Window } from "happy-dom";
-import { createWebviewAppModel, renderTableEditorHtml } from "../../src/app";
+import { createWebviewAppModel, renderTableEditorHtml, type TableEditorWebviewLabels } from "../../src/app";
 import {
   mergePlainCellsHorizontally,
   parseAsciiDocTable,
@@ -71,7 +71,7 @@ export async function createHarness(
   source: string,
   selectedSourceCellId?: string,
   tablePreviewHtml = "<table><tbody><tr><td>preview</td></tr></tbody></table>",
-  options: { exposeVsCodeApi?: boolean; initialState?: unknown; diagnostics?: TableDiagnostic[]; formatReview?: NonNullable<Parameters<typeof createWebviewAppModel>[1]>["formatReview"]; revisionToken?: string; autoAcknowledgeMutations?: boolean } = {}
+  options: { exposeVsCodeApi?: boolean; initialState?: unknown; diagnostics?: TableDiagnostic[]; formatReview?: NonNullable<Parameters<typeof createWebviewAppModel>[1]>["formatReview"]; revisionToken?: string; autoAcknowledgeMutations?: boolean; locale?: string; labels?: TableEditorWebviewLabels } = {}
 ) {
   const messages: PostedMessage[] = [];
   let vscodeState = options.initialState ?? {};
@@ -85,7 +85,7 @@ export async function createHarness(
     diagnostics: options.diagnostics,
     formatReview: options.formatReview
   });
-  const html = renderTableEditorHtml(model, "testNonce", { selectedSourceCellId, revisionToken: options.revisionToken });
+  const html = renderTableEditorHtml(model, "testNonce", { selectedSourceCellId, revisionToken: options.revisionToken, locale: options.locale }, options.labels);
   const window = new Window({ url: "https://webview.test/" });
   (window as unknown as { requestAnimationFrame: (callback: FrameRequestCallback) => number }).requestAnimationFrame = (callback: FrameRequestCallback): number => {
     callback(0);

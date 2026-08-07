@@ -178,7 +178,8 @@ describe("webview rich clipboard paste interactions", () => {
     const refreshed = await createHarness(result.source, message.selectedSourceCellId, undefined, {
       diagnostics: message.diagnostics
     });
-    expect(refreshed.diagnosticsText()).toContain("unsupported rich clipboard content");
+    expect(refreshed.diagnosticsText()).toContain("paste.rich-content-dropped");
+    expect(refreshed.diagnosticsText()).toContain("Unsupported rich clipboard content was simplified.");
   });
 
   it("extracts plain text from rich non-table HTML when text/plain is empty", async () => {

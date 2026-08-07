@@ -11,7 +11,7 @@ export function renderFormatReview(model: WebviewAppModel, labels: TableEditorWe
   const modeButtons = review.variants.map((variant) => `<button type="button" data-action="select-format-mode" data-format-mode="${escapeHtml(variant.mode)}" aria-pressed="${variant.mode === selectedMode ? "true" : "false"}">${escapeHtml(variant.label)}</button>`).join("");
   const summaries = review.variants.map((variant) => {
     const diagnostics = variant.diagnostics.length > 0
-      ? `<div class="diagnostic" data-severity="warning">${variant.diagnostics.map((diagnostic) => escapeHtml(diagnostic)).join("<br>")}</div>`
+      ? `<div class="diagnostic" data-severity="warning">${variant.diagnostics.map((diagnostic) => `${escapeHtml(diagnostic.code)}: ${escapeHtml(localizedDiagnosticMessage(diagnostic.code, labels))}`).join("<br>")}</div>`
       : "";
     return `<div data-format-summary data-format-mode="${escapeHtml(variant.mode)}"${variant.mode === selectedMode ? "" : " hidden"}>
       <p class="format-review-summary">
@@ -49,6 +49,12 @@ export function renderFormatReview(model: WebviewAppModel, labels: TableEditorWe
       <button type="button" data-action="apply-format-table" data-format-mode="${escapeHtml(selectedMode)}">${escapeHtml(labels.applyFormat)}</button>
     </div>
   </section>`;
+}
+
+function localizedDiagnosticMessage(code: string, labels: TableEditorWebviewLabels): string {
+  return Object.prototype.hasOwnProperty.call(labels.diagnosticMessages, code)
+    ? labels.diagnosticMessages[code] ?? labels.unknownDiagnosticMessage
+    : labels.unknownDiagnosticMessage;
 }
 
 function renderFormatSourceWithChangedLines(source: string, comparison: string): string {

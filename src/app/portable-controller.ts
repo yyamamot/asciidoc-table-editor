@@ -482,7 +482,7 @@ function createPortableFormatReviewModel(
       changedLineCount: result.summary.changedLineCount,
       formattedRowCount: result.summary.formattedRowCount,
       preservedRowCount: result.summary.preservedRowCount,
-      diagnostics: result.diagnostics.map((diagnostic) => diagnostic.message)
+      diagnostics: result.diagnostics
     }))
   };
 }

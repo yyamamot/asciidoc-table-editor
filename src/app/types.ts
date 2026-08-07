@@ -42,7 +42,7 @@ export interface WebviewFormatReviewVariant {
   readonly changedLineCount: number;
   readonly formattedRowCount: number;
   readonly preservedRowCount: number;
-  readonly diagnostics: string[];
+  readonly diagnostics: readonly TableDiagnostic[];
 }
 
 export interface RenderTableEditorOptions {
@@ -50,6 +50,7 @@ export interface RenderTableEditorOptions {
   readonly blockCellPreviewHtmlBySourceCellId?: Record<string, string>;
   readonly hostBridgeScript?: string;
   readonly revisionToken?: string;
+  readonly locale?: string;
 }
 
 export interface TableEditorWebviewLabels {
@@ -143,6 +144,8 @@ export interface TableEditorWebviewLabels {
   readonly operationInProgressMessage: string;
   readonly operationBlockedMessage: string;
   readonly operationBlockedWithoutDetailMessage: string;
+  readonly unknownDiagnosticMessage: string;
+  readonly diagnosticMessages: Readonly<Record<string, string>>;
   readonly alignLeft: string;
   readonly alignCenter: string;
   readonly alignRight: string;

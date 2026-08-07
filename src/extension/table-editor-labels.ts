@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import type { TableEditorWebviewLabels } from "../app";
+import { DEFAULT_TABLE_EDITOR_LABELS, type TableEditorWebviewLabels } from "../app";
 
 export function createTableEditorLabels(): TableEditorWebviewLabels {
   return {
@@ -93,6 +93,11 @@ export function createTableEditorLabels(): TableEditorWebviewLabels {
     operationInProgressMessage: vscode.l10n.t("Applying table change…"),
     operationBlockedMessage: vscode.l10n.t("{operation} failed: {message} ({code})"),
     operationBlockedWithoutDetailMessage: vscode.l10n.t("{operation} failed."),
+    unknownDiagnosticMessage: vscode.l10n.t("The operation could not be completed."),
+    diagnosticMessages: Object.fromEntries(
+      Object.entries(DEFAULT_TABLE_EDITOR_LABELS.diagnosticMessages)
+        .map(([code, message]) => [code, vscode.l10n.t(message)])
+    ),
     alignLeft: vscode.l10n.t("Align left"),
     alignCenter: vscode.l10n.t("Align center"),
     alignRight: vscode.l10n.t("Align right"),

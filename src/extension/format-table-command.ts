@@ -52,7 +52,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
         tableAttributes: parsed.attributes,
         diagnostics: [...preview.diagnostics, ...diagnostics]
       });
-      return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels()), diagnostics: model.diagnostics };
+      return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), { locale: vscode.env.language }, createTableEditorLabels()), diagnostics: model.diagnostics };
     }
     if (changedResults.length === 0) {
       const message = vscode.l10n.t("No table formatting changes were needed.");
@@ -63,7 +63,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
         tableAttributes: parsed.attributes,
         diagnostics: preview.diagnostics
       });
-      return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), {}, createTableEditorLabels()), diagnostics: model.diagnostics };
+      return { ok: true, mode: model.mode, model, html: renderTableEditorHtml(model, createNonce(), { locale: vscode.env.language }, createTableEditorLabels()), diagnostics: model.diagnostics };
     }
 
     const preview = await renderTableEditorPreview(tableBlock.raw);
@@ -75,7 +75,7 @@ export function registerFormatTableCommand(): vscode.Disposable {
       formatReview
     });
     const sessionTarget = createTableEditorSessionTarget(editor.document, tableBlock);
-    const html = renderTableEditorHtml(model, createNonce(), { revisionToken: sessionTarget.revisionToken } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
+    const html = renderTableEditorHtml(model, createNonce(), { revisionToken: sessionTarget.revisionToken, locale: vscode.env.language } as Parameters<typeof renderTableEditorHtml>[2], createTableEditorLabels());
     const panel = createTableEditorPanel();
     panel.onDidDispose(() => sessionTarget.dispose());
     registerTableEditorMessageRouter(panel, {

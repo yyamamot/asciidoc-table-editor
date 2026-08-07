@@ -1,6 +1,6 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createWebviewAppModel, renderTableEditorHtml, type TableEditorWebviewLabels } from "../../src/app";
+import { createWebviewAppModel, DEFAULT_TABLE_EDITOR_LABELS, renderTableEditorHtml, type TableEditorWebviewLabels } from "../../src/app";
 import { parseAsciiDocTable, projectGridModel } from "../../src/core";
 
 describe("l10n coverage", () => {
@@ -26,6 +26,33 @@ describe("l10n coverage", () => {
     expect(keys.filter((key) => japanese[key] === undefined)).toEqual([]);
   });
 
+  it("passes the active VS Code locale through every production Webview render path", () => {
+    const source = [
+      "src/extension/open-editor-command.ts",
+      "src/extension/format-table-command.ts",
+      "src/extension/command-utils.ts",
+      "src/extension/command-webview-handlers.ts"
+    ].map((path) => readFileSync(path, "utf8")).join("\n");
+    const renderCalls = source.split("\n").filter((line) => line.includes("renderTableEditorHtml(") && !line.startsWith("import "));
+
+    expect(renderCalls).toHaveLength(6);
+    expect(renderCalls.every((line) => line.includes("locale: vscode.env.language"))).toBe(true);
+  });
+
+  it("covers every finite production diagnostic code from the shared catalog", () => {
+    const portable = diagnosticCodes(readFileSync("src/app/labels.ts", "utf8"));
+    const production = productionDiagnosticCodes();
+    const extensionSource = readFileSync("src/extension/table-editor-labels.ts", "utf8");
+    const english = readJson("l10n/bundle.l10n.json");
+    const japanese = readJson("l10n/bundle.l10n.ja.json");
+
+    expect(portable.length).toBeGreaterThan(0);
+    expect(production.filter((code) => !portable.includes(code))).toEqual([]);
+    expect(extensionSource).toContain("Object.entries(DEFAULT_TABLE_EDITOR_LABELS.diagnosticMessages)");
+    expect(Object.values(DEFAULT_TABLE_EDITOR_LABELS.diagnosticMessages).filter((message) => english[message] === undefined)).toEqual([]);
+    expect(Object.values(DEFAULT_TABLE_EDITOR_LABELS.diagnosticMessages).filter((message) => japanese[message] === undefined)).toEqual([]);
+  });
+
   it("renders Webview labels from the provided label table", () => {
     const model = createWebviewAppModel(projectGridModel(parseAsciiDocTable("|===\n| A | B\n|===\n")));
     const labels = japaneseLabels();
@@ -36,10 +63,85 @@ describe("l10n coverage", () => {
     expect(html).toContain("セル内容を適用");
     expect(html).not.toContain("Insert row above");
   });
+
+  it("renders localized diagnostic messages and raw codes without exposing core messages", () => {
+    const model = createWebviewAppModel(projectGridModel(parseAsciiDocTable("|===\n| A\n|===\n")), {
+      diagnostics: [
+        { code: "writeback.table-changed", severity: "error", message: "CORE_SECRET_TABLE_CHANGED" },
+        { code: "unknown.private-detail", severity: "warning", message: "CORE_SECRET_UNKNOWN" },
+        { code: "constructor", severity: "error", message: "CORE_SECRET_CONSTRUCTOR" },
+        { code: "toString", severity: "error", message: "CORE_SECRET_TO_STRING" },
+        { code: "__proto__", severity: "error", message: "CORE_SECRET_PROTO" }
+      ]
+    });
+    const html = renderTableEditorHtml(model, "testNonce", { locale: "ja-JP" }, japaneseLabels());
+
+    expect(html).toContain('<html lang="ja">');
+    expect(html).toContain("writeback.table-changed: 対象の AsciiDoc テーブルがエディター外で変更されました。");
+    expect(html).toContain("unknown.private-detail: 操作を完了できませんでした。");
+    expect(html).toContain("constructor: 操作を完了できませんでした。");
+    expect(html).toContain("toString: 操作を完了できませんでした。");
+    expect(html).toContain("__proto__: 操作を完了できませんでした。");
+    expect(html).not.toContain("CORE_SECRET_TABLE_CHANGED");
+    expect(html).not.toContain("CORE_SECRET_UNKNOWN");
+    expect(html).not.toContain("CORE_SECRET_CONSTRUCTOR");
+    expect(html).not.toContain("CORE_SECRET_TO_STRING");
+    expect(html).not.toContain("CORE_SECRET_PROTO");
+    expect(model.diagnostics.map((diagnostic) => diagnostic.message)).toEqual([
+      "CORE_SECRET_TABLE_CHANGED",
+      "CORE_SECRET_UNKNOWN",
+      "CORE_SECRET_CONSTRUCTOR",
+      "CORE_SECRET_TO_STRING",
+      "CORE_SECRET_PROTO"
+    ]);
+  });
 });
 
 function readJson(path: string): Record<string, string> {
   return JSON.parse(readFileSync(path, "utf8")) as Record<string, string>;
+}
+
+function diagnosticCodes(source: string): string[] {
+  return [...source.matchAll(/^\s+"([a-z][a-z0-9.-]+)":/gmu)]
+    .map((match) => match[1])
+    .filter((code) => code.includes("."))
+    .sort();
+}
+
+function productionDiagnosticCodes(): string[] {
+  const excluded = new Set([
+    "src/app/labels.ts",
+    "src/extension/table-editor-labels.ts",
+    "src/logging/index.ts"
+  ]);
+  const source = sourceFiles("src")
+    .filter((path) => !excluded.has(path))
+    .map((path) => readFileSync(path, "utf8"))
+    .join("\n");
+  const literalCodes = [...source.matchAll(/["'`](block-cell|cell|format|grid|import|paste|preview|source-cell-reveal|table|webview|writeback)\.[a-z0-9.-]+["'`]/gu)]
+    .map((match) => match[0].slice(1, -1));
+  const finiteDynamicCodes = [
+    "writeback.revision-mismatch",
+    "writeback.document-replaced",
+    "writeback.table-not-found",
+    "writeback.table-ambiguous",
+    "writeback.table-changed",
+    "writeback.expected-raw-mismatch",
+    "writeback.apply-raced",
+    "writeback.undo-failed",
+    "writeback.redo-failed",
+    "writeback.no-active-editor",
+    "source-cell-reveal.no-active-editor",
+    "source-cell-reveal.table-not-found"
+  ];
+  return [...new Set([...literalCodes, ...finiteDynamicCodes])].sort();
+}
+
+function sourceFiles(path: string): string[] {
+  return readdirSync(path).flatMap((entry) => {
+    const child = `${path}/${entry}`;
+    return statSync(child).isDirectory() ? sourceFiles(child) : child.endsWith(".ts") ? [child] : [];
+  });
 }
 
 function japaneseLabels(): TableEditorWebviewLabels {
@@ -135,6 +237,10 @@ function japaneseLabels(): TableEditorWebviewLabels {
     operationInProgressMessage: bundle["Applying table change…"],
     operationBlockedMessage: bundle["{operation} failed: {message} ({code})"],
     operationBlockedWithoutDetailMessage: bundle["{operation} failed."],
+    unknownDiagnosticMessage: bundle["The operation could not be completed."],
+    diagnosticMessages: {
+      "writeback.table-changed": bundle["The target AsciiDoc table changed outside the editor."]
+    },
     alignLeft: bundle["Align left"],
     alignCenter: bundle["Align center"],
     alignRight: bundle["Align right"],

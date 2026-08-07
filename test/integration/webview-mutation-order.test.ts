@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_TABLE_EDITOR_LABELS } from "../../src/app";
 import { createHarness } from "./webview-harness";
 
 const source = "|===\n| A | B\n|===\n";
@@ -110,6 +111,66 @@ describe("Webview mutation ordering", () => {
     const retry = harness.lastMessage("update-cell-content");
     expect(retry.operationId).not.toBe(first.operationId);
     expect(retry.revisionToken).toBe("revision-1");
+  });
+
+  it("shows a localized blocked-operation message and raw code without exposing the core message", async () => {
+    const labels = {
+      ...DEFAULT_TABLE_EDITOR_LABELS,
+      operationBlockedMessage: "{operation}に失敗しました: {message} ({code})",
+      unknownDiagnosticMessage: "操作を完了できませんでした。",
+      diagnosticMessages: {
+        ...DEFAULT_TABLE_EDITOR_LABELS.diagnosticMessages,
+        "writeback.table-changed": "対象の AsciiDoc テーブルがエディター外で変更されました。"
+      }
+    };
+    const harness = await createHarness(source, undefined, undefined, {
+      revisionToken: "revision-1",
+      autoAcknowledgeMutations: false,
+      locale: "ja-JP",
+      labels
+    });
+    harness.cell("cell:0:0").focus();
+    harness.textarea("contentRaw").value = "未保存";
+    harness.button("update-cell-content").click();
+    const request = harness.lastMessage("update-cell-content");
+
+    harness.dispatchExtensionMessage({
+      type: "cell-content-update-result",
+      operationId: request.operationId,
+      revisionToken: "revision-1",
+      documentVersion: 1,
+      result: {
+        ok: false,
+        diagnostics: [{ code: "writeback.table-changed", severity: "error", message: "CORE_SECRET_CONFLICT_DETAIL" }]
+      }
+    });
+
+    expect(harness.window.document.documentElement.lang).toBe("ja");
+    expect(harness.diagnosticsText()).toContain("対象の AsciiDoc テーブルがエディター外で変更されました。");
+    expect(harness.diagnosticsText()).toContain("writeback.table-changed");
+    expect(harness.diagnosticsText()).not.toContain("CORE_SECRET_CONFLICT_DETAIL");
+  });
+
+  it.each(["constructor", "toString", "__proto__"])("uses the generic fallback for prototype-name code %s", async (code) => {
+    const harness = await draftHarness("Prototype-safe draft");
+    harness.button("update-cell-content").click();
+    const request = harness.lastMessage("update-cell-content");
+
+    harness.dispatchExtensionMessage({
+      type: "cell-content-update-result",
+      operationId: request.operationId,
+      revisionToken: "revision-1",
+      documentVersion: 1,
+      result: {
+        ok: false,
+        diagnostics: [{ code, severity: "error", message: "CORE_SECRET_PROTOTYPE_DETAIL" }]
+      }
+    });
+
+    expect(harness.diagnosticsText()).toContain(DEFAULT_TABLE_EDITOR_LABELS.unknownDiagnosticMessage);
+    expect(harness.diagnosticsText()).toContain(code);
+    expect(harness.diagnosticsText()).not.toContain("CORE_SECRET_PROTOTYPE_DETAIL");
+    expect(harness.diagnosticsText()).not.toContain("function Object");
   });
 });
 

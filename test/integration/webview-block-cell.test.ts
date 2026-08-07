@@ -30,7 +30,8 @@ describe("webview block cell paste interactions", () => {
     const refreshed = await createHarness(result.source, message.selectedSourceCellId, undefined, {
       diagnostics: message.diagnostics
     });
-    expect(refreshed.diagnosticsText()).toContain("unsupported rich clipboard content");
+    expect(refreshed.diagnosticsText()).toContain("paste.rich-content-dropped");
+    expect(refreshed.diagnosticsText()).toContain("Unsupported rich clipboard content was simplified.");
     expect(refreshed.cell("cell:0:0").dataset.block).toBe("true");
     expect(refreshed.textarea("contentRaw").value).toBe("* A\n* B");
   });

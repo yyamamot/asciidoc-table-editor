@@ -105,6 +105,9 @@ export function renderWebviewDomScript(): string {
           .replaceAll("{operation}", values.operation || "")
           .replaceAll("{message}", values.message || "")
           .replaceAll("{code}", values.code || "");
+        const localizedDiagnosticMessage = (code) => Object.prototype.hasOwnProperty.call(labels.diagnosticMessages || {}, code)
+          ? labels.diagnosticMessages[code]
+          : labels.unknownDiagnosticMessage;
         const setStatusMessage = (message, options = {}) => {
           if (diagnostics) {
             diagnostics.textContent = message;
@@ -133,7 +136,7 @@ export function renderWebviewDomScript(): string {
           }
           const diagnostic = result?.diagnostics?.[0];
           setStatusMessage(diagnostic
-            ? formatStatusTemplate(labels.operationBlockedMessage, { operation, message: diagnostic.message, code: diagnostic.code })
+            ? formatStatusTemplate(labels.operationBlockedMessage, { operation, message: localizedDiagnosticMessage(diagnostic.code), code: diagnostic.code })
             : formatStatusTemplate(labels.operationBlockedWithoutDetailMessage, { operation }));
         };
         const sourceMutationControls = () => Array.from(document.querySelectorAll([

@@ -16,6 +16,7 @@ export function renderTableEditorHtml(
   options: RenderTableEditorOptions = {},
   labels: TableEditorWebviewLabels = DEFAULT_TABLE_EDITOR_LABELS
 ): string {
+  const language = effectiveWebviewLanguage(options.locale);
   const grid = renderGrid(model, options, labels, nonce);
   const diagnostics = renderDiagnostics(model.diagnostics, labels);
   const scriptLabels = escapeJsonScript(JSON.stringify(labels));
@@ -30,7 +31,7 @@ export function renderTableEditorHtml(
   );
 
   return `<!doctype html>
-<html lang="en">
+<html lang="${language}">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
@@ -61,4 +62,13 @@ ${renderTableEditorStyles(model)}
   </main>
 </body>
 </html>`;
+}
+
+export function effectiveWebviewLanguage(locale: string | undefined): "en" | "ja" {
+  if (typeof locale !== "string" || locale.trim().length === 0) return "en";
+  try {
+    return new Intl.Locale(locale.trim()).language.toLowerCase() === "ja" ? "ja" : "en";
+  } catch {
+    return "en";
+  }
 }

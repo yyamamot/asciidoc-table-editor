@@ -136,9 +136,15 @@ export function renderDiagnostics(diagnostics: TableDiagnostic[], labels: TableE
   return `<footer class="diagnostics" data-review-target="diagnostics" aria-live="polite" tabindex="-1">${diagnostics
     .map(
       (diagnostic) =>
-        `<div class="diagnostic" data-severity="${diagnostic.severity}">${escapeHtml(diagnostic.code)}: ${escapeHtml(
-          diagnostic.message
+        `<div class="diagnostic" data-severity="${diagnostic.severity}" data-diagnostic-code="${escapeHtml(diagnostic.code)}">${escapeHtml(diagnostic.code)}: ${escapeHtml(
+          localizedDiagnosticMessage(diagnostic.code, labels)
         )}</div>`
     )
     .join("")}</footer>`;
+}
+
+function localizedDiagnosticMessage(code: string, labels: TableEditorWebviewLabels): string {
+  return Object.prototype.hasOwnProperty.call(labels.diagnosticMessages, code)
+    ? labels.diagnosticMessages[code] ?? labels.unknownDiagnosticMessage
+    : labels.unknownDiagnosticMessage;
 }
