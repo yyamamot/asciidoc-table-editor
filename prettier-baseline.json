@@ -94,7 +94,6 @@
     "test/unit/parser.test.ts": "dfaccca371a24ab3205357df7673fe7669c165f2c9255569b61805cdcebb8ec1",
     "test/unit/preview-performance.test.ts": "ae5e4af5c74c2045c199610ed5b9f42e43cbbb5a71376a8de5b2b47b58d70eff",
     "test/unit/preview-renderer.test.ts": "289828f59e929ea638bc4c28e57f022aca08684b640e8f6a2ed930e08b801b6f",
-    "test/unit/ui-review-provenance.test.ts": "1628179248aedc5af539372fa1e04049d7359e9453802d41d3e4e5412e288334",
     "test/unit/vscode-test-launcher.test.ts": "eb92fd48f575f406ed388b606df04c28516563a595dd28af8a66f760151a30ae",
     "test/unit/webview-app.test.ts": "5052e3fb82d1272db3bfc0868520bc7ba5298eaee2ad3cad0d855999d34142df"
   }

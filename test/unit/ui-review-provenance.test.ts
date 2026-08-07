@@ -1,15 +1,15 @@
 import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
 const root = join(__dirname, "..", "..");
 
 describe("UI review provenance and release policy", () => {
-  it("records an optional unconfigured model review as not-run without failing deterministic review", () => {
-    const execution = runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
+  it("records an optional unconfigured model review as not-run without failing deterministic review", async () => {
+    const execution = await runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
     try {
       expect(execution.status).toBe(0);
       const modelReview = readJson(join(execution.reviewRoot, "model-ui-review.json"));
@@ -21,20 +21,20 @@ describe("UI review provenance and release policy", () => {
       expect(modelReview.promptHash).toMatch(/^[a-f0-9]{64}$/u);
       expect(modelReview.evidenceHash).toMatch(/^[a-f0-9]{64}$/u);
       expect(deterministic.result).toBe("pass");
-      expect(readJson(join(execution.reviewRoot, "scenarios", "unit-provenance", "ui-review-snapshot.json")).reason)
-        .toBe("headless-webview-ui-review");
-      expect(deterministic.findings
-        .filter((finding: { provenance?: string }) => finding.provenance === "model-derived-review")
-        .every((finding: { status?: string }) => finding.status === "not-run"))
-        .toBe(true);
+      expect(readJson(join(execution.reviewRoot, "scenarios", "unit-provenance", "ui-review-snapshot.json")).reason).toBe("headless-webview-ui-review");
+      expect(
+        deterministic.findings
+          .filter((finding: { provenance?: string }) => finding.provenance === "model-derived-review")
+          .every((finding: { status?: string }) => finding.status === "not-run")
+      ).toBe(true);
       expectModelAssertionArtifacts(execution.reviewRoot, "not-run");
     } finally {
       rmSync(execution.reviewRoot, { recursive: true, force: true });
     }
   }, 20_000);
 
-  it("blocks and exits nonzero when model review is explicitly required but unconfigured", () => {
-    const execution = runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "required" });
+  it("blocks and exits nonzero when model review is explicitly required but unconfigured", async () => {
+    const execution = await runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "required" });
     try {
       expect(execution.status).not.toBe(0);
       const modelReview = readJson(join(execution.reviewRoot, "model-ui-review.json"));
@@ -46,23 +46,27 @@ describe("UI review provenance and release policy", () => {
     }
   }, 20_000);
 
-  it("accepts only a provenance-complete model response matching prompt and evidence hashes", () => {
-    const baseline = runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
+  it("accepts only a provenance-complete model response matching prompt and evidence hashes", async () => {
+    const baseline = await runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
     const responseRoot = mkdtempSync(join(tmpdir(), "ui-model-response-"));
     try {
       expect(baseline.status).toBe(0);
       const expected = readJson(join(baseline.reviewRoot, "model-ui-review.json"));
       const responsePath = join(responseRoot, "response.json");
-      writeFileSync(responsePath, JSON.stringify({
-        reviewerKind: "model",
-        provider: "unit-provider",
-        model: "unit-model",
-        promptHash: expected.promptHash,
-        evidenceHash: expected.evidenceHash,
-        result: "pass",
-        response: { assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "pass" }] }
-      }), "utf8");
-      const reviewed = runModelAssertionReview({
+      writeFileSync(
+        responsePath,
+        JSON.stringify({
+          reviewerKind: "model",
+          provider: "unit-provider",
+          model: "unit-model",
+          promptHash: expected.promptHash,
+          evidenceHash: expected.evidenceHash,
+          result: "pass",
+          response: { assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "pass" }] }
+        }),
+        "utf8"
+      );
+      const reviewed = await runModelAssertionReview({
         ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional",
         ASCIIDOC_TABLE_MODEL_REVIEW_RESPONSE_PATH: responsePath
       });
@@ -84,16 +88,20 @@ describe("UI review provenance and release policy", () => {
         rmSync(reviewed.reviewRoot, { recursive: true, force: true });
       }
 
-      writeFileSync(responsePath, JSON.stringify({
-        reviewerKind: "model",
-        provider: "unit-provider",
-        model: "unit-model",
-        promptHash: expected.promptHash,
-        evidenceHash: "0".repeat(64),
-        result: "pass",
-        response: { assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "pass" }] }
-      }), "utf8");
-      const mismatched = runModelAssertionReview({
+      writeFileSync(
+        responsePath,
+        JSON.stringify({
+          reviewerKind: "model",
+          provider: "unit-provider",
+          model: "unit-model",
+          promptHash: expected.promptHash,
+          evidenceHash: "0".repeat(64),
+          result: "pass",
+          response: { assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "pass" }] }
+        }),
+        "utf8"
+      );
+      const mismatched = await runModelAssertionReview({
         ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional",
         ASCIIDOC_TABLE_MODEL_REVIEW_RESPONSE_PATH: responsePath
       });
@@ -113,16 +121,22 @@ describe("UI review provenance and release policy", () => {
     }
   }, 30_000);
 
-  it("projects needs-fix model assertions consistently into every review artifact", () => {
-    const baseline = runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
+  it("projects needs-fix model assertions consistently into every review artifact", async () => {
+    const baseline = await runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
     const responseRoot = mkdtempSync(join(tmpdir(), "ui-model-needs-fix-"));
     try {
       const expected = readJson(join(baseline.reviewRoot, "model-ui-review.json"));
       const responsePath = join(responseRoot, "response.json");
-      writeFileSync(responsePath, JSON.stringify(modelResponse(expected, "needs-fix", {
-        assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "needs-fix" }]
-      })), "utf8");
-      const execution = runModelAssertionReview({
+      writeFileSync(
+        responsePath,
+        JSON.stringify(
+          modelResponse(expected, "needs-fix", {
+            assertions: [{ id: "duplicate-cells-edit-expands-shorthand", result: "needs-fix" }]
+          })
+        ),
+        "utf8"
+      );
+      const execution = await runModelAssertionReview({
         ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional",
         ASCIIDOC_TABLE_MODEL_REVIEW_RESPONSE_PATH: responsePath
       });
@@ -139,8 +153,8 @@ describe("UI review provenance and release policy", () => {
     }
   }, 30_000);
 
-  it("rejects non-exact, incomplete, duplicate, oversized, and aggregate-mismatched model responses", () => {
-    const baseline = runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
+  it("rejects non-exact, incomplete, duplicate, oversized, and aggregate-mismatched model responses", async () => {
+    const baseline = await runModelAssertionReview({ ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional" });
     const responseRoot = mkdtempSync(join(tmpdir(), "ui-model-invalid-contract-"));
     try {
       const expected = readJson(join(baseline.reviewRoot, "model-ui-review.json"));
@@ -162,7 +176,7 @@ describe("UI review provenance and release policy", () => {
       for (const [index, response] of invalidResponses.entries()) {
         const responsePath = join(responseRoot, `response-${index}.json`);
         writeFileSync(responsePath, JSON.stringify(response), "utf8");
-        const execution = runModelAssertionReview({
+        const execution = await runModelAssertionReview({
           ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional",
           ASCIIDOC_TABLE_MODEL_REVIEW_RESPONSE_PATH: responsePath
         });
@@ -183,12 +197,12 @@ describe("UI review provenance and release policy", () => {
     }
   }, 90_000);
 
-  it("redacts malformed model response content and paths behind a fixed safe reason", () => {
+  it("redacts malformed model response content and paths behind a fixed safe reason", async () => {
     const responseRoot = mkdtempSync(join(tmpdir(), "PRIVATE_SECRET_PATH-"));
     try {
       const responsePath = join(responseRoot, "PRIVATE_SECRET_RESPONSE.json");
       writeFileSync(responsePath, '{"PRIVATE_SECRET_MARKER":', "utf8");
-      const execution = runModelAssertionReview({
+      const execution = await runModelAssertionReview({
         ASCIIDOC_TABLE_MODEL_REVIEW_POLICY: "optional",
         ASCIIDOC_TABLE_MODEL_REVIEW_RESPONSE_PATH: responsePath
       });
@@ -209,25 +223,29 @@ describe("UI review provenance and release policy", () => {
     }
   }, 30_000);
 
-  it("changes evidenceHash when substantive scenario snapshot evidence changes", () => {
+  it("changes evidenceHash when substantive scenario snapshot evidence changes", async () => {
     const fixtureRoot = mkdtempSync(join(tmpdir(), "ui-review-evidence-change-"));
     const fixturePath = join(fixtureRoot, "source.adoc");
     const scenarioPath = join(fixtureRoot, "scenario.json");
-    writeFileSync(scenarioPath, JSON.stringify({
-      id: "evidence-change",
-      fixture: fixturePath,
-      expectedMode: "structured",
-      steps: [
-        { id: "open-fixture", action: "open" },
-        { id: "open-editor", action: "command", command: "asciidocTable.openEditor" }
-      ],
-      assertions: [{ id: "table-grid-visible", type: "ui-review" }]
-    }), "utf8");
+    writeFileSync(
+      scenarioPath,
+      JSON.stringify({
+        id: "evidence-change",
+        fixture: fixturePath,
+        expectedMode: "structured",
+        steps: [
+          { id: "open-fixture", action: "open" },
+          { id: "open-editor", action: "command", command: "asciidocTable.openEditor" }
+        ],
+        assertions: [{ id: "table-grid-visible", type: "ui-review" }]
+      }),
+      "utf8"
+    );
     try {
       writeFileSync(fixturePath, "|===\n| A\n|===\n", "utf8");
-      const before = runSingleReview({ ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: scenarioPath });
+      const before = await runSingleReview({ ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: scenarioPath });
       writeFileSync(fixturePath, "|===\n| A | B\n| C | D\n|===\n", "utf8");
-      const after = runSingleReview({ ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: scenarioPath });
+      const after = await runSingleReview({ ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: scenarioPath });
       try {
         const beforeArtifact = readJson(join(before.reviewRoot, "model-ui-review.json"));
         const afterArtifact = readJson(join(after.reviewRoot, "model-ui-review.json"));
@@ -242,7 +260,7 @@ describe("UI review provenance and release policy", () => {
     }
   }, 30_000);
 
-  it("keeps deterministic review required while model review is optional unless release explicitly requires it", () => {
+  it("keeps deterministic review required while model review is optional unless release explicitly requires it", async () => {
     const fixtureRoot = mkdtempSync(join(tmpdir(), "release-review-policy-"));
     try {
       const scriptPath = join(fixtureRoot, "scripts", "release-regression.mjs");
@@ -268,61 +286,75 @@ describe("UI review provenance and release policy", () => {
       writeFileSync(promptPath, prompt, "utf8");
       writeFileSync(evidencePath, evidenceText, "utf8");
       writeFileSync(join(reviewRoot, "evidence-manifest.json"), JSON.stringify({ version: 1, entries, evidenceHash }), "utf8");
-      writeFileSync(join(reviewRoot, "ui-review-report.json"), JSON.stringify({
-        result: "pass",
-        scenarioResults: [{
-          id: "release-scenario",
-          checks: [{ id: "assertion-release-model-check", provenance: "model-derived-review", status: "blocked" }]
-        }]
-      }), "utf8");
+      writeFileSync(
+        join(reviewRoot, "ui-review-report.json"),
+        JSON.stringify({
+          result: "pass",
+          scenarioResults: [
+            {
+              id: "release-scenario",
+              checks: [{ id: "assertion-release-model-check", provenance: "model-derived-review", status: "blocked" }]
+            }
+          ]
+        }),
+        "utf8"
+      );
       writeFileSync(join(reviewRoot, "model-ui-review.json"), JSON.stringify({ reviewerKind: "model", policy: "optional", status: "blocked" }), "utf8");
       const env = { ...process.env, PATH: `${fakeBin}:${process.env.PATH ?? ""}` };
 
-      const optional = spawnSync(process.execPath, [scriptPath], { encoding: "utf8", env });
+      const optional = await runNodeProcess([scriptPath], { env });
       expect(optional.status).toBe(0);
       expect(optional.stdout).toContain("release regression result: pass");
       expect(optional.stdout).toMatch(/model.*blocked/iu);
 
-      const required = spawnSync(process.execPath, [scriptPath, "--require-model-review"], { encoding: "utf8", env });
+      const required = await runNodeProcess([scriptPath, "--require-model-review"], { env });
       expect(required.status).not.toBe(0);
       expect(`${required.stdout}\n${required.stderr}`).toMatch(/model.*blocked/iu);
       expect(`${required.stdout}\n${required.stderr}`).not.toContain("Unknown argument");
 
-      writeFileSync(join(reviewRoot, "model-ui-review.json"), JSON.stringify({
-        reviewerKind: "model",
-        policy: "required",
-        status: "pass",
-        result: "pass",
-        provider: "unit-provider",
-        model: "unit-model",
-        promptHash,
-        evidenceHash,
-        response: { assertions: [{ id: "release-model-check", result: "pass" }] }
-      }), "utf8");
-      const requiredPass = spawnSync(process.execPath, [scriptPath, "--require-model-review"], { encoding: "utf8", env });
+      writeFileSync(
+        join(reviewRoot, "model-ui-review.json"),
+        JSON.stringify({
+          reviewerKind: "model",
+          policy: "required",
+          status: "pass",
+          result: "pass",
+          provider: "unit-provider",
+          model: "unit-model",
+          promptHash,
+          evidenceHash,
+          response: { assertions: [{ id: "release-model-check", result: "pass" }] }
+        }),
+        "utf8"
+      );
+      const requiredPass = await runNodeProcess([scriptPath, "--require-model-review"], { env });
       expect(requiredPass.status, `${requiredPass.stdout}\n${requiredPass.stderr}`).toBe(0);
 
       const modelArtifactPath = join(reviewRoot, "model-ui-review.json");
       const validModelArtifact = readJson(modelArtifactPath);
       writeFileSync(modelArtifactPath, JSON.stringify({ ...validModelArtifact, promptHash: "a".repeat(64), evidenceHash: "b".repeat(64) }), "utf8");
-      expect(spawnSync(process.execPath, [scriptPath, "--require-model-review"], { encoding: "utf8", env }).status).not.toBe(0);
+      expect((await runNodeProcess([scriptPath, "--require-model-review"], { env })).status).not.toBe(0);
 
       writeFileSync(modelArtifactPath, JSON.stringify(validModelArtifact), "utf8");
       writeFileSync(promptPath, `${prompt}tampered\n`, "utf8");
-      expect(spawnSync(process.execPath, [scriptPath, "--require-model-review"], { encoding: "utf8", env }).status).not.toBe(0);
+      expect((await runNodeProcess([scriptPath, "--require-model-review"], { env })).status).not.toBe(0);
       writeFileSync(promptPath, prompt, "utf8");
 
       const tamperedEntries = [{ ...entry, hash: "c".repeat(64) }];
       const tamperedEvidenceHash = sha256(JSON.stringify(tamperedEntries));
-      writeFileSync(join(reviewRoot, "evidence-manifest.json"), JSON.stringify({ version: 1, entries: tamperedEntries, evidenceHash: tamperedEvidenceHash }), "utf8");
+      writeFileSync(
+        join(reviewRoot, "evidence-manifest.json"),
+        JSON.stringify({ version: 1, entries: tamperedEntries, evidenceHash: tamperedEvidenceHash }),
+        "utf8"
+      );
       writeFileSync(modelArtifactPath, JSON.stringify({ ...validModelArtifact, evidenceHash: tamperedEvidenceHash }), "utf8");
-      expect(spawnSync(process.execPath, [scriptPath, "--require-model-review"], { encoding: "utf8", env }).status).not.toBe(0);
+      expect((await runNodeProcess([scriptPath, "--require-model-review"], { env })).status).not.toBe(0);
 
       writeFileSync(join(reviewRoot, "evidence-manifest.json"), JSON.stringify({ version: 1, entries, evidenceHash }), "utf8");
       writeFileSync(modelArtifactPath, JSON.stringify(validModelArtifact), "utf8");
 
       writeFileSync(join(reviewRoot, "ui-review-report.json"), JSON.stringify({ result: "needs-fix", scenarioResults: [] }), "utf8");
-      const deterministicFailure = spawnSync(process.execPath, [scriptPath], { encoding: "utf8", env });
+      const deterministicFailure = await runNodeProcess([scriptPath], { env });
       expect(deterministicFailure.status).not.toBe(0);
       expect(`${deterministicFailure.stdout}\n${deterministicFailure.stderr}`).toMatch(/deterministic|UI review did not pass/iu);
     } finally {
@@ -331,10 +363,12 @@ describe("UI review provenance and release policy", () => {
   }, 15_000);
 });
 
-function runSingleReview(extraEnv: Record<string, string>): { status: number | null; stdout: string; stderr: string; reviewRoot: string } {
-  const execution = spawnSync(process.execPath, ["scripts/review-ui-llm.mjs", "--single"], {
+type ChildExecution = { status: number | null; stdout: string; stderr: string };
+type ReviewExecution = ChildExecution & { reviewRoot: string };
+
+async function runSingleReview(extraEnv: Record<string, string>): Promise<ReviewExecution> {
+  const execution = await runNodeProcess(["scripts/review-ui-llm.mjs", "--single"], {
     cwd: root,
-    encoding: "utf8",
     env: {
       ...process.env,
       ASCIIDOC_TABLE_UI_REVIEW_ID: "unit-provenance",
@@ -347,10 +381,34 @@ function runSingleReview(extraEnv: Record<string, string>): { status: number | n
   return { status: execution.status, stdout: execution.stdout, stderr: execution.stderr, reviewRoot: reviewRoot! };
 }
 
-function runModelAssertionReview(extraEnv: Record<string, string>): ReturnType<typeof runSingleReview> {
+function runModelAssertionReview(extraEnv: Record<string, string>): Promise<ReviewExecution> {
   return runSingleReview({
     ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: "fixtures/harness/duplicate-cells/scenario.json",
     ...extraEnv
+  });
+}
+
+function runNodeProcess(args: string[], options: { cwd?: string; env?: NodeJS.ProcessEnv } = {}): Promise<ChildExecution> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, args, {
+      cwd: options.cwd,
+      env: options.env,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk: string) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk: string) => {
+      stderr += chunk;
+    });
+    child.once("error", reject);
+    child.once("close", (status) => {
+      resolve({ status, stdout, stderr });
+    });
   });
 }
 
