@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -15,7 +16,7 @@ import {
 const root = resolve(new URL("..", import.meta.url).pathname);
 const singleScenario = process.argv.includes("--single");
 const deprecatedLlmAlias = process.argv.includes("--deprecated-llm-alias");
-const runId = `ui-review-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+const runId = `ui-review-${new Date().toISOString().replace(/[:.]/g, "-")}-${process.pid}-${randomUUID()}`;
 const reviewRoot = join(root, ".tmp", "ui-review-pack", runId);
 const scenariosRoot = join(reviewRoot, "scenarios");
 const screenshotsRoot = join(reviewRoot, "screenshots");

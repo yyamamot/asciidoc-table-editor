@@ -1,7 +1,7 @@
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import {
   ScenarioBlockedError,
@@ -268,6 +268,28 @@ describe("UI review checks", () => {
     expect(JSON.parse(readFileSync(join(scenarioRoot, "command-trace.json"), "utf8"))).toEqual([]);
   }, 15_000);
 
+  it("isolates artifact roots and reports across parallel review child processes", async () => {
+    const [alpha, beta] = await Promise.all([
+      runReviewChild("parallel-alpha"),
+      runReviewChild("parallel-beta")
+    ]);
+
+    expect(alpha.status).toBe(1);
+    expect(beta.status).toBe(1);
+    expect(alpha.reviewRoot).not.toBe(beta.reviewRoot);
+    expect(alpha.reviewRoot).toMatch(/\/ui-review-[0-9TZ-]+-\d+-[0-9a-f-]{36}$/u);
+    expect(beta.reviewRoot).toMatch(/\/ui-review-[0-9TZ-]+-\d+-[0-9a-f-]{36}$/u);
+
+    const alphaReport = JSON.parse(readFileSync(join(alpha.reviewRoot, "ui-review-report.json"), "utf8"));
+    const betaReport = JSON.parse(readFileSync(join(beta.reviewRoot, "ui-review-report.json"), "utf8"));
+    expect(alphaReport).toMatchObject({ scenarioResults: [{ id: "parallel-alpha" }] });
+    expect(betaReport).toMatchObject({ scenarioResults: [{ id: "parallel-beta" }] });
+    expect(existsSync(join(alpha.reviewRoot, "scenarios", "parallel-alpha", "runtime.jsonl"))).toBe(true);
+    expect(existsSync(join(beta.reviewRoot, "scenarios", "parallel-beta", "runtime.jsonl"))).toBe(true);
+    expect(existsSync(join(alpha.reviewRoot, "scenarios", "parallel-beta"))).toBe(false);
+    expect(existsSync(join(beta.reviewRoot, "scenarios", "parallel-alpha"))).toBe(false);
+  }, 30_000);
+
   it("keeps expectedEditorMode assertion-only in the end-to-end review script", () => {
     const root = mkdtempSync(join(tmpdir(), "ui-review-expected-mode-"));
     const scenarioPath = join(root, "scenario.json");
@@ -310,6 +332,35 @@ describe("UI review checks", () => {
     }
   }, 15_000);
 });
+
+function runReviewChild(id: string): Promise<{ status: number | null; stdout: string; stderr: string; reviewRoot: string }> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, ["scripts/review-ui-llm.mjs", "--single"], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        ASCIIDOC_TABLE_UI_REVIEW_ID: id,
+        ASCIIDOC_TABLE_NIGHTLY_SCENARIO_PATH: `unknown-${id}`
+      },
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr.on("data", (chunk: string) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("close", (status) => {
+      const reviewRoot = [...stdout.matchAll(/^ui review pack:\s*(.+)$/gmu)].at(-1)?.[1]?.trim();
+      if (reviewRoot === undefined) {
+        reject(new Error(`review child ${id} did not report an artifact root:\n${stdout}\n${stderr}`));
+        return;
+      }
+      resolve({ status, stdout, stderr, reviewRoot });
+    });
+  });
+}
 
 type SnapshotOverrides = Omit<Partial<UiReviewSnapshot>, "geometry" | "selfReview"> & {
   geometry?: Partial<UiReviewSnapshot["geometry"]>;
