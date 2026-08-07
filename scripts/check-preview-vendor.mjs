@@ -4,19 +4,20 @@ import { Worker } from "node:worker_threads";
 
 const root = process.cwd();
 const vendorNodeModulesPath = join(root, "dist", "vendor", "asciidoctor-core-3.0.4", "node_modules");
-const packageJsonPath = join(vendorNodeModulesPath, "@asciidoctor", "core", "package.json");
 const workerPath = join(root, "dist", "workers", "asciidoctor-preview-worker.cjs");
-
-if (!existsSync(packageJsonPath)) {
-  fail(`Vendored Asciidoctor package is missing: ${packageJsonPath}`);
-}
 if (!existsSync(workerPath)) {
   fail(`Preview worker is missing: ${workerPath}`);
 }
 
-const manifest = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-if (manifest.name !== "@asciidoctor/core" || manifest.version !== "3.0.4") {
-  fail(`Unexpected vendored package: ${manifest.name}@${manifest.version}`);
+const expectedRuntime = new Map([
+  ["@asciidoctor/core", "3.0.4"],
+  ["@asciidoctor/opal-runtime", "3.0.1"],
+  ["glob", "8.1.0"],
+  ["minimatch", "5.1.9"],
+  ["brace-expansion", "2.1.3"]
+]);
+for (const [packageName, expectedVersion] of expectedRuntime) {
+  checkVendoredPackage(packageName, expectedVersion);
 }
 
 const smoke = await renderWithWorker("|===\n| A | B\n|===\n");
@@ -25,6 +26,22 @@ if (!smoke.includes("<table") || !smoke.includes("<td")) {
 }
 
 console.log("preview vendor smoke: pass");
+
+function checkVendoredPackage(packageName, expectedVersion) {
+  const packageRoot = join(vendorNodeModulesPath, ...packageName.split("/"));
+  const packageJsonPath = join(packageRoot, "package.json");
+  if (!existsSync(packageJsonPath)) {
+    fail(`Vendored package is missing: ${packageJsonPath}`);
+  }
+  const manifest = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+  if (manifest.name !== packageName || manifest.version !== expectedVersion) {
+    fail(`Unexpected vendored package: ${manifest.name}@${manifest.version}; expected ${packageName}@${expectedVersion}`);
+  }
+  const entryPath = join(packageRoot, manifest.main ?? "index.js");
+  if (!existsSync(entryPath)) {
+    fail(`Vendored package entry is missing: ${entryPath}`);
+  }
+}
 
 function renderWithWorker(source) {
   return new Promise((resolve, reject) => {
