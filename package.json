@@ -120,6 +120,7 @@
     "verify:ui-change": "node ./scripts/verify-ui-change.mjs",
     "capture:clipboard-fixture": "node ./scripts/capture-macos-clipboard-fixture.mjs",
     "release:regression": "node ./scripts/release-regression.mjs",
+    "release:check-version": "node ./scripts/check-release-version.mjs",
     "check:l10n": "node ./scripts/check-l10n.mjs",
     "check:asciidoctor-compat": "node ./scripts/check-asciidoctor-compat.mjs",
     "check": "pnpm run check:toolchain && pnpm run check:quality-baseline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit",
