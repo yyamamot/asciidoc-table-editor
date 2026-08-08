@@ -5,7 +5,6 @@
     "scripts/build.mjs": "875754e846128fcbbc2cb24bd8a0c980f3ac78e4faef499f21a40c8776bab063",
     "scripts/check-asciidoctor-compat.mjs": "212bf6ee526f6554ecf15f33221b0c962b5d08e9aaeb43581b6787dbb8d76b28",
     "scripts/check-token-efficiency.mjs": "200cb86c901bc36ca82cc799c0ad9ebf8e661df6cffaf5419b6b7d4a5bf20cdb",
-    "scripts/mirror-commit-message.mjs": "3e7f8080aaac22545031f2ee8715906a72232020e509409713272faa13dc6f56",
     "scripts/perf-large-table.mjs": "24e719a9a908deac6f1587b73c798856193a652dcd0b03c3541747ce589fdbc5",
     "scripts/perf-preview-block-cells.mjs": "28f3ee9a325726729e223a59d2691ec6f22189b0322d357ddffc7f05fa468e34",
     "scripts/release-regression.mjs": "53e6104abb6cf529d9815fb59ac0d30909451269944ba5ecb5325cbc279aa9c4",
